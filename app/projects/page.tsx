@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -12,7 +13,9 @@ import {
   Calendar, 
   FileText,
   MoreVertical,
-  ArrowUpRight
+  ArrowUpRight,
+  User,
+  LogOut
 } from "lucide-react";
 import {
   DropdownMenu,
@@ -79,8 +82,56 @@ const projects = [
 ];
 
 export default function ProjectsPage() {
+  const [isDemoUser, setIsDemoUser] = useState(false);
+  const [demoEmail, setDemoEmail] = useState("");
+
+  useEffect(() => {
+    // Check if user is logged in via demo auth
+    const demoAuth = localStorage.getItem('demo_auth');
+    const demoUser = localStorage.getItem('demo_user');
+    
+    if (demoAuth === 'true' && demoUser) {
+      setIsDemoUser(true);
+      setDemoEmail(demoUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('demo_auth');
+    localStorage.removeItem('demo_user');
+    setIsDemoUser(false);
+    setDemoEmail("");
+    window.location.href = '/auth/login';
+  };
+
   return (
     <div className="space-y-6">
+      {/* Demo Auth Banner */}
+      {isDemoUser && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="bg-green-100 p-2 rounded-full">
+                <User className="h-5 w-5 text-green-600" />
+              </div>
+              <div>
+                <p className="font-medium text-green-800">Demo Account Active</p>
+                <p className="text-sm text-green-600">Logged in as: {demoEmail}</p>
+              </div>
+            </div>
+            <Button 
+              variant="outline" 
+              size="sm"
+              onClick={handleLogout}
+              className="border-green-300 text-green-700 hover:bg-green-100"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Logout
+            </Button>
+          </div>
+        </div>
+      )}
+
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Projects</h1>
