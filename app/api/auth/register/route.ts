@@ -43,11 +43,17 @@ export async function POST(request: Request) {
     // Send verification email via Resend
     const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://unified-dashboard-mauve.vercel.app'}/auth/verify?token=${verifyToken}`;
     
+    let emailSent = false;
+    let emailError = null;
+    
     try {
-      await resend.emails.send({
-        from: 'Unified Dashboard <noreply@cdlschoolsusa.com>',
+      // Use Resend's default domain for testing if custom domain not verified
+      const fromEmail = process.env.RESEND_FROM_EMAIL || 'Blueprint Creations <onboarding@resend.dev>';
+      
+      const result = await resend.emails.send({
+        from: fromEmail,
         to: email,
-        subject: 'Verify your email - Unified Dashboard',
+        subject: 'Verify your email - Blueprint Creations Dashboard',
         html: `
           <!DOCTYPE html>
           <html>
@@ -55,50 +61,60 @@ export async function POST(request: Request) {
             <style>
               body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
               .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-              .header { background: linear-gradient(135deg, #3b82f6, #8b5cf6); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+              .header { background: linear-gradient(135deg, #64FFDA, #00D4FF); color: #0A192F; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+              .header h1 { margin: 0; font-size: 24px; }
               .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
-              .button { display: inline-block; background: #3b82f6; color: white; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+              .button { display: inline-block; background: #0A192F; color: #64FFDA; padding: 14px 28px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
               .footer { text-align: center; color: #6b7280; font-size: 12px; margin-top: 20px; }
             </style>
           </head>
           <body>
             <div class="container">
               <div class="header">
-                <h1>Welcome to Unified Dashboard!</h1>
+                <h1>Welcome to Blueprint Creations!</h1>
               </div>
               <div class="content">
                 <p>Hi ${name},</p>
-                <p>Thanks for signing up! Please verify your email address to get started.</p>
+                <p>Thanks for signing up! Please verify your email address to get started with your dashboard.</p>
                 <p style="text-align: center;">
                   <a href="${verifyUrl}" class="button">Verify Email Address</a>
                 </p>
                 <p>Or copy and paste this link in your browser:</p>
-                <p style="word-break: break-all; color: #3b82f6;">${verifyUrl}</p>
+                <p style="word-break: break-all; color: #0A192F; font-size: 12px;">${verifyUrl}</p>
                 <p>This link will expire in 24 hours.</p>
+                <p>If you didn't create this account, you can safely ignore this email.</p>
               </div>
               <div class="footer">
-                <p>© 2024 Unified Dashboard. All rights reserved.</p>
+                <p>© 2026 Blueprint Creations LLC. All rights reserved.</p>
+                <p>1827 Richmond PKWY, STE 102, Richmond, TX 77469</p>
               </div>
             </div>
           </body>
           </html>
         `
       });
-    } catch (emailError) {
-      console.error('Failed to send verification email:', emailError);
-      // Still create the account, just warn about email
+      
+      console.log('Email sent successfully:', result);
+      emailSent = true;
+    } catch (err: any) {
+      console.error('Failed to send verification email:', err);
+      emailError = err.message || 'Email service error';
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Account created! Please check your email to verify your account.',
-      requiresVerification: true
+      message: emailSent 
+        ? 'Account created! Please check your email to verify your account.'
+        : 'Account created! Email verification is temporarily unavailable - please contact support.',
+      requiresVerification: true,
+      emailSent,
+      ...(emailError && { emailWarning: emailError })
     });
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Registration error:', error);
     return NextResponse.json(
-      { error: 'Registration failed' },
+      { error: 'Registration failed: ' + (error.message || 'Unknown error') },
       { status: 500 }
     );
   }
