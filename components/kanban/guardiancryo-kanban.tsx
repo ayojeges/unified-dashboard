@@ -44,102 +44,27 @@ export function GuardianCryoKanban() {
     {
       id: "backlog",
       title: "Backlog",
-      tasks: [
-        {
-          id: "1",
-          title: "International Shipping Protocol",
-          description: "Research requirements for EU and Asia shipments",
-          assignee: "Logistics Team",
-          priority: "medium",
-        },
-        {
-          id: "2",
-          title: "Dry Ice Supplier Evaluation",
-          description: "Evaluate new suppliers for better pricing",
-          assignee: "Procurement",
-          priority: "low",
-        },
-        {
-          id: "3",
-          title: "Temperature Monitoring Upgrade",
-          description: "Research IoT sensors for real-time monitoring",
-          assignee: "Engineering",
-          priority: "medium",
-        },
-        {
-          id: "4",
-          title: "Client Portal Enhancement",
-          description: "Add shipment history and analytics",
-          assignee: "Product Team",
-          priority: "low",
-        },
-      ],
+      tasks: [],
     },
     {
       id: "todo",
       title: "To Do",
-      tasks: [
-        {
-          id: "5",
-          title: "Miami Clinic Onboarding",
-          description: "Prepare training materials for new clinic",
-          assignee: "Customer Success",
-          priority: "high",
-        },
-        {
-          id: "6",
-          title: "Insurance Documentation",
-          description: "Update liability insurance for international shipments",
-          assignee: "Legal Team",
-          priority: "medium",
-        },
-      ],
+      tasks: [],
     },
     {
       id: "in-progress",
       title: "In Progress",
-      tasks: [
-        {
-          id: "7",
-          title: "Shipping Protocol Update",
-          description: "Implement new dry ice quantity requirements",
-          assignee: "Operations",
-          priority: "high",
-        },
-      ],
+      tasks: [],
     },
     {
       id: "review",
       title: "Review",
-      tasks: [
-        {
-          id: "8",
-          title: "Container Maintenance Schedule",
-          description: "Review quarterly maintenance procedures",
-          assignee: "Quality Control",
-          priority: "medium",
-        },
-      ],
+      tasks: [],
     },
     {
       id: "done",
       title: "Done",
-      tasks: [
-        {
-          id: "9",
-          title: "Website Security Audit",
-          description: "Completed security assessment and fixes",
-          assignee: "Security Team",
-          priority: "low",
-        },
-        {
-          id: "10",
-          title: "Training Materials Update",
-          description: "Updated clinic onboarding documentation",
-          assignee: "Training",
-          priority: "medium",
-        },
-      ],
+      tasks: [],
     },
   ];
 

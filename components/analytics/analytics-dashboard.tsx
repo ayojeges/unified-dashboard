@@ -30,34 +30,30 @@ import {
 } from "recharts";
 
 const monthlyData = [
-  { month: "Jan", projects: 4, tasks: 120, completed: 85 },
-  { month: "Feb", projects: 6, tasks: 180, completed: 150 },
-  { month: "Mar", projects: 8, tasks: 240, completed: 210 },
-  { month: "Apr", projects: 7, tasks: 210, completed: 180 },
-  { month: "May", projects: 9, tasks: 270, completed: 240 },
-  { month: "Jun", projects: 10, tasks: 300, completed: 270 },
+  { month: "Jan", projects: 0, tasks: 0, completed: 0 },
+  { month: "Feb", projects: 0, tasks: 0, completed: 0 },
+  { month: "Mar", projects: 0, tasks: 0, completed: 0 },
+  { month: "Apr", projects: 0, tasks: 0, completed: 0 },
+  { month: "May", projects: 0, tasks: 0, completed: 0 },
+  { month: "Jun", projects: 0, tasks: 0, completed: 0 },
 ];
 
 const teamPerformance = [
-  { name: "Alex Johnson", tasks: 48, completed: 42, efficiency: 87 },
-  { name: "Sarah Miller", tasks: 52, completed: 48, efficiency: 92 },
-  { name: "Mike Chen", tasks: 38, completed: 35, efficiency: 92 },
-  { name: "Emma Wilson", tasks: 45, completed: 40, efficiency: 89 },
-  { name: "David Lee", tasks: 32, completed: 28, efficiency: 88 },
+  { name: "No team members", tasks: 0, completed: 0, efficiency: 0 },
 ];
 
 const projectDistribution = [
-  { name: "Active", value: 8, color: "#3b82f6" },
-  { name: "Completed", value: 4, color: "#10b981" },
-  { name: "On Hold", value: 2, color: "#f59e0b" },
-  { name: "Cancelled", value: 1, color: "#ef4444" },
+  { name: "Active", value: 0, color: "#3b82f6" },
+  { name: "Completed", value: 0, color: "#10b981" },
+  { name: "On Hold", value: 0, color: "#f59e0b" },
+  { name: "Cancelled", value: 0, color: "#ef4444" },
 ];
 
 const taskStatusData = [
-  { status: "To Do", count: 24, color: "#9ca3af" },
-  { status: "In Progress", count: 18, color: "#3b82f6" },
-  { status: "Review", count: 12, color: "#f59e0b" },
-  { status: "Done", count: 42, color: "#10b981" },
+  { status: "To Do", count: 0, color: "#9ca3af" },
+  { status: "In Progress", count: 0, color: "#3b82f6" },
+  { status: "Review", count: 0, color: "#f59e0b" },
+  { status: "Done", count: 0, color: "#10b981" },
 ];
 
 export function AnalyticsDashboard() {
@@ -94,10 +90,10 @@ export function AnalyticsDashboard() {
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">15</div>
-            <div className="flex items-center text-xs text-green-600">
+            <div className="text-2xl font-bold">0</div>
+            <div className="flex items-center text-xs text-gray-600">
               <TrendingUp className="mr-1 h-3 w-3" />
-              +12% from last month
+              No data yet
             </div>
           </CardContent>
         </Card>
@@ -107,10 +103,10 @@ export function AnalyticsDashboard() {
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">8</div>
-            <div className="flex items-center text-xs text-green-600">
+            <div className="text-2xl font-bold">0</div>
+            <div className="flex items-center text-xs text-gray-600">
               <TrendingUp className="mr-1 h-3 w-3" />
-              +2 new members
+              No team members
             </div>
           </CardContent>
         </Card>
@@ -120,10 +116,10 @@ export function AnalyticsDashboard() {
             <Clock className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3.2 days</div>
-            <div className="flex items-center text-xs text-green-600">
+            <div className="text-2xl font-bold">0 days</div>
+            <div className="flex items-center text-xs text-gray-600">
               <TrendingUp className="mr-1 h-3 w-3" />
-              -0.8 days faster
+              No tasks completed
             </div>
           </CardContent>
         </Card>
@@ -133,10 +129,10 @@ export function AnalyticsDashboard() {
             <CheckCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">94%</div>
-            <div className="flex items-center text-xs text-green-600">
+            <div className="text-2xl font-bold">0%</div>
+            <div className="flex items-center text-xs text-gray-600">
               <TrendingUp className="mr-1 h-3 w-3" />
-              +5% improvement
+              No data yet
             </div>
           </CardContent>
         </Card>

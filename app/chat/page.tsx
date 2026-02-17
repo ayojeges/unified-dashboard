@@ -28,58 +28,17 @@ import {
 const conversations = [
   { 
     id: 1, 
-    name: "Team Channel", 
-    lastMessage: "Let's discuss the Q2 roadmap tomorrow at 10 AM", 
-    time: "10:30 AM",
-    unread: 3,
-    online: true,
-    type: "group"
-  },
-  { 
-    id: 2, 
-    name: "Alex Johnson", 
-    lastMessage: "I've completed the homepage design", 
-    time: "09:45 AM",
+    name: "No conversations", 
+    lastMessage: "Start your first conversation to get started", 
+    time: "No time",
     unread: 0,
-    online: true,
-    type: "direct"
-  },
-  { 
-    id: 3, 
-    name: "Sarah Miller", 
-    lastMessage: "Can you review the API documentation?", 
-    time: "Yesterday",
-    unread: 1,
     online: false,
-    type: "direct"
-  },
-  { 
-    id: 4, 
-    name: "Project Alpha", 
-    lastMessage: "Meeting notes from yesterday's sync", 
-    time: "Yesterday",
-    unread: 0,
-    online: true,
-    type: "group"
-  },
-  { 
-    id: 5, 
-    name: "Mike Chen", 
-    lastMessage: "Thanks for the feedback!", 
-    time: "Mar 12",
-    unread: 0,
-    online: true,
-    type: "direct"
+    type: "info"
   },
 ];
 
 const messages = [
-  { id: 1, sender: "Alex Johnson", text: "Hey team, I've completed the homepage design. Let me know your thoughts!", time: "10:15 AM", isOwn: false },
-  { id: 2, sender: "You", text: "Looks great Alex! The color scheme works well with our brand.", time: "10:16 AM", isOwn: true },
-  { id: 3, sender: "Sarah Miller", text: "I agree. The layout is clean and intuitive.", time: "10:17 AM", isOwn: false },
-  { id: 4, sender: "You", text: "Can we add a dark mode toggle? That would be a nice feature.", time: "10:18 AM", isOwn: true },
-  { id: 5, sender: "Alex Johnson", text: "Good idea! I'll work on that today.", time: "10:20 AM", isOwn: false },
-  { id: 6, sender: "Mike Chen", text: "I can help with the implementation if needed.", time: "10:21 AM", isOwn: false },
+  { id: 1, sender: "System", text: "No messages yet. Start a conversation to begin chatting.", time: "Just now", isOwn: false },
 ];
 
 export default function ChatPage() {

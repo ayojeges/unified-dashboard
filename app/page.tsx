@@ -22,9 +22,9 @@ export default function DashboardPage() {
     { 
       name: "GuardianCryo", 
       description: "Cryogenic shipping solutions",
-      progress: 65,
-      tasks: 42,
-      completed: 27,
+      progress: 0,
+      tasks: 0,
+      completed: 0,
       icon: Package,
       color: "text-blue-600",
       bgColor: "bg-blue-100"
@@ -32,9 +32,9 @@ export default function DashboardPage() {
     { 
       name: "CDL Schools", 
       description: "Driver training platform",
-      progress: 80,
-      tasks: 56,
-      completed: 45,
+      progress: 0,
+      tasks: 0,
+      completed: 0,
       icon: GraduationCap,
       color: "text-green-600",
       bgColor: "bg-green-100"
@@ -42,9 +42,9 @@ export default function DashboardPage() {
     { 
       name: "Apply Intelligent", 
       description: "College application AI",
-      progress: 40,
-      tasks: 78,
-      completed: 31,
+      progress: 0,
+      tasks: 0,
+      completed: 0,
       icon: Brain,
       color: "text-purple-600",
       bgColor: "bg-purple-100"
@@ -53,16 +53,13 @@ export default function DashboardPage() {
 
   const stats = [
     { label: "Total Projects", value: "3", icon: Package, change: "+0%", trend: "neutral", color: "text-blue-600", bgColor: "bg-blue-100" },
-    { label: "Active Tasks", value: "176", icon: Clock, change: "+12%", trend: "up", color: "text-yellow-600", bgColor: "bg-yellow-100" },
-    { label: "Completion Rate", value: "92%", icon: CheckCircle, change: "+5%", trend: "up", color: "text-green-600", bgColor: "bg-green-100" },
-    { label: "Team Members", value: "12", icon: Users, change: "+2", trend: "up", color: "text-purple-600", bgColor: "bg-purple-100" },
+    { label: "Active Tasks", value: "0", icon: Clock, change: "+0%", trend: "neutral", color: "text-yellow-600", bgColor: "bg-yellow-100" },
+    { label: "Completion Rate", value: "0%", icon: CheckCircle, change: "+0%", trend: "neutral", color: "text-green-600", bgColor: "bg-green-100" },
+    { label: "Team Members", value: "0", icon: Users, change: "+0", trend: "neutral", color: "text-purple-600", bgColor: "bg-purple-100" },
   ];
 
   const recentActivity = [
-    { project: "GuardianCryo", action: "Shipping protocol updated", time: "2 hours ago", user: "Ayo" },
-    { project: "CDL Schools", action: "New partner onboarded", time: "4 hours ago", user: "Debby" },
-    { project: "Apply Intelligent", action: "AI model deployed", time: "1 day ago", user: "Akan" },
-    { project: "GuardianCryo", action: "Client meeting scheduled", time: "1 day ago", user: "Ayo" },
+    { project: "No activity yet", action: "Add your first task to get started", time: "Just now", user: "System" },
   ];
 
   return (

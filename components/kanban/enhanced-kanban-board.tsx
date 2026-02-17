@@ -44,81 +44,27 @@ const defaultColumns: Column[] = [
   {
     id: "backlog",
     title: "Backlog",
-    tasks: [
-      {
-        id: "1",
-        title: "User Research",
-        description: "Conduct interviews with target users",
-        assignee: "Research Team",
-        priority: "medium",
-      },
-      {
-        id: "2",
-        title: "Market Analysis",
-        description: "Analyze competitor features and pricing",
-        assignee: "Marketing",
-        priority: "medium",
-      },
-    ],
+    tasks: [],
   },
   {
     id: "todo",
     title: "To Do",
-    tasks: [
-      {
-        id: "3",
-        title: "Design Review",
-        description: "Review new dashboard designs",
-        assignee: "Alex Chen",
-        priority: "high",
-      },
-      {
-        id: "4",
-        title: "Documentation",
-        description: "Update API documentation",
-        assignee: "Sam Rivera",
-        priority: "medium",
-      },
-    ],
+    tasks: [],
   },
   {
     id: "inprogress",
     title: "In Progress",
-    tasks: [
-      {
-        id: "5",
-        title: "Authentication Flow",
-        description: "Implement new auth system",
-        assignee: "Jordan Lee",
-        priority: "high",
-      },
-    ],
+    tasks: [],
   },
   {
     id: "review",
     title: "Review",
-    tasks: [
-      {
-        id: "6",
-        title: "Performance Testing",
-        description: "Run load tests on new features",
-        assignee: "Taylor Kim",
-        priority: "medium",
-      },
-    ],
+    tasks: [],
   },
   {
     id: "done",
     title: "Done",
-    tasks: [
-      {
-        id: "7",
-        title: "Mobile Responsive",
-        description: "Fix mobile layout issues",
-        assignee: "Casey Morgan",
-        priority: "low",
-      },
-    ],
+    tasks: [],
   },
 ];
 
@@ -221,12 +167,26 @@ export function EnhancedKanbanBoard() {
     }
   };
 
-  // Don't render anything during SSR
+  // Show skeleton loading during SSR/hydration
   if (!isClient) {
     return (
-      <div className="p-4">
-        <div className="text-center text-muted-foreground">
-          Loading Kanban board...
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="h-8 w-40 bg-muted animate-pulse rounded" />
+          <div className="h-4 w-60 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="flex gap-4 overflow-x-auto pb-4">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="min-w-[280px] md:min-w-[300px]">
+              <div className="border rounded-lg p-4 space-y-3">
+                <div className="h-6 w-24 bg-muted animate-pulse rounded" />
+                <div className="space-y-2 min-h-[200px]">
+                  <div className="h-20 bg-muted animate-pulse rounded" />
+                  <div className="h-20 bg-muted animate-pulse rounded" />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -234,9 +194,9 @@ export function EnhancedKanbanBoard() {
 
   return (
     <div className="space-y-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Project Tasks</h2>
-        <p className="text-sm text-muted-foreground">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+        <h2 className="text-xl md:text-2xl font-bold">Project Tasks</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground">
           Drag and drop tasks between columns
         </p>
       </div>
@@ -247,24 +207,24 @@ export function EnhancedKanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="flex gap-4 overflow-x-auto pb-4">
+        <div className="flex gap-3 md:gap-4 overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0">
           {columns.map((column) => (
-            <div key={column.id} className="min-w-[300px]">
+            <div key={column.id} className="min-w-[260px] md:min-w-[300px] flex-shrink-0">
               <Card>
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex justify-between items-center">
+                <CardHeader className="pb-2 md:pb-3 px-3 md:px-4">
+                  <CardTitle className="flex justify-between items-center text-sm md:text-base">
                     <span>{column.title}</span>
-                    <span className="text-sm font-normal text-muted-foreground">
+                    <span className="text-xs md:text-sm font-normal text-muted-foreground">
                       {column.tasks.length}
                     </span>
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="px-3 md:px-4">
                   <SortableContext
                     items={column.tasks.map(t => t.id)}
                     strategy={verticalListSortingStrategy}
                   >
-                    <div className="space-y-2 min-h-[200px]" id={`column-${column.id}`}>
+                    <div className="space-y-2 min-h-[150px] md:min-h-[200px]" id={`column-${column.id}`}>
                       {column.tasks.map((task) => (
                         <SortableTask key={task.id} task={task} />
                       ))}
@@ -278,9 +238,9 @@ export function EnhancedKanbanBoard() {
 
         <DragOverlay>
           {activeTask && (
-            <div className="bg-white p-3 rounded-lg shadow-lg border">
-              <div className="font-medium">{activeTask.title}</div>
-              <div className="text-sm text-muted-foreground">{activeTask.description}</div>
+            <div className="bg-white p-3 rounded-lg shadow-lg border max-w-[260px]">
+              <div className="font-medium text-sm">{activeTask.title}</div>
+              <div className="text-xs text-muted-foreground line-clamp-2">{activeTask.description}</div>
               <div className="text-xs mt-1">Assignee: {activeTask.assignee}</div>
             </div>
           )}

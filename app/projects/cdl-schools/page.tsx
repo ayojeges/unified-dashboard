@@ -24,8 +24,8 @@ export default function CDLSchoolsPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <Button 
             variant="outline" 
             size="sm"
@@ -36,13 +36,13 @@ export default function CDLSchoolsPage() {
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">CDL Schools</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">CDL Schools</h1>
             <p className="text-muted-foreground">
               Commercial Driver&apos;s License training and certification platform
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline">
             <Building className="mr-2 h-4 w-4" />
             Partner Management
@@ -55,48 +55,48 @@ export default function CDLSchoolsPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Active Partners</p>
-                <p className="text-2xl font-bold">10</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Building className="h-8 w-8 text-blue-500" />
+              <Building className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Students Enrolled</p>
-                <p className="text-2xl font-bold">247</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <GraduationCap className="h-8 w-8 text-green-500" />
+              <GraduationCap className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Pending Tasks</p>
-                <p className="text-2xl font-bold">18</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
+              <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Completion Rate</p>
-                <p className="text-2xl font-bold">92%</p>
+                <p className="text-lg sm:text-2xl font-bold">0%</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -135,7 +135,7 @@ export default function CDLSchoolsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add New Note</h3>
                   <Badge variant="outline">Action Item</Badge>
                 </div>
@@ -156,48 +156,15 @@ export default function CDLSchoolsPage() {
               <div className="space-y-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">New Partner Onboarding</CardTitle>
-                      <Badge variant="secondary">Completed</Badge>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <CardTitle className="text-sm">No notes yet</CardTitle>
+                      <Badge variant="secondary">Empty</Badge>
                     </div>
-                    <CardDescription>Updated on Feb 14, 2026</CardDescription>
+                    <CardDescription>Add your first note to get started</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">
-                      Successfully onboarded &quot;Texas Trucking Academy&quot; as white-label partner. 
-                      Training materials delivered, portal access configured.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">Course Content Update</CardTitle>
-                      <Badge variant="outline">In Progress</Badge>
-                    </div>
-                    <CardDescription>Updated on Feb 16, 2026</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">
-                      Updating hazardous materials training module to meet new DOT regulations.
-                      Deadline: Feb 25. Assigned to: Course Creation Team.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">Marketing Campaign</CardTitle>
-                      <Badge variant="outline">Planning</Badge>
-                    </div>
-                    <CardDescription>Updated on Feb 17, 2026</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">
-                      Q2 marketing campaign targeting independent trucking schools in Midwest.
-                      Budget: $5,000. Launch date: March 1.
+                    <p className="text-sm text-muted-foreground">
+                      This project dashboard is ready for your real data. Add notes, tasks, and track progress.
                     </p>
                   </CardContent>
                 </Card>
@@ -217,7 +184,7 @@ export default function CDLSchoolsPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add Parking Lot Item</h3>
                   <Badge variant="outline">Low Priority</Badge>
                 </div>
@@ -236,44 +203,16 @@ export default function CDLSchoolsPage() {
 
               {/* Parking Lot Items */}
               <div className="space-y-3">
-                <Card className="border-yellow-200">
+                <Card className="border-gray-200">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="font-medium">Mobile App Development</h4>
+                        <h4 className="font-medium">No parking lot items</h4>
                         <p className="text-sm text-muted-foreground">
-                          Consider native mobile app for student progress tracking - market research needed
+                          Add items that need attention but aren't blocking current work
                         </p>
                       </div>
-                      <Badge variant="outline">Future Consideration</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">International Expansion</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Research CDL training requirements in Canada and Mexico for potential expansion
-                        </p>
-                      </div>
-                      <Badge variant="outline">Research Needed</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">API Rate Limiting</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Implement rate limiting on public API endpoints - security enhancement
-                        </p>
-                      </div>
-                      <Badge variant="outline">Security</Badge>
+                      <Badge variant="outline">Empty</Badge>
                     </div>
                   </CardContent>
                 </Card>

@@ -24,8 +24,8 @@ export default function ApplyIntelligentPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <Button 
             variant="outline" 
             size="sm"
@@ -36,13 +36,13 @@ export default function ApplyIntelligentPage() {
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Apply Intelligent</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Apply Intelligent</h1>
             <p className="text-muted-foreground">
               AI-powered college application platform with predictive analytics
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline">
             <BarChart className="mr-2 h-4 w-4" />
             Analytics Dashboard
@@ -55,48 +55,48 @@ export default function ApplyIntelligentPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Active Users</p>
-                <p className="text-2xl font-bold">1,248</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Users className="h-8 w-8 text-blue-500" />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">AI Predictions</p>
-                <p className="text-2xl font-bold">8,942</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Brain className="h-8 w-8 text-purple-500" />
+              <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-purple-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Pending Tasks</p>
-                <p className="text-2xl font-bold">32</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
+              <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Accuracy Rate</p>
-                <p className="text-2xl font-bold">94%</p>
+                <p className="text-lg sm:text-2xl font-bold">0%</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -135,7 +135,7 @@ export default function ApplyIntelligentPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add New Note</h3>
                   <Badge variant="outline">Action Item</Badge>
                 </div>
@@ -156,48 +156,15 @@ export default function ApplyIntelligentPage() {
               <div className="space-y-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">AI Model Update</CardTitle>
-                      <Badge variant="secondary">Completed</Badge>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <CardTitle className="text-sm">No notes yet</CardTitle>
+                      <Badge variant="secondary">Empty</Badge>
                     </div>
-                    <CardDescription>Updated on Feb 13, 2026</CardDescription>
+                    <CardDescription>Add your first note to get started</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">
-                      Deployed updated GPT-4 model for essay analysis. Accuracy improved from 
-                      89% to 94% on test dataset. Monitoring performance in production.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">College Database Sync</CardTitle>
-                      <Badge variant="outline">In Progress</Badge>
-                    </div>
-                    <CardDescription>Updated on Feb 16, 2026</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">
-                      Syncing with Common App API to get real-time application deadlines and 
-                      requirements. Estimated completion: Feb 20.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">User Feedback Analysis</CardTitle>
-                      <Badge variant="outline">Analysis</Badge>
-                    </div>
-                    <CardDescription>Updated on Feb 17, 2026</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">
-                      Collected 247 user feedback responses. Top request: Scholarship matching 
-                      feature. Planning phase for Q2 development.
+                    <p className="text-sm text-muted-foreground">
+                      This project dashboard is ready for your real data. Add notes, tasks, and track progress.
                     </p>
                   </CardContent>
                 </Card>
@@ -217,7 +184,7 @@ export default function ApplyIntelligentPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add Parking Lot Item</h3>
                   <Badge variant="outline">Low Priority</Badge>
                 </div>
@@ -236,58 +203,16 @@ export default function ApplyIntelligentPage() {
 
               {/* Parking Lot Items */}
               <div className="space-y-3">
-                <Card className="border-yellow-200">
+                <Card className="border-gray-200">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="font-medium">Mobile App Development</h4>
+                        <h4 className="font-medium">No parking lot items</h4>
                         <p className="text-sm text-muted-foreground">
-                          Native mobile app for iOS/Android - user requested but web app works fine
+                          Add items that need attention but aren't blocking current work
                         </p>
                       </div>
-                      <Badge variant="outline">Future Consideration</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">International Expansion</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Research college application systems in UK, Canada, Australia
-                        </p>
-                      </div>
-                      <Badge variant="outline">Research Needed</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-purple-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">Advanced Analytics Dashboard</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Real-time analytics with predictive trends - nice to have feature
-                        </p>
-                      </div>
-                      <Badge variant="outline">Enhancement</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-red-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">API Rate Limiting</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Implement stricter rate limiting on prediction API endpoints
-                        </p>
-                      </div>
-                      <Badge variant="outline">Security</Badge>
+                      <Badge variant="outline">Empty</Badge>
                     </div>
                   </CardContent>
                 </Card>

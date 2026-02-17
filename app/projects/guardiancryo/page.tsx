@@ -23,8 +23,8 @@ export default function GuardianCryoPage() {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
           <Button 
             variant="outline" 
             size="sm"
@@ -35,13 +35,13 @@ export default function GuardianCryoPage() {
             Back to Dashboard
           </Button>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">GuardianCryo</h1>
+            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">GuardianCryo</h1>
             <p className="text-muted-foreground">
               Cryogenic shipping and storage solutions for fertility clinics
             </p>
           </div>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button variant="outline">
             <Package className="mr-2 h-4 w-4" />
             Shipping Requests
@@ -54,48 +54,48 @@ export default function GuardianCryoPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid gap-4 md:grid-cols-4">
+      <div className="grid gap-3 grid-cols-2 md:grid-cols-4">
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Active Shipments</p>
-                <p className="text-2xl font-bold">12</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Package className="h-8 w-8 text-blue-500" />
+              <Package className="h-6 w-6 sm:h-8 sm:w-8 text-blue-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Partner Clinics</p>
-                <p className="text-2xl font-bold">8</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Users className="h-8 w-8 text-green-500" />
+              <Users className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Pending Tasks</p>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-lg sm:text-2xl font-bold">0</p>
               </div>
-              <Clock className="h-8 w-8 text-yellow-500" />
+              <Clock className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-500" />
             </div>
           </CardContent>
         </Card>
         <Card>
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div>
                 <p className="text-sm font-medium">Completion Rate</p>
-                <p className="text-2xl font-bold">85%</p>
+                <p className="text-lg sm:text-2xl font-bold">0%</p>
               </div>
-              <CheckCircle className="h-8 w-8 text-green-500" />
+              <CheckCircle className="h-6 w-6 sm:h-8 sm:w-8 text-green-500" />
             </div>
           </CardContent>
         </Card>
@@ -134,7 +134,7 @@ export default function GuardianCryoPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add New Note</h3>
                   <Badge variant="outline">Action Item</Badge>
                 </div>
@@ -155,32 +155,15 @@ export default function GuardianCryoPage() {
               <div className="space-y-4">
                 <Card>
                   <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">Shipping Protocol Update</CardTitle>
-                      <Badge variant="secondary">Completed</Badge>
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                      <CardTitle className="text-sm">No notes yet</CardTitle>
+                      <Badge variant="secondary">Empty</Badge>
                     </div>
-                    <CardDescription>Updated on Feb 15, 2026</CardDescription>
+                    <CardDescription>Add your first note to get started</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-sm">
-                      Updated shipping protocols for international shipments. Added dry ice 
-                      quantity requirements and extended monitoring period to 72 hours.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-sm">New Clinic Onboarding</CardTitle>
-                      <Badge variant="outline">In Progress</Badge>
-                    </div>
-                    <CardDescription>Updated on Feb 16, 2026</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm">
-                      Miami Fertility Center onboarding scheduled for Feb 20. Need to prepare 
-                      training materials and shipping kits. Contact: Dr. Rodriguez.
+                    <p className="text-sm text-muted-foreground">
+                      This project dashboard is ready for your real data. Add notes, tasks, and track progress.
                     </p>
                   </CardContent>
                 </Card>
@@ -200,7 +183,7 @@ export default function GuardianCryoPage() {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="space-y-2">
-                <div className="flex items-center justify-between">
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <h3 className="font-medium">Add Parking Lot Item</h3>
                   <Badge variant="outline">Low Priority</Badge>
                 </div>
@@ -219,30 +202,16 @@ export default function GuardianCryoPage() {
 
               {/* Parking Lot Items */}
               <div className="space-y-3">
-                <Card className="border-yellow-200">
+                <Card className="border-gray-200">
                   <CardContent className="p-4">
                     <div className="flex items-start justify-between">
                       <div>
-                        <h4 className="font-medium">Website Performance</h4>
+                        <h4 className="font-medium">No parking lot items</h4>
                         <p className="text-sm text-muted-foreground">
-                          Homepage load time is 4.2s - needs optimization but not critical
+                          Add items that need attention but aren't blocking current work
                         </p>
                       </div>
-                      <Badge variant="outline">Needs Review</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="border-blue-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">Mobile App Feature</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Consider adding shipment tracking to mobile app - nice to have
-                        </p>
-                      </div>
-                      <Badge variant="outline">Future Consideration</Badge>
+                      <Badge variant="outline">Empty</Badge>
                     </div>
                   </CardContent>
                 </Card>

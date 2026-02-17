@@ -24,74 +24,24 @@ import {
 const events = [
   { 
     id: 1, 
-    title: "Team Standup", 
-    description: "Daily team sync meeting",
-    date: "2024-03-15", 
-    time: "09:00 AM - 09:30 AM",
-    type: "meeting",
-    participants: 8,
-    location: "Conference Room A"
-  },
-  { 
-    id: 2, 
-    title: "Client Presentation", 
-    description: "Quarterly review with major client",
-    date: "2024-03-15", 
-    time: "02:00 PM - 03:30 PM",
-    type: "presentation",
-    participants: 5,
-    location: "Zoom Meeting"
-  },
-  { 
-    id: 3, 
-    title: "Product Launch Planning", 
-    description: "Finalize launch strategy and timeline",
-    date: "2024-03-16", 
-    time: "10:00 AM - 12:00 PM",
-    type: "planning",
-    participants: 6,
-    location: "War Room"
-  },
-  { 
-    id: 4, 
-    title: "Code Review", 
-    description: "Weekly code review session",
-    date: "2024-03-16", 
-    time: "03:00 PM - 04:00 PM",
-    type: "review",
-    participants: 4,
-    location: "Slack Huddle"
-  },
-  { 
-    id: 5, 
-    title: "Team Building", 
-    description: "Monthly team building activity",
-    date: "2024-03-17", 
-    time: "11:00 AM - 01:00 PM",
-    type: "social",
-    participants: 12,
-    location: "Central Park"
-  },
-  { 
-    id: 6, 
-    title: "Budget Review", 
-    description: "Q2 budget planning and review",
-    date: "2024-03-18", 
-    time: "01:00 PM - 02:30 PM",
-    type: "finance",
-    participants: 3,
-    location: "Executive Office"
+    title: "No events scheduled", 
+    description: "Add your first event to get started",
+    date: "No date", 
+    time: "No time",
+    type: "info",
+    participants: 0,
+    location: "No location"
   },
 ];
 
 const days = [
-  { date: "2024-03-14", day: "Thu", events: [] },
-  { date: "2024-03-15", day: "Fri", events: [events[0], events[1]] },
-  { date: "2024-03-16", day: "Sat", events: [events[2], events[3]] },
-  { date: "2024-03-17", day: "Sun", events: [events[4]] },
-  { date: "2024-03-18", day: "Mon", events: [events[5]] },
-  { date: "2024-03-19", day: "Tue", events: [] },
-  { date: "2024-03-20", day: "Wed", events: [] },
+  { date: "No date", day: "No", events: [] },
+  { date: "No date", day: "events", events: [] },
+  { date: "No date", day: "scheduled", events: [] },
+  { date: "No date", day: "Add", events: [] },
+  { date: "No date", day: "your", events: [] },
+  { date: "No date", day: "first", events: [] },
+  { date: "No date", day: "event", events: [] },
 ];
 
 export default function CalendarPage() {
