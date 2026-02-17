@@ -31,10 +31,11 @@ function VerifyContent() {
           setStatus("success");
           setMessage(data.message || "Email verified successfully!");
           
-          // Redirect to login after 3 seconds
+          // Store auth state and redirect to dashboard after 2 seconds
+          localStorage.setItem("isAuthenticated", "true");
           setTimeout(() => {
-            router.push("/auth/login");
-          }, 3000);
+            router.push("/dashboard");
+          }, 2000);
         } else {
           setStatus("error");
           setMessage(data.error || "Verification failed");
@@ -105,7 +106,7 @@ function VerifyContent() {
             {status === "success" && (
               <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
                 <p className="text-sm text-green-700 dark:text-green-400">
-                  You will be redirected to the login page in a few seconds...
+                  You will be redirected to the dashboard in a moment...
                 </p>
               </div>
             )}
@@ -150,9 +151,9 @@ function VerifyContent() {
             
             {status === "success" && (
               <div className="w-full">
-                <Link href="/auth/login">
+                <Link href="/dashboard">
                   <Button className="w-full">
-                    Go to Login Now
+                    Go to Dashboard Now
                   </Button>
                 </Link>
               </div>

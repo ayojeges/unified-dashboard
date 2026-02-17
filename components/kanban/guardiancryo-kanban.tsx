@@ -10,12 +10,9 @@ import {
   useSensor,
   useSensors,
   closestCorners,
+  useDroppable,
+  useDraggable,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,7 +20,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/simple-select";
-import { Plus, MoreVertical, User, Package, Thermometer, Truck, Shield, GripVertical, Edit, Trash2, Save, X } from "lucide-react";
+import { Plus, Package, Thermometer, Truck, Shield, X, GripVertical } from "lucide-react";
 
 interface Task {
   id: string;
@@ -37,6 +34,92 @@ interface Column {
   id: string;
   title: string;
   tasks: Task[];
+}
+
+// Draggable Task Card Component
+function DraggableTask({ task, columnId, onDelete, getPriorityColor, getTaskIcon }: { 
+  task: Task; 
+  columnId: string;
+  onDelete: (columnId: string, taskId: string) => void;
+  getPriorityColor: (priority: Task["priority"]) => string;
+  getTaskIcon: (title: string) => React.ReactNode;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: { task, columnId },
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    opacity: isDragging ? 0.5 : 1,
+  } : undefined;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className={`cursor-grab hover:shadow-md transition-shadow ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}>
+        <CardHeader className="p-4 pb-2">
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2">
+              <div {...listeners} {...attributes} className="cursor-grab hover:bg-muted rounded p-1">
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <CardTitle className="text-sm font-medium">
+                {task.title}
+              </CardTitle>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 hover:bg-destructive/10 hover:text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(columnId, task.id);
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-2 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            {task.description}
+          </p>
+          
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
+                {getTaskIcon(task.title)}
+              </div>
+              <span className="text-xs">{task.assignee}</span>
+            </div>
+            
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Droppable Column Component
+function DroppableColumn({ column, children }: { column: Column; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `column-${column.id}`,
+    data: { columnId: column.id },
+  });
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-colors ${
+        isOver ? 'bg-primary/10 ring-2 ring-primary ring-dashed' : 'bg-muted/30'
+      }`}
+    >
+      {children}
+    </div>
+  );
 }
 
 export function GuardianCryoKanban() {
@@ -55,31 +138,11 @@ export function GuardianCryoKanban() {
     
     // Default empty columns
     return [
-      {
-        id: "backlog",
-        title: "Backlog",
-        tasks: [],
-      },
-      {
-        id: "todo",
-        title: "To Do",
-        tasks: [],
-      },
-      {
-        id: "in-progress",
-        title: "In Progress",
-        tasks: [],
-      },
-      {
-        id: "review",
-        title: "Review",
-        tasks: [],
-      },
-      {
-        id: "done",
-        title: "Done",
-        tasks: [],
-      },
+      { id: "backlog", title: "Backlog", tasks: [] },
+      { id: "todo", title: "To Do", tasks: [] },
+      { id: "in-progress", title: "In Progress", tasks: [] },
+      { id: "review", title: "Review", tasks: [] },
+      { id: "done", title: "Done", tasks: [] },
     ];
   };
 
@@ -118,22 +181,16 @@ export function GuardianCryoKanban() {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
       },
     })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const taskId = active.id as string;
-    
-    // Find the task
-    for (const column of columns) {
-      const task = column.tasks.find(t => t.id === taskId);
-      if (task) {
-        setActiveTask(task);
-        break;
-      }
+    const taskData = active.data.current;
+    if (taskData?.task) {
+      setActiveTask(taskData.task);
     }
   };
 
@@ -146,44 +203,48 @@ export function GuardianCryoKanban() {
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // If dragging over a column
-    if (overId.toString().startsWith('column-')) {
-      const columnId = overId.toString().replace('column-', '');
-      
-      updateColumns(prevColumns => {
-        const newColumns = [...prevColumns];
-        
-        // Find source column and task
-        let sourceColumnIndex = -1;
-        let taskIndex = -1;
-        let task: Task | null = null;
-        
-        for (let i = 0; i < newColumns.length; i++) {
-          const column = newColumns[i];
-          const foundIndex = column.tasks.findIndex(t => t.id === activeId);
-          if (foundIndex !== -1) {
-            sourceColumnIndex = i;
-            taskIndex = foundIndex;
-            task = column.tasks[foundIndex];
-            break;
-          }
-        }
-        
-        if (!task || sourceColumnIndex === -1) return prevColumns;
-        
-        // Remove from source column
-        newColumns[sourceColumnIndex].tasks.splice(taskIndex, 1);
-        
-        // Find target column
-        const targetColumnIndex = newColumns.findIndex(c => c.id === columnId);
-        if (targetColumnIndex === -1) return prevColumns;
-        
-        // Add to target column
-        newColumns[targetColumnIndex].tasks.push(task);
-        
-        return newColumns;
-      });
+    // Get the target column ID
+    let targetColumnId: string | null = null;
+    
+    if (overId.startsWith('column-')) {
+      targetColumnId = overId.replace('column-', '');
+    } else {
+      // Dropped on another task - find its column
+      const overData = over.data.current;
+      if (overData?.columnId) {
+        targetColumnId = overData.columnId;
+      }
     }
+
+    if (!targetColumnId) return;
+
+    // Get source info
+    const sourceData = active.data.current;
+    const sourceColumnId = sourceData?.columnId;
+
+    if (!sourceColumnId || sourceColumnId === targetColumnId) {
+      // Same column, no move needed (could add reordering here)
+      return;
+    }
+
+    updateColumns(prevColumns => {
+      const newColumns = prevColumns.map(col => ({ ...col, tasks: [...col.tasks] }));
+      
+      // Find source column and task
+      const sourceColIndex = newColumns.findIndex(c => c.id === sourceColumnId);
+      const targetColIndex = newColumns.findIndex(c => c.id === targetColumnId);
+      
+      if (sourceColIndex === -1 || targetColIndex === -1) return prevColumns;
+
+      const taskIndex = newColumns[sourceColIndex].tasks.findIndex(t => t.id === activeId);
+      if (taskIndex === -1) return prevColumns;
+
+      // Move task
+      const [task] = newColumns[sourceColIndex].tasks.splice(taskIndex, 1);
+      newColumns[targetColIndex].tasks.push(task);
+      
+      return newColumns;
+    });
   };
 
   const handleAddTask = () => {
@@ -198,7 +259,7 @@ export function GuardianCryoKanban() {
     };
 
     updateColumns(prevColumns => {
-      const newColumns = [...prevColumns];
+      const newColumns = prevColumns.map(col => ({ ...col, tasks: [...col.tasks] }));
       const columnIndex = newColumns.findIndex(c => c.id === selectedColumn);
       if (columnIndex !== -1) {
         newColumns[columnIndex].tasks.push(newTaskObj);
@@ -206,59 +267,48 @@ export function GuardianCryoKanban() {
       return newColumns;
     });
 
-    // Reset form
-    setNewTask({
-      title: "",
-      description: "",
-      assignee: "",
-      priority: "medium",
-    });
+    setNewTask({ title: "", description: "", assignee: "", priority: "medium" });
     setAddTaskDialogOpen(false);
   };
 
   const handleDeleteTask = (columnId: string, taskId: string) => {
     updateColumns(prevColumns => {
-      const newColumns = [...prevColumns];
-      const columnIndex = newColumns.findIndex(c => c.id === columnId);
-      if (columnIndex !== -1) {
-        newColumns[columnIndex].tasks = newColumns[columnIndex].tasks.filter(
-          task => task.id !== taskId
-        );
-      }
-      return newColumns;
+      return prevColumns.map(col => {
+        if (col.id === columnId) {
+          return { ...col, tasks: col.tasks.filter(t => t.id !== taskId) };
+        }
+        return col;
+      });
     });
   };
 
   const getPriorityColor = (priority: Task["priority"]) => {
     switch (priority) {
-      case "high": return "bg-red-100 text-red-800";
-      case "medium": return "bg-yellow-100 text-yellow-800";
-      case "low": return "bg-green-100 text-green-800";
+      case "high": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      case "medium": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "low": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
     }
   };
 
   const getTaskIcon = (title: string) => {
-    if (title.includes("Shipping") || title.includes("Container")) return <Truck className="h-3 w-3" />;
-    if (title.includes("Temperature") || title.includes("Ice")) return <Thermometer className="h-3 w-3" />;
-    if (title.includes("Security") || title.includes("Insurance")) return <Shield className="h-3 w-3" />;
+    if (title.toLowerCase().includes("shipping") || title.toLowerCase().includes("container")) return <Truck className="h-3 w-3" />;
+    if (title.toLowerCase().includes("temperature") || title.toLowerCase().includes("ice")) return <Thermometer className="h-3 w-3" />;
+    if (title.toLowerCase().includes("security") || title.toLowerCase().includes("insurance")) return <Shield className="h-3 w-3" />;
     return <Package className="h-3 w-3" />;
   };
 
-  // Show skeleton loading during SSR/hydration
   if (!isClient) {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <div className="h-8 w-40 bg-muted animate-pulse rounded" />
-          <div className="h-4 w-60 bg-muted animate-pulse rounded" />
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="space-y-4">
               <div className="h-6 w-24 bg-muted animate-pulse rounded" />
-              <div className="space-y-2 min-h-[200px]">
-                <div className="h-20 bg-muted animate-pulse rounded" />
-                <div className="h-20 bg-muted animate-pulse rounded" />
+              <div className="space-y-2 min-h-[200px] bg-muted/30 rounded-lg p-2">
+                <div className="h-24 bg-muted animate-pulse rounded" />
               </div>
             </div>
           ))}
@@ -272,23 +322,23 @@ export function GuardianCryoKanban() {
       <div className="flex justify-between items-center">
         <div>
           <h2 className="text-xl font-semibold">GuardianCryo Tasks</h2>
-          <p className="text-sm text-muted-foreground">Cryogenic shipping workflow management</p>
+          <p className="text-sm text-muted-foreground">Drag and drop tasks between columns</p>
         </div>
         
         <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="h-4 w-4 mr-2" />
-              Add Shipping Task
+              Add Task
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Add New Shipping Task</DialogTitle>
+              <DialogTitle>Add New Task</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Task Title</Label>
+                <Label htmlFor="title">Task Title *</Label>
                 <Input
                   id="title"
                   placeholder="e.g., Schedule Cryo Container Pickup"
@@ -301,7 +351,7 @@ export function GuardianCryoKanban() {
                 <Label htmlFor="description">Description</Label>
                 <Textarea
                   id="description"
-                  placeholder="e.g., Coordinate with clinic for temperature-sensitive shipment"
+                  placeholder="Describe the task..."
                   value={newTask.description}
                   onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                 />
@@ -318,16 +368,11 @@ export function GuardianCryoKanban() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
+                <Label>Priority</Label>
                 <Select
                   value={newTask.priority}
-                  onValueChange={(value) => 
-                    setNewTask({...newTask, priority: value as "low" | "medium" | "high"})
-                  }
+                  onValueChange={(value) => setNewTask({...newTask, priority: value as "low" | "medium" | "high"})}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="low">Low</SelectItem>
                     <SelectItem value="medium">Medium</SelectItem>
@@ -337,14 +382,11 @@ export function GuardianCryoKanban() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="column">Column</Label>
+                <Label>Column</Label>
                 <Select
                   value={selectedColumn}
                   onValueChange={setSelectedColumn}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
                   <SelectContent>
                     {columns.map(column => (
                       <SelectItem key={column.id} value={column.id}>
@@ -355,7 +397,7 @@ export function GuardianCryoKanban() {
                 </Select>
               </div>
               
-              <Button onClick={handleAddTask} className="w-full">
+              <Button onClick={handleAddTask} className="w-full" disabled={!newTask.title.trim()}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
               </Button>
@@ -370,19 +412,20 @@ export function GuardianCryoKanban() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {columns.map((column) => (
-            <div key={column.id} className="space-y-4">
-              <div className="flex justify-between items-center">
+            <div key={column.id} className="space-y-3">
+              <div className="flex justify-between items-center px-2">
                 <div className="flex items-center gap-2">
                   <h3 className="font-medium">{column.title}</h3>
-                  <span className="text-xs bg-muted px-2 py-1 rounded-full">
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
                     {column.tasks.length}
                   </span>
                 </div>
                 <Button 
                   variant="ghost" 
                   size="icon"
+                  className="h-8 w-8"
                   onClick={() => {
                     setSelectedColumn(column.id);
                     setAddTaskDialogOpen(true);
@@ -392,62 +435,44 @@ export function GuardianCryoKanban() {
                 </Button>
               </div>
 
-              <div className="space-y-3" id={`column-${column.id}`}>
-                {column.tasks.map((task) => (
-                  <Card key={task.id} className="cursor-move hover:shadow-md transition-shadow">
-                    <CardHeader className="p-4 pb-2">
-                      <div className="flex justify-between items-start">
-                        <CardTitle className="text-sm font-medium">
-                          {task.title}
-                        </CardTitle>
-                        <Button 
-                          variant="ghost" 
-                          size="icon" 
-                          className="h-6 w-6"
-                          onClick={() => handleDeleteTask(column.id, task.id)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </CardHeader>
-                    <CardContent className="p-4 pt-2 space-y-3">
-                      <p className="text-sm text-muted-foreground">
-                        {task.description}
-                      </p>
-                      
-                      <div className="flex justify-between items-center">
-                        <div className="flex items-center gap-2">
-                          <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                            {getTaskIcon(task.title)}
-                          </div>
-                          <span className="text-xs">{task.assignee}</span>
-                        </div>
-                        
-                        <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(task.priority)}`}>
-                          {task.priority}
-                        </span>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              {column.tasks.length === 0 && (
-                <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center">
-                  <p className="text-sm text-muted-foreground">No tasks yet. Click + to add one.</p>
-                </div>
-              )}
+              <DroppableColumn column={column}>
+                {column.tasks.length === 0 ? (
+                  <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center">
+                    <p className="text-sm text-muted-foreground">Drop tasks here</p>
+                  </div>
+                ) : (
+                  column.tasks.map((task) => (
+                    <DraggableTask
+                      key={task.id}
+                      task={task}
+                      columnId={column.id}
+                      onDelete={handleDeleteTask}
+                      getPriorityColor={getPriorityColor}
+                      getTaskIcon={getTaskIcon}
+                    />
+                  ))
+                )}
+              </DroppableColumn>
             </div>
           ))}
         </div>
 
         <DragOverlay>
           {activeTask && (
-            <div className="bg-white p-3 rounded-lg shadow-lg border max-w-[260px]">
-              <div className="font-medium text-sm">{activeTask.title}</div>
-              <div className="text-xs text-muted-foreground line-clamp-2">{activeTask.description}</div>
-              <div className="text-xs mt-1">Assignee: {activeTask.assignee}</div>
-            </div>
+            <Card className="shadow-2xl ring-2 ring-primary rotate-3 max-w-[280px]">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-sm">{activeTask.title}</CardTitle>
+              </CardHeader>
+              <CardContent className="p-3 pt-1">
+                <p className="text-xs text-muted-foreground line-clamp-2">{activeTask.description}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-xs">{activeTask.assignee}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(activeTask.priority)}`}>
+                    {activeTask.priority}
+                  </span>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </DragOverlay>
       </DndContext>
