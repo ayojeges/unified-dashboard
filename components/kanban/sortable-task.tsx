@@ -4,7 +4,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { GripVertical, User, Trash2 } from "lucide-react";
+import { GripVertical, User } from "lucide-react";
 
 interface Task {
   id: string;
@@ -16,11 +16,9 @@ interface Task {
 
 interface SortableTaskProps {
   task: Task;
-  onDelete: () => void;
-  getPriorityColor: (priority: Task["priority"]) => string;
 }
 
-export function SortableTask({ task, onDelete, getPriorityColor }: SortableTaskProps) {
+export function SortableTask({ task }: SortableTaskProps) {
   const {
     attributes,
     listeners,
@@ -37,6 +35,15 @@ export function SortableTask({ task, onDelete, getPriorityColor }: SortableTaskP
     transition,
   };
 
+  const getPriorityColor = (priority: Task["priority"]) => {
+    switch (priority) {
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
@@ -50,25 +57,15 @@ export function SortableTask({ task, onDelete, getPriorityColor }: SortableTaskP
               <div className="font-medium text-sm">{task.title}</div>
               <div className="text-xs text-muted-foreground mt-1">{task.description}</div>
             </div>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 cursor-grab active:cursor-grabbing"
-                {...attributes}
-                {...listeners}
-              >
-                <GripVertical className="h-3 w-3" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={onDelete}
-              >
-                <Trash2 className="h-3 w-3" />
-              </Button>
-            </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 cursor-grab active:cursor-grabbing ml-1"
+              {...attributes}
+              {...listeners}
+            >
+              <GripVertical className="h-3 w-3" />
+            </Button>
           </div>
           
           <div className="flex justify-between items-center mt-2">
