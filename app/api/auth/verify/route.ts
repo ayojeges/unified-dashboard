@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
-import { users, verifyTokens } from '../register/route';
+import { verifyUser } from '@/lib/auth-store';
 
-export const dynamic = 'force-dynamic'; // Prevent static generation
+export const dynamic = 'force-dynamic';
 
 export async function GET(request: Request) {
   try {
@@ -15,38 +15,20 @@ export async function GET(request: Request) {
       );
     }
 
-    // Find email associated with token
-    const email = verifyTokens.get(token);
+    // Verify the user
+    const user = verifyUser(token);
     
-    if (!email) {
+    if (!user) {
       return NextResponse.json(
         { error: 'Invalid or expired verification token' },
         { status: 400 }
       );
     }
 
-    // Get user
-    const user = users.get(email);
-    
-    if (!user) {
-      return NextResponse.json(
-        { error: 'User not found' },
-        { status: 404 }
-      );
-    }
-
-    // Mark user as verified
-    user.verified = true;
-    user.verifyToken = undefined;
-    users.set(email, user);
-    
-    // Remove token
-    verifyTokens.delete(token);
-
     return NextResponse.json({
       success: true,
-      message: 'Email verified successfully! You can now log in.',
-      email
+      message: 'Email verified successfully! Redirecting to dashboard...',
+      email: user.email
     });
 
   } catch (error: any) {

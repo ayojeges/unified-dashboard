@@ -45,7 +45,8 @@ export default function LoginPage() {
         localStorage.setItem("userEmail", formData.email);
         localStorage.setItem("userName", data.user?.name || formData.email);
         
-        router.push("/dashboard");
+        // Use window.location for reliable redirect
+        window.location.href = "/dashboard";
       } else {
         if (data.requiresVerification) {
           setUnverifiedEmail(data.email || formData.email);

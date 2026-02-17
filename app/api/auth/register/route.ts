@@ -1,11 +1,8 @@
 import { Resend } from 'resend';
 import { NextResponse } from 'next/server';
+import { userExists, createUser, verifyTokens } from '@/lib/auth-store';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
-
-// In-memory store for demo (use database in production)
-const users: Map<string, { email: string; password: string; name: string; verified: boolean; verifyToken?: string }> = new Map();
-const verifyTokens: Map<string, string> = new Map(); // token -> email
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +17,7 @@ export async function POST(request: Request) {
     }
 
     // Check if user already exists
-    if (users.has(email)) {
+    if (userExists(email)) {
       return NextResponse.json(
         { error: 'User already exists' },
         { status: 400 }
@@ -31,14 +28,7 @@ export async function POST(request: Request) {
     const verifyToken = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
     
     // Store user (unverified)
-    users.set(email, {
-      email,
-      password, // In production, hash this!
-      name,
-      verified: false,
-      verifyToken
-    });
-    verifyTokens.set(verifyToken, email);
+    createUser(email, password, name, false, verifyToken);
 
     // Send verification email via Resend
     const verifyUrl = `${process.env.NEXT_PUBLIC_APP_URL || 'https://unified-dashboard-mauve.vercel.app'}/auth/verify?token=${verifyToken}`;
@@ -119,6 +109,3 @@ export async function POST(request: Request) {
     );
   }
 }
-
-// Export users map for other routes to use
-export { users, verifyTokens };
