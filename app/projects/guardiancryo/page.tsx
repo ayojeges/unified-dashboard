@@ -1,4 +1,5 @@
 "use client";
+import { useState } from "react";
 import { GuardianCryoKanban } from "@/components/kanban/guardiancryo-kanban";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -6,6 +7,9 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { 
   Save, 
   Plus, 
@@ -20,6 +24,8 @@ import {
 } from "lucide-react";
 
 export default function GuardianCryoPage() {
+  const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -46,10 +52,83 @@ export default function GuardianCryoPage() {
             <Package className="mr-2 h-4 w-4" />
             Shipping Requests
           </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Task
-          </Button>
+          <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
+            <DialogTrigger asChild>
+              <Button>
+                <Plus className="mr-2 h-4 w-4" />
+                Add Task
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Add New Shipping Task</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="title">Task Title</Label>
+                  <Input
+                    id="title"
+                    placeholder="e.g., Schedule Cryo Container Pickup"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="description">Description</Label>
+                  <Textarea
+                    id="description"
+                    placeholder="e.g., Coordinate with clinic for temperature-sensitive shipment"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="assignee">Assignee</Label>
+                  <Input
+                    id="assignee"
+                    placeholder="e.g., Logistics Team"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="priority">Priority</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select priority" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="low">Low</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="column">Column</Label>
+                  <Select>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select column" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="backlog">Backlog</SelectItem>
+                      <SelectItem value="todo">To Do</SelectItem>
+                      <SelectItem value="in-progress">In Progress</SelectItem>
+                      <SelectItem value="review">Review</SelectItem>
+                      <SelectItem value="done">Done</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+                
+                <Button onClick={() => {
+                  // This would need to be connected to the Kanban component
+                  // For now, just close the dialog
+                  setAddTaskDialogOpen(false);
+                }} className="w-full">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Task
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
