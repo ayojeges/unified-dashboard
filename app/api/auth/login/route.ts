@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { users } from '../register/route';
 
+export const dynamic = 'force-dynamic'; // Prevent static generation
+
 export async function POST(request: Request) {
   try {
     const { email, password } = await request.json();

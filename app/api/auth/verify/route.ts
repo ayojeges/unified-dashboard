@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { users, verifyTokens } from '../register/route';
 
+export const dynamic = 'force-dynamic'; // Prevent static generation
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
