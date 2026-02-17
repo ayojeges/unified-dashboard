@@ -1,3 +1,5 @@
+"use client";
+
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -22,69 +24,39 @@ import {
 const projects = [
   { 
     id: 1, 
-    name: "Website Redesign", 
-    description: "Complete overhaul of company website with modern design",
+    name: "GuardianCryo", 
+    description: "Cryogenic shipping and storage solutions for fertility clinics",
     status: "active", 
-    progress: 75,
-    team: 4,
-    dueDate: "2024-04-15",
-    tasks: 24,
-    completed: 18
+    progress: 65,
+    team: 3,
+    dueDate: "2026-03-15",
+    tasks: 42,
+    completed: 27,
+    features: ["Kanban Board", "Notes", "Parking Lot", "Shipping Requests"]
   },
   { 
     id: 2, 
-    name: "Mobile App Development", 
-    description: "Native iOS and Android application for customer engagement",
+    name: "CDL Schools", 
+    description: "Commercial Driver's License training and certification platform",
     status: "active", 
-    progress: 45,
-    team: 6,
-    dueDate: "2024-05-30",
-    tasks: 48,
-    completed: 22
+    progress: 80,
+    team: 4,
+    dueDate: "2026-02-28",
+    tasks: 56,
+    completed: 45,
+    features: ["Kanban Board", "Notes", "Parking Lot", "Partner Management"]
   },
   { 
     id: 3, 
-    name: "Marketing Campaign", 
-    description: "Q2 digital marketing campaign across social media platforms",
-    status: "completed", 
-    progress: 100,
-    team: 3,
-    dueDate: "2024-03-01",
-    tasks: 32,
-    completed: 32
-  },
-  { 
-    id: 4, 
-    name: "API Integration", 
-    description: "Third-party API integration for payment processing",
+    name: "Apply Intelligent", 
+    description: "AI-powered college application platform with predictive analytics",
     status: "active", 
-    progress: 60,
-    team: 2,
-    dueDate: "2024-04-30",
-    tasks: 18,
-    completed: 11
-  },
-  { 
-    id: 5, 
-    name: "Data Migration", 
-    description: "Migration from legacy database to cloud infrastructure",
-    status: "on-hold", 
-    progress: 30,
+    progress: 40,
     team: 5,
-    dueDate: "2024-06-15",
-    tasks: 42,
-    completed: 13
-  },
-  { 
-    id: 6, 
-    name: "User Research", 
-    description: "Comprehensive user research for product improvement",
-    status: "planning", 
-    progress: 15,
-    team: 3,
-    dueDate: "2024-05-01",
-    tasks: 28,
-    completed: 4
+    dueDate: "2026-04-30",
+    tasks: 78,
+    completed: 31,
+    features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"]
   },
 ];
 
@@ -216,12 +188,39 @@ export default function ProjectsPage() {
                 </div>
               </div>
 
+              {/* Features */}
+              <div className="mt-4">
+                <p className="text-sm font-medium mb-2">Features:</p>
+                <div className="flex flex-wrap gap-1">
+                  {project.features?.map((feature, index) => (
+                    <Badge key={index} variant="outline" className="text-xs">
+                      {feature}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
+
               {/* Action Buttons */}
               <div className="mt-6 flex gap-2">
-                <Button variant="outline" className="flex-1" size="sm">
+                <Button 
+                  variant="outline" 
+                  className="flex-1" 
+                  size="sm"
+                  onClick={() => {
+                    const projectPath = project.name.toLowerCase().replace(/\s+/g, '-');
+                    window.location.href = `/projects/${projectPath}`;
+                  }}
+                >
                   View Details
                 </Button>
-                <Button className="flex-1" size="sm">
+                <Button 
+                  className="flex-1" 
+                  size="sm"
+                  onClick={() => {
+                    const projectPath = project.name.toLowerCase().replace(/\s+/g, '-');
+                    window.location.href = `/projects/${projectPath}`;
+                  }}
+                >
                   Open Board
                 </Button>
               </div>
