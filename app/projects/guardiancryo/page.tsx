@@ -1,3 +1,4 @@
+"use client";
 import { GuardianCryoKanban } from "@/components/kanban/guardiancryo-kanban";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
