@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreVertical, User } from "lucide-react";
+import { Plus, MoreVertical, User, GraduationCap, Car, BookOpen, Users, DollarSign } from "lucide-react";
 
 interface Task {
   id: string;
@@ -18,7 +18,7 @@ interface Column {
   tasks: Task[];
 }
 
-export function KanbanBoard() {
+export function CDLKanban() {
   const columns: Column[] = [
     {
       id: "backlog",
@@ -26,22 +26,29 @@ export function KanbanBoard() {
       tasks: [
         {
           id: "1",
-          title: "User Research",
-          description: "Conduct interviews with target users",
-          assignee: "Research Team",
+          title: "Online Course Platform",
+          description: "Research LMS platforms for online CDL training",
+          assignee: "Product Team",
           priority: "medium",
         },
         {
           id: "2",
-          title: "Market Analysis",
-          description: "Analyze competitor features and pricing",
-          assignee: "Marketing",
-          priority: "medium",
+          title: "State Certification Updates",
+          description: "Track upcoming changes to state CDL requirements",
+          assignee: "Compliance",
+          priority: "low",
         },
         {
           id: "3",
-          title: "Technical Debt",
-          description: "Refactor legacy authentication code",
+          title: "Partner School Expansion",
+          description: "Identify potential partner schools in Midwest",
+          assignee: "Business Development",
+          priority: "medium",
+        },
+        {
+          id: "4",
+          title: "Mobile App Development",
+          description: "Plan CDL practice test mobile app",
           assignee: "Engineering",
           priority: "low",
         },
@@ -52,17 +59,17 @@ export function KanbanBoard() {
       title: "To Do",
       tasks: [
         {
-          id: "4",
-          title: "Design Review",
-          description: "Review new dashboard designs",
-          assignee: "Alex Chen",
+          id: "5",
+          title: "Texas DMV Partnership",
+          description: "Schedule meeting with Texas DMV officials",
+          assignee: "Partnerships",
           priority: "high",
         },
         {
-          id: "5",
-          title: "Documentation",
-          description: "Update API documentation",
-          assignee: "Sam Rivera",
+          id: "6",
+          title: "Curriculum Update",
+          description: "Update hazmat training materials",
+          assignee: "Curriculum Team",
           priority: "medium",
         },
       ],
@@ -72,10 +79,10 @@ export function KanbanBoard() {
       title: "In Progress",
       tasks: [
         {
-          id: "6",
-          title: "Authentication Flow",
-          description: "Implement new auth system",
-          assignee: "Jordan Lee",
+          id: "7",
+          title: "Website Redesign",
+          description: "Implement new homepage and course pages",
+          assignee: "Design Team",
           priority: "high",
         },
       ],
@@ -85,10 +92,10 @@ export function KanbanBoard() {
       title: "Review",
       tasks: [
         {
-          id: "7",
-          title: "Performance Testing",
-          description: "Run load tests on new features",
-          assignee: "Taylor Kim",
+          id: "8",
+          title: "Financial Aid Documentation",
+          description: "Review updated financial aid application forms",
+          assignee: "Finance",
           priority: "medium",
         },
       ],
@@ -98,11 +105,18 @@ export function KanbanBoard() {
       title: "Done",
       tasks: [
         {
-          id: "8",
-          title: "Mobile Responsive",
-          description: "Fix mobile layout issues",
-          assignee: "Casey Morgan",
+          id: "9",
+          title: "Instructor Certification",
+          description: "Completed certification for 5 new instructors",
+          assignee: "HR",
           priority: "low",
+        },
+        {
+          id: "10",
+          title: "Truck Fleet Maintenance",
+          description: "Completed quarterly maintenance on training trucks",
+          assignee: "Operations",
+          priority: "medium",
         },
       ],
     },
@@ -116,16 +130,24 @@ export function KanbanBoard() {
     }
   };
 
+  const getTaskIcon = (title: string) => {
+    if (title.includes("Course") || title.includes("Curriculum")) return <BookOpen className="h-3 w-3" />;
+    if (title.includes("Truck") || title.includes("Fleet")) return <Car className="h-3 w-3" />;
+    if (title.includes("Instructor") || title.includes("Partner")) return <Users className="h-3 w-3" />;
+    if (title.includes("Financial") || title.includes("DMV")) return <DollarSign className="h-3 w-3" />;
+    return <GraduationCap className="h-3 w-3" />;
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">Project Tasks</h2>
-          <p className="text-sm text-muted-foreground">Drag and drop tasks between columns</p>
+          <h2 className="text-xl font-semibold">CDL Schools Tasks</h2>
+          <p className="text-sm text-muted-foreground">Driver training and certification workflow</p>
         </div>
         <Button>
           <Plus className="h-4 w-4 mr-2" />
-          Add Task
+          Add Training Task
         </Button>
       </div>
 
@@ -164,8 +186,8 @@ export function KanbanBoard() {
                     
                     <div className="flex justify-between items-center">
                       <div className="flex items-center gap-2">
-                        <div className="h-6 w-6 rounded-full bg-muted flex items-center justify-center">
-                          <User className="h-3 w-3" />
+                        <div className="h-6 w-6 rounded-full bg-green-100 flex items-center justify-center">
+                          {getTaskIcon(task.title)}
                         </div>
                         <span className="text-xs">{task.assignee}</span>
                       </div>

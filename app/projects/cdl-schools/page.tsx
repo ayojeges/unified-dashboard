@@ -1,4 +1,4 @@
-import { KanbanBoard } from "@/components/kanban/kanban-board";
+import { CDLKanban } from "@/components/kanban/cdl-kanban";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -108,7 +108,7 @@ export default function CDLSchoolsPage() {
 
         {/* Kanban Board Tab */}
         <TabsContent value="kanban" className="space-y-4">
-          <KanbanBoard />
+          <CDLKanban />
         </TabsContent>
 
         {/* Notes Tab */}

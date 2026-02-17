@@ -1,4 +1,4 @@
-import { KanbanBoard } from "@/components/kanban/kanban-board";
+import { GuardianCryoKanban } from "@/components/kanban/guardiancryo-kanban";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Button } from "@/components/ui/button";
@@ -107,7 +107,7 @@ export default function GuardianCryoPage() {
 
         {/* Kanban Board Tab */}
         <TabsContent value="kanban" className="space-y-4">
-          <KanbanBoard />
+          <GuardianCryoKanban />
         </TabsContent>
 
         {/* Notes Tab */}
