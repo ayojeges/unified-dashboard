@@ -22,7 +22,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SimpleSelect, SimpleSelectContent, SimpleSelectItem, SimpleSelectTrigger, SimpleSelectValue } from "@/components/ui/simple-select";
 import { Plus, MoreVertical, User, Package, Thermometer, Truck, Shield, GripVertical, Edit, Trash2, Save, X } from "lucide-react";
 
 interface Task {
@@ -319,40 +319,40 @@ export function GuardianCryoKanban() {
               
               <div className="space-y-2">
                 <Label htmlFor="priority">Priority</Label>
-                <Select
+                <SimpleSelect
                   value={newTask.priority}
                   onValueChange={(value) => 
                     setNewTask({...newTask, priority: value as "low" | "medium" | "high"})
                   }
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select priority" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="low">Low</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <SimpleSelectTrigger>
+                    <SimpleSelectValue placeholder="Select priority" />
+                  </SimpleSelectTrigger>
+                  <SimpleSelectContent>
+                    <SimpleSelectItem value="low">Low</SimpleSelectItem>
+                    <SimpleSelectItem value="medium">Medium</SimpleSelectItem>
+                    <SimpleSelectItem value="high">High</SimpleSelectItem>
+                  </SimpleSelectContent>
+                </SimpleSelect>
               </div>
               
               <div className="space-y-2">
                 <Label htmlFor="column">Column</Label>
-                <Select
+                <SimpleSelect
                   value={selectedColumn}
                   onValueChange={setSelectedColumn}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select column" />
-                  </SelectTrigger>
-                  <SelectContent>
+                  <SimpleSelectTrigger>
+                    <SimpleSelectValue placeholder="Select column" />
+                  </SimpleSelectTrigger>
+                  <SimpleSelectContent>
                     {columns.map(column => (
-                      <SelectItem key={column.id} value={column.id}>
+                      <SimpleSelectItem key={column.id} value={column.id}>
                         {column.title}
-                      </SelectItem>
+                      </SimpleSelectItem>
                     ))}
-                  </SelectContent>
-                </Select>
+                  </SimpleSelectContent>
+                </SimpleSelect>
               </div>
               
               <Button onClick={handleAddTask} className="w-full">

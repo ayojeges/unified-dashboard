@@ -9,7 +9,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { SimpleSelect, SimpleSelectContent, SimpleSelectItem, SimpleSelectTrigger, SimpleSelectValue } from "@/components/ui/simple-select";
 import { 
   Save, 
   Plus, 
@@ -90,32 +90,32 @@ export default function GuardianCryoPage() {
                 
                 <div className="space-y-2">
                   <Label htmlFor="priority">Priority</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select priority" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="low">Low</SelectItem>
-                      <SelectItem value="medium">Medium</SelectItem>
-                      <SelectItem value="high">High</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <SimpleSelect>
+                    <SimpleSelectTrigger>
+                      <SimpleSelectValue placeholder="Select priority" />
+                    </SimpleSelectTrigger>
+                    <SimpleSelectContent>
+                      <SimpleSelectItem value="low">Low</SimpleSelectItem>
+                      <SimpleSelectItem value="medium">Medium</SimpleSelectItem>
+                      <SimpleSelectItem value="high">High</SimpleSelectItem>
+                    </SimpleSelectContent>
+                  </SimpleSelect>
                 </div>
                 
                 <div className="space-y-2">
                   <Label htmlFor="column">Column</Label>
-                  <Select>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select column" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="backlog">Backlog</SelectItem>
-                      <SelectItem value="todo">To Do</SelectItem>
-                      <SelectItem value="in-progress">In Progress</SelectItem>
-                      <SelectItem value="review">Review</SelectItem>
-                      <SelectItem value="done">Done</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  <SimpleSelect>
+                    <SimpleSelectTrigger>
+                      <SimpleSelectValue placeholder="Select column" />
+                    </SimpleSelectTrigger>
+                    <SimpleSelectContent>
+                      <SimpleSelectItem value="backlog">Backlog</SimpleSelectItem>
+                      <SimpleSelectItem value="todo">To Do</SimpleSelectItem>
+                      <SimpleSelectItem value="in-progress">In Progress</SimpleSelectItem>
+                      <SimpleSelectItem value="review">Review</SimpleSelectItem>
+                      <SimpleSelectItem value="done">Done</SimpleSelectItem>
+                    </SimpleSelectContent>
+                  </SimpleSelect>
                 </div>
                 
                 <Button onClick={() => {
