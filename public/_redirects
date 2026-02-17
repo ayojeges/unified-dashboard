@@ -1,0 +1,5 @@
+# Redirects for broken links
+/signup    /auth/register    302
+/dashboard /                 302
+/signup/   /auth/register    302
+/dashboard/ /                302
