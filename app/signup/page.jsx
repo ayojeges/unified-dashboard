@@ -1,14 +1,21 @@
-// Simple HTML redirect page
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function SignupPage() {
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.push('/auth/register');
+  }, [router]);
+  
   return (
-    <html>
-      <head>
-        <meta httpEquiv="refresh" content="0; url=/auth/register" />
-        <title>Redirecting to Signup</title>
-      </head>
-      <body>
-        <p>Redirecting to <a href="/auth/register">signup page</a>...</p>
-      </body>
-    </html>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <p>Redirecting to signup page...</p>
+      <p>
+        <a href="/auth/register">Click here if not redirected</a>
+      </p>
+    </div>
   );
 }

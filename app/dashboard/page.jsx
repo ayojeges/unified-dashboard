@@ -1,14 +1,21 @@
-// Simple HTML redirect page
+'use client';
+
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+
 export default function DashboardPage() {
+  const router = useRouter();
+  
+  useEffect(() => {
+    router.push('/');
+  }, [router]);
+  
   return (
-    <html>
-      <head>
-        <meta httpEquiv="refresh" content="0; url=/" />
-        <title>Redirecting to Dashboard</title>
-      </head>
-      <body>
-        <p>Redirecting to <a href="/">dashboard</a>...</p>
-      </body>
-    </html>
+    <div style={{ padding: '2rem', textAlign: 'center' }}>
+      <p>Redirecting to dashboard...</p>
+      <p>
+        <a href="/">Click here if not redirected</a>
+      </p>
+    </div>
   );
 }
