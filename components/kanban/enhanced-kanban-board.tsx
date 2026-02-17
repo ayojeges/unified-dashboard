@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -10,21 +10,17 @@ import {
   useSensor,
   useSensors,
   closestCorners,
+  useDroppable,
+  useDraggable,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { Select, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/simple-select";
-import { Plus, MoreVertical, User, GripVertical, Edit, Trash2, Save, X } from "lucide-react";
-import { SortableTask } from "./sortable-task";
-import { SortableColumn } from "./sortable-column";
+import { Select, SelectContent, SelectItem } from "@/components/ui/simple-select";
+import { Plus, X, GripVertical, User } from "lucide-react";
 
 interface Task {
   id: string;
@@ -40,130 +36,107 @@ interface Column {
   tasks: Task[];
 }
 
-export function EnhancedKanbanBoard() {
-  // Load from localStorage or use default
-  const loadColumns = (): Column[] => {
-    if (typeof window === 'undefined') return [];
-    
-    try {
-      const saved = localStorage.getItem('kanban-board-data');
-      if (saved) {
-        return JSON.parse(saved);
-      }
-    } catch (error) {
-      console.error('Failed to load kanban data:', error);
-    }
-    
-    // Default columns
-    return [
-    {
-      id: "backlog",
-      title: "Backlog",
-      tasks: [
-        {
-          id: "1",
-          title: "User Research",
-          description: "Conduct interviews with target users",
-          assignee: "Research Team",
-          priority: "medium",
-        },
-        {
-          id: "2",
-          title: "Market Analysis",
-          description: "Analyze competitor features and pricing",
-          assignee: "Marketing",
-          priority: "medium",
-        },
-        {
-          id: "3",
-          title: "Technical Debt",
-          description: "Refactor legacy authentication code",
-          assignee: "Engineering",
-          priority: "low",
-        },
-      ],
-    },
-    {
-      id: "todo",
-      title: "To Do",
-      tasks: [
-        {
-          id: "4",
-          title: "Design Review",
-          description: "Review new dashboard designs",
-          assignee: "Alex Chen",
-          priority: "high",
-        },
-        {
-          id: "5",
-          title: "Documentation",
-          description: "Update API documentation",
-          assignee: "Sam Rivera",
-          priority: "medium",
-        },
-      ],
-    },
-    {
-      id: "in-progress",
-      title: "In Progress",
-      tasks: [
-        {
-          id: "6",
-          title: "Authentication Flow",
-          description: "Implement new auth system",
-          assignee: "Jordan Lee",
-          priority: "high",
-        },
-      ],
-    },
-    {
-      id: "review",
-      title: "Review",
-      tasks: [
-        {
-          id: "7",
-          title: "Performance Testing",
-          description: "Run load tests on new features",
-          assignee: "Taylor Kim",
-          priority: "medium",
-        },
-      ],
-    },
-    {
-      id: "done",
-      title: "Done",
-      tasks: [
-        {
-          id: "8",
-          title: "Mobile Responsive",
-          description: "Fix mobile layout issues",
-          assignee: "Casey Morgan",
-          priority: "low",
-        },
-      ],
-    },
+interface EnhancedKanbanBoardProps {
+  storageKey?: string;
+}
+
+// Draggable Task Card Component
+function DraggableTask({ task, columnId, onDelete, getPriorityColor }: { 
+  task: Task; 
+  columnId: string;
+  onDelete: (columnId: string, taskId: string) => void;
+  getPriorityColor: (priority: Task["priority"]) => string;
+}) {
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: task.id,
+    data: { task, columnId },
+  });
+
+  const style = transform ? {
+    transform: `translate3d(${transform.x}px, ${transform.y}px, 0)`,
+    opacity: isDragging ? 0.5 : 1,
+  } : undefined;
+
+  return (
+    <div ref={setNodeRef} style={style}>
+      <Card className={`cursor-grab hover:shadow-md transition-shadow ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}>
+        <CardHeader className="p-4 pb-2">
+          <div className="flex justify-between items-start">
+            <div className="flex items-center gap-2">
+              <div {...listeners} {...attributes} className="cursor-grab hover:bg-muted rounded p-1">
+                <GripVertical className="h-4 w-4 text-muted-foreground" />
+              </div>
+              <CardTitle className="text-sm font-medium">
+                {task.title}
+              </CardTitle>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-6 w-6 hover:bg-destructive/10 hover:text-destructive"
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(columnId, task.id);
+              }}
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 pt-2 space-y-3">
+          <p className="text-sm text-muted-foreground">
+            {task.description}
+          </p>
+          
+          <div className="flex justify-between items-center">
+            <div className="flex items-center gap-2">
+              <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
+                <User className="h-3 w-3" />
+              </div>
+              <span className="text-xs">{task.assignee}</span>
+            </div>
+            
+            <span className={`text-xs px-2 py-1 rounded-full font-medium ${getPriorityColor(task.priority)}`}>
+              {task.priority}
+            </span>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+// Droppable Column Component
+function DroppableColumn({ column, children }: { column: Column; children: React.ReactNode }) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `column-${column.id}`,
+    data: { columnId: column.id },
+  });
+
+  return (
+    <div 
+      ref={setNodeRef} 
+      className={`space-y-3 min-h-[200px] p-2 rounded-lg transition-colors ${
+        isOver ? 'bg-primary/10 ring-2 ring-primary ring-dashed' : 'bg-muted/30'
+      }`}
+    >
+      {children}
+    </div>
+  );
+}
+
+export function EnhancedKanbanBoard({ storageKey = "kanban-board-data" }: EnhancedKanbanBoardProps) {
+  const getDefaultColumns = (): Column[] => [
+    { id: "backlog", title: "Backlog", tasks: [] },
+    { id: "todo", title: "To Do", tasks: [] },
+    { id: "in-progress", title: "In Progress", tasks: [] },
+    { id: "review", title: "Review", tasks: [] },
+    { id: "done", title: "Done", tasks: [] },
   ];
-  };
 
-  const [columns, setColumns] = useState<Column[]>(loadColumns());
+  const [columns, setColumns] = useState<Column[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
-
-  // Save columns to localStorage (functional update)
-  const updateColumns = (updater: (prevColumns: Column[]) => Column[]) => {
-    setColumns(prevColumns => {
-      const newColumns = updater(prevColumns);
-      if (typeof window !== 'undefined') {
-        try {
-          localStorage.setItem('kanban-board-data', JSON.stringify(newColumns));
-        } catch (error) {
-          console.error('Failed to save kanban data:', error);
-        }
-      }
-      return newColumns;
-    });
-  };
-  const [editingColumn, setEditingColumn] = useState<string | null>(null);
-  const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [isClient, setIsClient] = useState(false);
   const [newTask, setNewTask] = useState({
     title: "",
     description: "",
@@ -173,97 +146,103 @@ export function EnhancedKanbanBoard() {
   const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
   const [selectedColumn, setSelectedColumn] = useState<string>("backlog");
 
+  useEffect(() => {
+    setIsClient(true);
+    // Load from localStorage
+    try {
+      const saved = localStorage.getItem(storageKey);
+      if (saved) {
+        setColumns(JSON.parse(saved));
+      } else {
+        setColumns(getDefaultColumns());
+      }
+    } catch (error) {
+      console.error('Failed to load kanban data:', error);
+      setColumns(getDefaultColumns());
+    }
+  }, [storageKey]);
+
+  // Save columns to localStorage
+  const updateColumns = (updater: (prevColumns: Column[]) => Column[]) => {
+    setColumns(prevColumns => {
+      const newColumns = updater(prevColumns);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify(newColumns));
+        } catch (error) {
+          console.error('Failed to save kanban data:', error);
+        }
+      }
+      return newColumns;
+    });
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 8,
+        distance: 5,
       },
     })
   );
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-    const taskId = active.id as string;
-    
-    // Find the task
-    for (const column of columns) {
-      const task = column.tasks.find(t => t.id === taskId);
-      if (task) {
-        setActiveTask(task);
-        break;
-      }
+    const taskData = active.data.current;
+    if (taskData?.task) {
+      setActiveTask(taskData.task);
     }
   };
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
-    
-    if (!over) {
-      setActiveTask(null);
-      return;
-    }
+    setActiveTask(null);
+
+    if (!over) return;
 
     const activeId = active.id as string;
     const overId = over.id as string;
 
-    // If dragging over a column
-    if (overId.startsWith("column-")) {
-      const columnId = overId.replace("column-", "");
+    // Get the target column ID
+    let targetColumnId: string | null = null;
+    
+    if (overId.startsWith('column-')) {
+      targetColumnId = overId.replace('column-', '');
+    } else {
+      // Dropped on another task - find its column
+      const overData = over.data.current;
+      if (overData?.columnId) {
+        targetColumnId = overData.columnId;
+      }
+    }
+
+    if (!targetColumnId) return;
+
+    // Get source info
+    const sourceData = active.data.current;
+    const sourceColumnId = sourceData?.columnId;
+
+    if (!sourceColumnId || sourceColumnId === targetColumnId) {
+      return;
+    }
+
+    updateColumns(prevColumns => {
+      const newColumns = prevColumns.map(col => ({ ...col, tasks: [...col.tasks] }));
       
-      updateColumns(prevColumns => {
-        const newColumns = [...prevColumns];
-        
-        // Find source column and task
-        let sourceColumnIndex = -1;
-        let taskIndex = -1;
-        let task: Task | null = null;
-        
-        for (let i = 0; i < newColumns.length; i++) {
-          const column = newColumns[i];
-          const foundIndex = column.tasks.findIndex(t => t.id === activeId);
-          if (foundIndex !== -1) {
-            sourceColumnIndex = i;
-            taskIndex = foundIndex;
-            task = column.tasks[foundIndex];
-            break;
-          }
-        }
+      // Find source column and task
+      const sourceColIndex = newColumns.findIndex(c => c.id === sourceColumnId);
+      const targetColIndex = newColumns.findIndex(c => c.id === targetColumnId);
+      
+      if (sourceColIndex === -1 || targetColIndex === -1) return prevColumns;
 
-        if (task && sourceColumnIndex !== -1) {
-          // Remove from source column
-          newColumns[sourceColumnIndex].tasks.splice(taskIndex, 1);
-          
-          // Add to target column
-          const targetColumnIndex = newColumns.findIndex(c => c.id === columnId);
-          if (targetColumnIndex !== -1) {
-            newColumns[targetColumnIndex].tasks.push(task);
-          }
-        }
+      const taskIndex = newColumns[sourceColIndex].tasks.findIndex(t => t.id === activeId);
+      if (taskIndex === -1) return prevColumns;
 
-        return newColumns;
-      });
-    }
-    // If dragging within same column (reordering)
-    else if (activeId !== overId) {
-      updateColumns(prevColumns => {
-        const newColumns = [...prevColumns];
-        
-        for (const column of newColumns) {
-          const taskIds = column.tasks.map(task => task.id);
-          const oldIndex = taskIds.indexOf(activeId);
-          const newIndex = taskIds.indexOf(overId);
-
-          if (oldIndex !== -1 && newIndex !== -1) {
-            column.tasks = arrayMove(column.tasks, oldIndex, newIndex);
-            break;
-          }
-        }
-
-        return newColumns;
-      });
-    }
-
-    setActiveTask(null);
+      // Move task
+      const [task] = newColumns[sourceColIndex].tasks.splice(taskIndex, 1);
+      newColumns[targetColIndex].tasks.push(task);
+      
+      return newColumns;
+    });
   };
 
   const handleAddTask = () => {
@@ -278,7 +257,7 @@ export function EnhancedKanbanBoard() {
     };
 
     updateColumns(prevColumns => {
-      const newColumns = [...prevColumns];
+      const newColumns = prevColumns.map(col => ({ ...col, tasks: [...col.tasks] }));
       const columnIndex = newColumns.findIndex(c => c.id === selectedColumn);
       if (columnIndex !== -1) {
         newColumns[columnIndex].tasks.push(newTaskObj);
@@ -286,64 +265,55 @@ export function EnhancedKanbanBoard() {
       return newColumns;
     });
 
-    // Reset form
-    setNewTask({
-      title: "",
-      description: "",
-      assignee: "",
-      priority: "medium",
-    });
+    setNewTask({ title: "", description: "", assignee: "", priority: "medium" });
     setAddTaskDialogOpen(false);
-  };
-
-  const handleUpdateColumnTitle = (columnId: string) => {
-    if (!newColumnTitle.trim()) {
-      setEditingColumn(null);
-      return;
-    }
-
-    updateColumns(prevColumns => {
-      const newColumns = [...prevColumns];
-      const columnIndex = newColumns.findIndex(c => c.id === columnId);
-      if (columnIndex !== -1) {
-        newColumns[columnIndex].title = newColumnTitle;
-      }
-      return newColumns;
-    });
-
-    setEditingColumn(null);
-    setNewColumnTitle("");
   };
 
   const handleDeleteTask = (columnId: string, taskId: string) => {
     updateColumns(prevColumns => {
-      const newColumns = [...prevColumns];
-      const columnIndex = newColumns.findIndex(c => c.id === columnId);
-      if (columnIndex !== -1) {
-        newColumns[columnIndex].tasks = newColumns[columnIndex].tasks.filter(
-          task => task.id !== taskId
-        );
-      }
-      return newColumns;
+      return prevColumns.map(col => {
+        if (col.id === columnId) {
+          return { ...col, tasks: col.tasks.filter(t => t.id !== taskId) };
+        }
+        return col;
+      });
     });
   };
 
   const getPriorityColor = (priority: Task["priority"]) => {
     switch (priority) {
-      case "high": return "bg-red-100 text-red-800";
-      case "medium": return "bg-yellow-100 text-yellow-800";
-      case "low": return "bg-green-100 text-green-800";
+      case "high": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
+      case "medium": return "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
+      case "low": return "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
     }
   };
 
+  if (!isClient) {
+    return (
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <div className="h-8 w-40 bg-muted animate-pulse rounded" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+          {[1, 2, 3, 4, 5].map((i) => (
+            <div key={i} className="space-y-4">
+              <div className="h-6 w-24 bg-muted animate-pulse rounded" />
+              <div className="space-y-2 min-h-[200px] bg-muted/30 rounded-lg p-2">
+                <div className="h-24 bg-muted animate-pulse rounded" />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-xl font-semibold">Enhanced Kanban Board</h2>
-          <p className="text-sm text-muted-foreground">
-            Drag and drop tasks between columns. Click column titles to rename.
-          </p>
+          <h2 className="text-xl font-semibold">Task Board</h2>
+          <p className="text-sm text-muted-foreground">Drag and drop tasks between columns</p>
         </div>
         
         <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
@@ -353,13 +323,13 @@ export function EnhancedKanbanBoard() {
               Add Task
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Add New Task</DialogTitle>
             </DialogHeader>
-            <div className="space-y-4">
+            <div className="space-y-4 pt-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Task Title</Label>
+                <Label htmlFor="title">Task Title *</Label>
                 <Input
                   id="title"
                   placeholder="Enter task title"
@@ -370,9 +340,9 @@ export function EnhancedKanbanBoard() {
               
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
-                <Input
+                <Textarea
                   id="description"
-                  placeholder="Enter task description"
+                  placeholder="Describe the task..."
                   value={newTask.description}
                   onChange={(e) => setNewTask({...newTask, description: e.target.value})}
                 />
@@ -389,34 +359,36 @@ export function EnhancedKanbanBoard() {
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="priority">Priority</Label>
+                <Label>Priority</Label>
                 <Select
                   value={newTask.priority}
-                  onValueChange={(value) => 
-                    setNewTask({...newTask, priority: value as "low" | "medium" | "high"})
-                  }
+                  onValueChange={(value) => setNewTask({...newTask, priority: value as "low" | "medium" | "high"})}
                 >
-                  <SelectItem value="low">Low</SelectItem>
-                  <SelectItem value="medium">Medium</SelectItem>
-                  <SelectItem value="high">High</SelectItem>
+                  <SelectContent>
+                    <SelectItem value="low">Low</SelectItem>
+                    <SelectItem value="medium">Medium</SelectItem>
+                    <SelectItem value="high">High</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="column">Column</Label>
+                <Label>Column</Label>
                 <Select
                   value={selectedColumn}
                   onValueChange={setSelectedColumn}
                 >
-                  {columns.map(column => (
-                    <SelectItem key={column.id} value={column.id}>
-                      {column.title}
-                    </SelectItem>
-                  ))}
+                  <SelectContent>
+                    {columns.map(column => (
+                      <SelectItem key={column.id} value={column.id}>
+                        {column.title}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
               
-              <Button onClick={handleAddTask} className="w-full">
+              <Button onClick={handleAddTask} className="w-full" disabled={!newTask.title.trim()}>
                 <Plus className="h-4 w-4 mr-2" />
                 Add Task
               </Button>
@@ -431,73 +403,61 @@ export function EnhancedKanbanBoard() {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {columns.map((column) => (
-            <SortableColumn
-              key={column.id}
-              id={`column-${column.id}`}
-              column={column}
-              editingColumn={editingColumn}
-              newColumnTitle={newColumnTitle}
-              onEditStart={(colId) => {
-                setEditingColumn(colId);
-                setNewColumnTitle(column.title);
-              }}
-              onEditCancel={() => {
-                setEditingColumn(null);
-                setNewColumnTitle("");
-              }}
-              onEditSave={() => handleUpdateColumnTitle(column.id)}
-              onNewColumnTitleChange={setNewColumnTitle}
-              onAddTask={() => {
-                setSelectedColumn(column.id);
-                setAddTaskDialogOpen(true);
-              }}
-            >
-              <SortableContext
-                items={column.tasks.map(task => task.id)}
-                strategy={verticalListSortingStrategy}
-              >
-                <div className="space-y-3">
-                  {column.tasks.map((task) => (
-                    <SortableTask
+            <div key={column.id} className="space-y-3">
+              <div className="flex justify-between items-center px-2">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium">{column.title}</h3>
+                  <span className="text-xs bg-muted px-2 py-0.5 rounded-full">
+                    {column.tasks.length}
+                  </span>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon"
+                  className="h-8 w-8"
+                  onClick={() => {
+                    setSelectedColumn(column.id);
+                    setAddTaskDialogOpen(true);
+                  }}
+                >
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </div>
+
+              <DroppableColumn column={column}>
+                {column.tasks.length === 0 ? (
+                  <div className="border-2 border-dashed border-muted-foreground/20 rounded-lg p-6 text-center">
+                    <p className="text-sm text-muted-foreground">Drop tasks here</p>
+                  </div>
+                ) : (
+                  column.tasks.map((task) => (
+                    <DraggableTask
                       key={task.id}
-                      id={task.id}
                       task={task}
                       columnId={column.id}
+                      onDelete={handleDeleteTask}
                       getPriorityColor={getPriorityColor}
-                      onDelete={() => handleDeleteTask(column.id, task.id)}
                     />
-                  ))}
-                </div>
-              </SortableContext>
-            </SortableColumn>
+                  ))
+                )}
+              </DroppableColumn>
+            </div>
           ))}
         </div>
 
         <DragOverlay>
           {activeTask && (
-            <Card className="cursor-grabbing shadow-lg">
-              <CardHeader className="p-4 pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-sm font-medium">
-                    {activeTask.title}
-                  </CardTitle>
-                  <GripVertical className="h-4 w-4 text-muted-foreground" />
-                </div>
+            <Card className="shadow-2xl ring-2 ring-primary rotate-3 max-w-[280px]">
+              <CardHeader className="p-3 pb-1">
+                <CardTitle className="text-sm">{activeTask.title}</CardTitle>
               </CardHeader>
-              <CardContent className="p-4 pt-2 space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  {activeTask.description}
-                </p>
-                <div className="flex justify-between items-center">
-                  <div className="flex items-center gap-2">
-                    <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                      <User className="h-3 w-3" />
-                    </div>
-                    <span className="text-xs">{activeTask.assignee}</span>
-                  </div>
-                  <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(activeTask.priority)}`}>
+              <CardContent className="p-3 pt-1">
+                <p className="text-xs text-muted-foreground line-clamp-2">{activeTask.description}</p>
+                <div className="flex justify-between items-center mt-2">
+                  <span className="text-xs">{activeTask.assignee}</span>
+                  <span className={`text-xs px-2 py-0.5 rounded-full ${getPriorityColor(activeTask.priority)}`}>
                     {activeTask.priority}
                   </span>
                 </div>
@@ -506,17 +466,6 @@ export function EnhancedKanbanBoard() {
           )}
         </DragOverlay>
       </DndContext>
-
-      <div className="text-sm text-muted-foreground">
-        <p>💡 <strong>How to use:</strong></p>
-        <ul className="list-disc pl-5 mt-2 space-y-1">
-          <li>Drag tasks between columns to move them</li>
-          <li>Drag tasks within a column to reorder them</li>
-          <li>Click column titles to rename them (e.g., "Review" → "Ready for Test")</li>
-          <li>Use the "Add Task" button to create new tasks</li>
-          <li>Click the trash icon on tasks to delete them</li>
-        </ul>
-      </div>
     </div>
   );
 }

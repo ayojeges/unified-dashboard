@@ -34,7 +34,7 @@ function VerifyContent() {
           // Store auth state and redirect to dashboard after 2 seconds
           localStorage.setItem("isAuthenticated", "true");
           setTimeout(() => {
-            router.push("/dashboard");
+            window.location.href = "/dashboard";
           }, 2000);
         } else {
           setStatus("error");

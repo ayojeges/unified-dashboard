@@ -3,5 +3,5 @@
 import { EnhancedKanbanBoard } from "./enhanced-kanban-board";
 
 export function ApplyIntelligentKanban() {
-  return <EnhancedKanbanBoard />;
+  return <EnhancedKanbanBoard storageKey="apply-intelligent-kanban" />;
 }

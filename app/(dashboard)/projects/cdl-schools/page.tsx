@@ -1,20 +1,12 @@
 "use client";
 import { CDLKanban } from "@/components/kanban/cdl-kanban";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ProjectBoard } from "@/components/project-board";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { 
-  Save, 
   Plus, 
-  FileText, 
-  MessageSquare,
-  AlertTriangle,
   CheckCircle,
   Clock,
-  Users,
   GraduationCap,
   Building,
   ArrowLeft
@@ -46,10 +38,6 @@ export default function CDLSchoolsPage() {
           <Button variant="outline">
             <Building className="mr-2 h-4 w-4" />
             Partner Management
-          </Button>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Task
           </Button>
         </div>
       </div>
@@ -102,125 +90,11 @@ export default function CDLSchoolsPage() {
         </Card>
       </div>
 
-      {/* Main Tabs */}
-      <Tabs defaultValue="kanban" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="kanban">
-            <FileText className="mr-2 h-4 w-4" />
-            Kanban Board
-          </TabsTrigger>
-          <TabsTrigger value="notes">
-            <MessageSquare className="mr-2 h-4 w-4" />
-            Notes & Documentation
-          </TabsTrigger>
-          <TabsTrigger value="parking-lot">
-            <AlertTriangle className="mr-2 h-4 w-4" />
-            Parking Lot
-          </TabsTrigger>
-        </TabsList>
-
-        {/* Kanban Board Tab */}
-        <TabsContent value="kanban" className="space-y-4">
-          <CDLKanban />
-        </TabsContent>
-
-        {/* Notes Tab */}
-        <TabsContent value="notes" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Project Notes</CardTitle>
-              <CardDescription>
-                Document action items, decisions, and important information
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <h3 className="font-medium">Add New Note</h3>
-                  <Badge variant="outline">Action Item</Badge>
-                </div>
-                <Input placeholder="Note title" />
-                <Textarea 
-                  placeholder="Document important information, decisions, or action items..."
-                  className="min-h-[200px]"
-                />
-                <div className="flex justify-end">
-                  <Button>
-                    <Save className="mr-2 h-4 w-4" />
-                    Save Note
-                  </Button>
-                </div>
-              </div>
-
-              {/* Existing Notes */}
-              <div className="space-y-4">
-                <Card>
-                  <CardHeader className="pb-3">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                      <CardTitle className="text-sm">No notes yet</CardTitle>
-                      <Badge variant="secondary">Empty</Badge>
-                    </div>
-                    <CardDescription>Add your first note to get started</CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground">
-                      This project dashboard is ready for your real data. Add notes, tasks, and track progress.
-                    </p>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Parking Lot Tab */}
-        <TabsContent value="parking-lot" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Parking Lot Issues</CardTitle>
-              <CardDescription>
-                Issues that need attention but aren&apos;t blocking current work
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                  <h3 className="font-medium">Add Parking Lot Item</h3>
-                  <Badge variant="outline">Low Priority</Badge>
-                </div>
-                <Input placeholder="Issue title" />
-                <Textarea 
-                  placeholder="Describe the issue and why it's in the parking lot..."
-                  className="min-h-[150px]"
-                />
-                <div className="flex justify-end">
-                  <Button variant="outline">
-                    <Plus className="mr-2 h-4 w-4" />
-                    Add to Parking Lot
-                  </Button>
-                </div>
-              </div>
-
-              {/* Parking Lot Items */}
-              <div className="space-y-3">
-                <Card className="border-gray-200">
-                  <CardContent className="p-4">
-                    <div className="flex items-start justify-between">
-                      <div>
-                        <h4 className="font-medium">No parking lot items</h4>
-                        <p className="text-sm text-muted-foreground">
-                          Add items that need attention but aren't blocking current work
-                        </p>
-                      </div>
-                      <Badge variant="outline">Empty</Badge>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+      {/* Project Board with Kanban, Notes, and Parking Lot */}
+      <ProjectBoard 
+        projectKey="cdl-schools"
+        kanbanComponent={<CDLKanban />}
+      />
     </div>
   );
 }
