@@ -45,8 +45,8 @@ export default function LoginPage() {
         localStorage.setItem("userEmail", formData.email);
         localStorage.setItem("userName", data.user?.name || formData.email);
         
-        // Use window.location for reliable redirect
-        window.location.href = "/dashboard";
+        // Redirect to projects page (dashboard home)
+        window.location.href = "/projects";
       } else {
         if (data.requiresVerification) {
           setUnverifiedEmail(data.email || formData.email);

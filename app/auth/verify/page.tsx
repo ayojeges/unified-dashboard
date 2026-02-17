@@ -31,10 +31,10 @@ function VerifyContent() {
           setStatus("success");
           setMessage(data.message || "Email verified successfully!");
           
-          // Store auth state and redirect to dashboard after 2 seconds
+          // Store auth state and redirect to projects page
           localStorage.setItem("isAuthenticated", "true");
           setTimeout(() => {
-            window.location.href = "/dashboard";
+            window.location.href = "/projects";
           }, 2000);
         } else {
           setStatus("error");
@@ -151,7 +151,7 @@ function VerifyContent() {
             
             {status === "success" && (
               <div className="w-full">
-                <Link href="/dashboard">
+                <Link href="/projects">
                   <Button className="w-full">
                     Go to Dashboard Now
                   </Button>
