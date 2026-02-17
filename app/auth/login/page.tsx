@@ -18,25 +18,76 @@ export default function LoginPage() {
     password: ""
   });
 
+  const [resendLoading, setResendLoading] = useState(false);
+  const [resendSuccess, setResendSuccess] = useState(false);
+  const [unverifiedEmail, setUnverifiedEmail] = useState("");
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setResendSuccess(false);
     setLoading(true);
 
     try {
-      // For demo, accept any credentials
-      // In production, this would validate against your backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Store auth state
-      localStorage.setItem("isAuthenticated", "true");
-      localStorage.setItem("userEmail", formData.email);
-      
-      router.push("/dashboard");
+      const response = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store auth state
+        localStorage.setItem("isAuthenticated", "true");
+        localStorage.setItem("userEmail", formData.email);
+        localStorage.setItem("userName", data.user?.name || formData.email);
+        
+        router.push("/dashboard");
+      } else {
+        if (data.requiresVerification) {
+          setUnverifiedEmail(data.email || formData.email);
+          setError("Please verify your email before logging in. Check your inbox for the verification link.");
+        } else {
+          setError(data.error || "Invalid credentials");
+        }
+      }
     } catch (err: any) {
-      setError(err.message || "Invalid credentials");
+      setError(err.message || "Network error. Please try again.");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResendVerification = async () => {
+    if (!unverifiedEmail) return;
+    
+    setResendLoading(true);
+    setResendSuccess(false);
+    
+    try {
+      const response = await fetch('/api/auth/resend-verification', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email: unverifiedEmail }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setResendSuccess(true);
+        setError("Verification email sent! Please check your inbox.");
+      } else {
+        setError(data.error || "Failed to resend verification email");
+      }
+    } catch (err: any) {
+      setError(err.message || "Network error. Please try again.");
+    } finally {
+      setResendLoading(false);
     }
   };
 
@@ -76,8 +127,36 @@ export default function LoginPage() {
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
               {error && (
-                <div className="p-3 text-sm text-red-600 bg-red-50 rounded-lg border border-red-200">
-                  {error}
+                <div className={`p-3 text-sm rounded-lg border ${
+                  resendSuccess 
+                    ? "text-green-600 bg-green-50 border-green-200" 
+                    : "text-red-600 bg-red-50 border-red-200"
+                }`}>
+                  <div className="flex flex-col gap-2">
+                    <div>{error}</div>
+                    {unverifiedEmail && !resendSuccess && (
+                      <button
+                        type="button"
+                        onClick={handleResendVerification}
+                        disabled={resendLoading}
+                        className="text-sm text-primary hover:underline font-medium flex items-center gap-1"
+                      >
+                        {resendLoading ? (
+                          <>
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                            Sending...
+                          </>
+                        ) : (
+                          "Resend verification email"
+                        )}
+                      </button>
+                    )}
+                    {resendSuccess && (
+                      <div className="text-sm text-green-700">
+                        ✅ New verification email sent to {unverifiedEmail}
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               
