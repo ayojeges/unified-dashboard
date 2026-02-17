@@ -15,7 +15,8 @@ import {
   Clock,
   Users,
   Brain,
-  BarChart
+  BarChart,
+  ArrowLeft
 } from "lucide-react";
 
 export default function ApplyIntelligentPage() {
@@ -23,11 +24,22 @@ export default function ApplyIntelligentPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Apply Intelligent</h1>
-          <p className="text-muted-foreground">
-            AI-powered college application platform with predictive analytics
-          </p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => window.location.href = "/projects"}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Apply Intelligent</h1>
+            <p className="text-muted-foreground">
+              AI-powered college application platform with predictive analytics
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">

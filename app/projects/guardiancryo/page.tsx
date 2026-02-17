@@ -14,7 +14,8 @@ import {
   CheckCircle,
   Clock,
   Users,
-  Package
+  Package,
+  ArrowLeft
 } from "lucide-react";
 
 export default function GuardianCryoPage() {
@@ -22,11 +23,22 @@ export default function GuardianCryoPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">GuardianCryo</h1>
-          <p className="text-muted-foreground">
-            Cryogenic shipping and storage solutions for fertility clinics
-          </p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => window.location.href = "/projects"}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">GuardianCryo</h1>
+            <p className="text-muted-foreground">
+              Cryogenic shipping and storage solutions for fertility clinics
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">

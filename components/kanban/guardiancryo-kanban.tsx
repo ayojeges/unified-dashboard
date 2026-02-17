@@ -1,8 +1,29 @@
 "use client";
 
+import { useState } from "react";
+import {
+  DndContext,
+  DragEndEvent,
+  DragOverlay,
+  DragStartEvent,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  closestCorners,
+} from "@dnd-kit/core";
+import {
+  SortableContext,
+  verticalListSortingStrategy,
+  arrayMove,
+} from "@dnd-kit/sortable";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, MoreVertical, User, Package, Thermometer, Truck, Shield } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Plus, MoreVertical, User, Package, Thermometer, Truck, Shield, GripVertical, Edit, Trash2, Save, X } from "lucide-react";
+import { SortableTask } from "./sortable-task";
+import { SortableColumn } from "./sortable-column";
 
 interface Task {
   id: string;

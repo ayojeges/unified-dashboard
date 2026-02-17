@@ -15,7 +15,8 @@ import {
   Clock,
   Users,
   GraduationCap,
-  Building
+  Building,
+  ArrowLeft
 } from "lucide-react";
 
 export default function CDLSchoolsPage() {
@@ -23,11 +24,22 @@ export default function CDLSchoolsPage() {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">CDL Schools</h1>
-          <p className="text-muted-foreground">
-            Commercial Driver&apos;s License training and certification platform
-          </p>
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => window.location.href = "/projects"}
+            className="gap-2"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">CDL Schools</h1>
+            <p className="text-muted-foreground">
+              Commercial Driver&apos;s License training and certification platform
+            </p>
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline">

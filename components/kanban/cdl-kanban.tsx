@@ -1,33 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, MoreVertical, User, GraduationCap, Car, BookOpen, Users, DollarSign } from "lucide-react";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignee: string;
-  priority: "low" | "medium" | "high";
-}
-
-interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
+import { EnhancedKanbanBoard } from "./enhanced-kanban-board";
 
 export function CDLKanban() {
-  const columns: Column[] = [
-    {
-      id: "backlog",
-      title: "Backlog",
-      tasks: [
-        {
-          id: "1",
-          title: "Online Course Platform",
-          description: "Research LMS platforms for online CDL training",
+  return <EnhancedKanbanBoard />;
+}
           assignee: "Product Team",
           priority: "medium",
         },

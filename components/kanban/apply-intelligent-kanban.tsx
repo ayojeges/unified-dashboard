@@ -1,33 +1,10 @@
 "use client";
 
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Plus, MoreVertical, User, Brain, Cpu, Database, LineChart, MessageSquare } from "lucide-react";
-
-interface Task {
-  id: string;
-  title: string;
-  description: string;
-  assignee: string;
-  priority: "low" | "medium" | "high";
-}
-
-interface Column {
-  id: string;
-  title: string;
-  tasks: Task[];
-}
+import { EnhancedKanbanBoard } from "./enhanced-kanban-board";
 
 export function ApplyIntelligentKanban() {
-  const columns: Column[] = [
-    {
-      id: "backlog",
-      title: "Backlog",
-      tasks: [
-        {
-          id: "1",
-          title: "AI Model Fine-tuning",
-          description: "Fine-tune GPT-4 model on college admission essays",
+  return <EnhancedKanbanBoard />;
+}
           assignee: "AI Research",
           priority: "medium",
         },

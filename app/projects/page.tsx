@@ -32,7 +32,13 @@ const projects = [
     dueDate: "2026-03-15",
     tasks: 42,
     completed: 27,
-    features: ["Kanban Board", "Notes", "Parking Lot", "Shipping Requests"]
+    features: ["Kanban Board", "Notes", "Parking Lot", "Shipping Requests"],
+    color: {
+      primary: "#0D9488", // Teal
+      secondary: "#14B8A6",
+      light: "#F0FDFA",
+      dark: "#0F766E"
+    }
   },
   { 
     id: 2, 
@@ -44,7 +50,13 @@ const projects = [
     dueDate: "2026-02-28",
     tasks: 56,
     completed: 45,
-    features: ["Kanban Board", "Notes", "Parking Lot", "Partner Management"]
+    features: ["Kanban Board", "Notes", "Parking Lot", "Partner Management"],
+    color: {
+      primary: "#1E40AF", // Deep blue
+      secondary: "#3B82F6",
+      light: "#EFF6FF",
+      dark: "#1E3A8A"
+    }
   },
   { 
     id: 3, 
@@ -56,7 +68,13 @@ const projects = [
     dueDate: "2026-04-30",
     tasks: 78,
     completed: 31,
-    features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"]
+    features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"],
+    color: {
+      primary: "#7C3AED", // Purple
+      secondary: "#8B5CF6",
+      light: "#F5F3FF",
+      dark: "#6D28D9"
+    }
   },
 ];
 
@@ -104,12 +122,12 @@ export default function ProjectsPage() {
                   <CardTitle className="flex items-center gap-2">
                     {project.name}
                     <Badge 
-                      variant={
-                        project.status === "active" ? "default" :
-                        project.status === "completed" ? "secondary" :
-                        project.status === "on-hold" ? "outline" : "secondary"
-                      }
-                      className="text-xs"
+                      className="text-xs border-0"
+                      style={{ 
+                        backgroundColor: project.color.light,
+                        color: project.color.dark,
+                        borderColor: project.color.primary
+                      }}
                     >
                       {project.status}
                     </Badge>
@@ -144,8 +162,11 @@ export default function ProjectsPage() {
                 </div>
                 <div className="h-2 w-full rounded-full bg-muted overflow-hidden">
                   <div 
-                    className="h-full bg-primary transition-all duration-300"
-                    style={{ width: `${project.progress}%` }}
+                    className="h-full transition-all duration-300"
+                    style={{ 
+                      width: `${project.progress}%`,
+                      backgroundColor: project.color.primary
+                    }}
                   />
                 </div>
               </div>
@@ -176,11 +197,22 @@ export default function ProjectsPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <div className="h-4 w-4 rounded-full bg-primary/20 flex items-center justify-center">
-                    <ArrowUpRight className="h-3 w-3 text-primary" />
+                  <div 
+                    className="h-4 w-4 rounded-full flex items-center justify-center"
+                    style={{ 
+                      backgroundColor: `${project.color.primary}20`
+                    }}
+                  >
+                    <ArrowUpRight 
+                      className="h-3 w-3"
+                      style={{ color: project.color.primary }}
+                    />
                   </div>
                   <div>
-                    <p className="text-sm font-medium">
+                    <p 
+                      className="text-sm font-medium"
+                      style={{ color: project.color.primary }}
+                    >
                       {Math.round((project.completed / project.tasks) * 100)}%
                     </p>
                     <p className="text-xs text-muted-foreground">Complete</p>
@@ -216,6 +248,10 @@ export default function ProjectsPage() {
                 <Button 
                   className="flex-1" 
                   size="sm"
+                  style={{ 
+                    backgroundColor: project.color.primary,
+                    borderColor: project.color.primary
+                  }}
                   onClick={() => {
                     const projectPath = project.name.toLowerCase().replace(/\s+/g, '-');
                     window.location.href = `/projects/${projectPath}`;
