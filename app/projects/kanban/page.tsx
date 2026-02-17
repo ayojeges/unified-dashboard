@@ -1,3 +1,5 @@
+"use client";
+
 import { EnhancedKanbanBoard } from "@/components/kanban/enhanced-kanban-board";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
