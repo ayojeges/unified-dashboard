@@ -24,7 +24,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 const mainNavItems = [
-  { href: "/", icon: Home, label: "Dashboard" },
+  { href: "/dashboard", icon: Home, label: "Dashboard" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
   { href: "/analytics", icon: BarChart3, label: "Analytics" },
   { href: "/calendar", icon: Calendar, label: "Calendar" },
