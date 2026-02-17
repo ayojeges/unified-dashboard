@@ -24,7 +24,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/simple-select";
 import { Plus, MoreVertical, User, GripVertical, Edit, Trash2, Save, X } from "lucide-react";
 import { SortableTask } from "./sortable-task";
-import { SortableColumn } from "./sortable-column";
 
 interface Task {
   id: string;
@@ -59,6 +58,13 @@ const defaultColumns: Column[] = [
         assignee: "Marketing",
         priority: "medium",
       },
+      {
+        id: "3",
+        title: "Technical Debt",
+        description: "Refactor legacy authentication code",
+        assignee: "Engineering",
+        priority: "low",
+      },
     ],
   },
   {
@@ -66,14 +72,14 @@ const defaultColumns: Column[] = [
     title: "To Do",
     tasks: [
       {
-        id: "3",
+        id: "4",
         title: "Design Review",
         description: "Review new dashboard designs",
         assignee: "Alex Chen",
         priority: "high",
       },
       {
-        id: "4",
+        id: "5",
         title: "Documentation",
         description: "Update API documentation",
         assignee: "Sam Rivera",
@@ -86,7 +92,7 @@ const defaultColumns: Column[] = [
     title: "In Progress",
     tasks: [
       {
-        id: "5",
+        id: "6",
         title: "Authentication Flow",
         description: "Implement new auth system",
         assignee: "Jordan Lee",
@@ -99,7 +105,7 @@ const defaultColumns: Column[] = [
     title: "Review",
     tasks: [
       {
-        id: "6",
+        id: "7",
         title: "Performance Testing",
         description: "Run load tests on new features",
         assignee: "Taylor Kim",
@@ -112,7 +118,7 @@ const defaultColumns: Column[] = [
     title: "Done",
     tasks: [
       {
-        id: "7",
+        id: "8",
         title: "Mobile Responsive",
         description: "Fix mobile layout issues",
         assignee: "Casey Morgan",
@@ -125,6 +131,16 @@ const defaultColumns: Column[] = [
 export function EnhancedKanbanBoard() {
   const [columns, setColumns] = useState<Column[]>([]);
   const [activeTask, setActiveTask] = useState<Task | null>(null);
+  const [editingColumn, setEditingColumn] = useState<string | null>(null);
+  const [newColumnTitle, setNewColumnTitle] = useState("");
+  const [newTask, setNewTask] = useState({
+    title: "",
+    description: "",
+    assignee: "",
+    priority: "medium" as "low" | "medium" | "high",
+  });
+  const [addTaskDialogOpen, setAddTaskDialogOpen] = useState(false);
+  const [selectedColumn, setSelectedColumn] = useState<string>("backlog");
   const [isClient, setIsClient] = useState(false);
 
   // Initialize on client side only
@@ -144,6 +160,21 @@ export function EnhancedKanbanBoard() {
     
     setColumns(loadColumns());
   }, []);
+
+  // Save columns to localStorage (functional update)
+  const updateColumns = (updater: (prevColumns: Column[]) => Column[]) => {
+    setColumns(prevColumns => {
+      const newColumns = updater(prevColumns);
+      if (typeof window !== 'undefined') {
+        try {
+          localStorage.setItem('kanban-board-data', JSON.stringify(newColumns));
+        } catch (error) {
+          console.error('Failed to save kanban data:', error);
+        }
+      }
+      return newColumns;
+    });
+  };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -180,7 +211,7 @@ export function EnhancedKanbanBoard() {
     if (overId.toString().startsWith('column-')) {
       const columnId = overId.toString().replace('column-', '');
       
-      setColumns(prevColumns => {
+      updateColumns(prevColumns => {
         const newColumns = [...prevColumns];
         
         // Find source column and task
@@ -211,13 +242,84 @@ export function EnhancedKanbanBoard() {
         // Add to target column
         newColumns[targetColumnIndex].tasks.push(task);
         
-        // Save to localStorage
-        if (typeof window !== 'undefined') {
-          localStorage.setItem('kanban-board-data', JSON.stringify(newColumns));
-        }
-        
         return newColumns;
       });
+    }
+  };
+
+  const handleAddTask = () => {
+    if (!newTask.title.trim()) return;
+    
+    const newTaskObj: Task = {
+      id: Date.now().toString(),
+      title: newTask.title,
+      description: newTask.description,
+      assignee: newTask.assignee,
+      priority: newTask.priority,
+    };
+    
+    updateColumns(prevColumns => {
+      const newColumns = [...prevColumns];
+      const columnIndex = newColumns.findIndex(c => c.id === selectedColumn);
+      if (columnIndex !== -1) {
+        newColumns[columnIndex].tasks.push(newTaskObj);
+      }
+      return newColumns;
+    });
+    
+    setNewTask({
+      title: "",
+      description: "",
+      assignee: "",
+      priority: "medium",
+    });
+    setAddTaskDialogOpen(false);
+  };
+
+  const handleDeleteTask = (taskId: string) => {
+    updateColumns(prevColumns => {
+      const newColumns = [...prevColumns];
+      for (const column of newColumns) {
+        const taskIndex = column.tasks.findIndex(t => t.id === taskId);
+        if (taskIndex !== -1) {
+          column.tasks.splice(taskIndex, 1);
+          break;
+        }
+      }
+      return newColumns;
+    });
+  };
+
+  const handleEditColumn = (columnId: string) => {
+    const column = columns.find(c => c.id === columnId);
+    if (column) {
+      setNewColumnTitle(column.title);
+      setEditingColumn(columnId);
+    }
+  };
+
+  const handleSaveColumn = () => {
+    if (!editingColumn || !newColumnTitle.trim()) return;
+    
+    updateColumns(prevColumns => {
+      const newColumns = [...prevColumns];
+      const columnIndex = newColumns.findIndex(c => c.id === editingColumn);
+      if (columnIndex !== -1) {
+        newColumns[columnIndex].title = newColumnTitle;
+      }
+      return newColumns;
+    });
+    
+    setEditingColumn(null);
+    setNewColumnTitle("");
+  };
+
+  const getPriorityColor = (priority: Task["priority"]) => {
+    switch (priority) {
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
     }
   };
 
@@ -233,12 +335,97 @@ export function EnhancedKanbanBoard() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-6">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Project Tasks</h2>
-        <p className="text-sm text-muted-foreground">
-          Drag and drop tasks between columns
-        </p>
+        <div>
+          <h2 className="text-2xl font-bold">Project Tasks</h2>
+          <p className="text-sm text-muted-foreground">
+            Drag and drop tasks between columns
+          </p>
+        </div>
+        
+        <Dialog open={addTaskDialogOpen} onOpenChange={setAddTaskDialogOpen}>
+          <DialogTrigger asChild>
+            <Button>
+              <Plus className="h-4 w-4 mr-2" />
+              Add Task
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Add New Task</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="title">Title</Label>
+                <Input
+                  id="title"
+                  value={newTask.title}
+                  onChange={(e) => setNewTask({...newTask, title: e.target.value})}
+                  placeholder="Task title"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="description">Description</Label>
+                <Input
+                  id="description"
+                  value={newTask.description}
+                  onChange={(e) => setNewTask({...newTask, description: e.target.value})}
+                  placeholder="Task description"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="assignee">Assignee</Label>
+                <Input
+                  id="assignee"
+                  value={newTask.assignee}
+                  onChange={(e) => setNewTask({...newTask, assignee: e.target.value})}
+                  placeholder="Assignee name"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="priority">Priority</Label>
+                <Select
+                  value={newTask.priority}
+                  onValueChange={(value: "low" | "medium" | "high") => 
+                    setNewTask({...newTask, priority: value})
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select priority" />
+                  </SelectTrigger>
+                  <SelectItem value="low">Low</SelectItem>
+                  <SelectItem value="medium">Medium</SelectItem>
+                  <SelectItem value="high">High</SelectItem>
+                </Select>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="column">Column</Label>
+                <Select
+                  value={selectedColumn}
+                  onValueChange={setSelectedColumn}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select column" />
+                  </SelectTrigger>
+                  {columns.map((column) => (
+                    <SelectItem key={column.id} value={column.id}>
+                      {column.title}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setAddTaskDialogOpen(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={handleAddTask}>
+                  Add Task
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       <DndContext
@@ -252,12 +439,73 @@ export function EnhancedKanbanBoard() {
             <div key={column.id} className="min-w-[300px]">
               <Card>
                 <CardHeader className="pb-3">
-                  <CardTitle className="flex justify-between items-center">
-                    <span>{column.title}</span>
-                    <span className="text-sm font-normal text-muted-foreground">
-                      {column.tasks.length}
-                    </span>
-                  </CardTitle>
+                  <div className="flex justify-between items-center">
+                    <div className="flex items-center gap-2">
+                      {editingColumn === column.id ? (
+                        <div className="flex items-center gap-2">
+                          <Input
+                            value={newColumnTitle}
+                            onChange={(e) => setNewColumnTitle(e.target.value)}
+                            className="h-8 w-32"
+                            autoFocus
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") handleSaveColumn();
+                              if (e.key === "Escape") {
+                                setEditingColumn(null);
+                                setNewColumnTitle("");
+                              }
+                            }}
+                          />
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            onClick={handleSaveColumn}
+                          >
+                            <Save className="h-3 w-3" />
+                          </Button>
+                          <Button
+                            size="icon"
+                            variant="ghost"
+                            className="h-6 w-6"
+                            onClick={() => {
+                              setEditingColumn(null);
+                              setNewColumnTitle("");
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <CardTitle className="cursor-pointer hover:text-blue-600" onClick={() => handleEditColumn(column.id)}>
+                            {column.title}
+                          </CardTitle>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6"
+                            onClick={() => handleEditColumn(column.id)}
+                          >
+                            <Edit className="h-3 w-3" />
+                          </Button>
+                        </>
+                      )}
+                      <span className="text-xs bg-muted px-2 py-1 rounded-full">
+                        {column.tasks.length}
+                      </span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setSelectedColumn(column.id);
+                        setAddTaskDialogOpen(true);
+                      }}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
                 </CardHeader>
                 <CardContent>
                   <SortableContext
@@ -266,10 +514,24 @@ export function EnhancedKanbanBoard() {
                   >
                     <div className="space-y-2 min-h-[200px]" id={`column-${column.id}`}>
                       {column.tasks.map((task) => (
-                        <SortableTask key={task.id} task={task} />
+                        <SortableTask
+                          key={task.id}
+                          task={task}
+                          onDelete={() => handleDeleteTask(task.id)}
+                          getPriorityColor={getPriorityColor}
+                        />
                       ))}
                     </div>
                   </SortableContext>
+                  
+                  {column.tasks.length === 0 && (
+                    <div className="border-2 border-dashed border-muted rounded-lg p-8 text-center">
+                      <p className="text-sm text-muted-foreground">Drop tasks here</p>
+                      <p className="text-xs text-muted-foreground mt-1">
+                        or click + to add a task
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             </div>
@@ -278,17 +540,22 @@ export function EnhancedKanbanBoard() {
 
         <DragOverlay>
           {activeTask && (
-            <div className="bg-white p-3 rounded-lg shadow-lg border">
+            <div className="bg-white p-3 rounded-lg shadow-lg border min-w-[250px]">
               <div className="font-medium">{activeTask.title}</div>
               <div className="text-sm text-muted-foreground">{activeTask.description}</div>
-              <div className="text-xs mt-1">Assignee: {activeTask.assignee}</div>
+              <div className="flex justify-between items-center mt-2">
+                <div className="text-xs">Assignee: {activeTask.assignee}</div>
+                <span className={`text-xs px-2 py-1 rounded-full ${getPriorityColor(activeTask.priority)}`}>
+                  {activeTask.priority}
+                </span>
+              </div>
             </div>
           )}
         </DragOverlay>
       </DndContext>
 
       <div className="text-xs text-muted-foreground text-center">
-        Tip: Drag tasks between columns to update their status
+        Tip: Drag tasks between columns to update their status • Click column titles to edit • Use + buttons to add tasks
       </div>
     </div>
   );
