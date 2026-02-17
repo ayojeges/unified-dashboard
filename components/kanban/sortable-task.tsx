@@ -2,9 +2,9 @@
 
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { MoreVertical, User, GripVertical, Trash2 } from "lucide-react";
+import { GripVertical, User } from "lucide-react";
 
 interface Task {
   id: string;
@@ -15,14 +15,10 @@ interface Task {
 }
 
 interface SortableTaskProps {
-  id: string;
   task: Task;
-  columnId: string;
-  getPriorityColor: (priority: Task["priority"]) => string;
-  onDelete: () => void;
 }
 
-export function SortableTask({ id, task, columnId, getPriorityColor, onDelete }: SortableTaskProps) {
+export function SortableTask({ task }: SortableTaskProps) {
   const {
     attributes,
     listeners,
@@ -31,17 +27,21 @@ export function SortableTask({ id, task, columnId, getPriorityColor, onDelete }:
     transition,
     isDragging,
   } = useSortable({
-    id,
-    data: {
-      type: "task",
-      task,
-      columnId,
-    },
+    id: task.id,
   });
 
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
+  };
+
+  const getPriorityColor = (priority: Task["priority"]) => {
+    switch (priority) {
+      case "high": return "bg-red-100 text-red-800";
+      case "medium": return "bg-yellow-100 text-yellow-800";
+      case "low": return "bg-green-100 text-green-800";
+      default: return "bg-gray-100 text-gray-800";
+    }
   };
 
   return (
@@ -50,43 +50,27 @@ export function SortableTask({ id, task, columnId, getPriorityColor, onDelete }:
       style={style}
       className={`relative ${isDragging ? "opacity-50" : ""}`}
     >
-      <Card className="cursor-move hover:shadow-md transition-shadow">
-        <CardHeader className="p-4 pb-2">
+      <Card className="cursor-move hover:shadow-md transition-shadow mb-2">
+        <CardContent className="p-3">
           <div className="flex justify-between items-start">
-            <CardTitle className="text-sm font-medium">
-              {task.title}
-            </CardTitle>
-            <div className="flex items-center gap-1">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6 cursor-grab active:cursor-grabbing"
-                {...attributes}
-                {...listeners}
-              >
-                <GripVertical className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="h-6 w-6"
-                onClick={onDelete}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+            <div className="flex-1">
+              <div className="font-medium text-sm">{task.title}</div>
+              <div className="text-xs text-muted-foreground mt-1">{task.description}</div>
             </div>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-6 w-6 cursor-grab active:cursor-grabbing ml-1"
+              {...attributes}
+              {...listeners}
+            >
+              <GripVertical className="h-3 w-3" />
+            </Button>
           </div>
-        </CardHeader>
-        <CardContent className="p-4 pt-2 space-y-3">
-          <p className="text-sm text-muted-foreground">
-            {task.description}
-          </p>
           
-          <div className="flex justify-between items-center">
-            <div className="flex items-center gap-2">
-              <div className="h-6 w-6 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="h-3 w-3" />
-              </div>
+          <div className="flex justify-between items-center mt-2">
+            <div className="flex items-center gap-1">
+              <User className="h-3 w-3" />
               <span className="text-xs">{task.assignee}</span>
             </div>
             
