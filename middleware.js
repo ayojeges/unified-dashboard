@@ -8,14 +8,9 @@ export function middleware(request) {
     return NextResponse.redirect(new URL('/auth/register', request.url))
   }
   
-  // Redirect /dashboard to /
-  if (pathname === '/dashboard' || pathname === '/dashboard/') {
-    return NextResponse.redirect(new URL('/', request.url))
-  }
-  
   return NextResponse.next()
 }
 
 export const config = {
-  matcher: ['/signup', '/signup/', '/dashboard', '/dashboard/']
+  matcher: ['/signup', '/signup/']
 }

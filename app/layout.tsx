@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { Sidebar } from "@/components/layout/sidebar";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Unified Dashboard",
-  description: "A modern unified dashboard built with Next.js 14, TypeScript, Tailwind CSS, and Shadcn/ui",
+  title: "Blueprint Creations LLC | Engineering the Future of Daily Life",
+  description: "Premier IT solutions firm deploying intelligent ecosystems. Custom software, cloud architecture, and user-centric design.",
 };
 
 export default function RootLayout({
@@ -18,15 +17,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="flex h-screen">
-          <Sidebar />
-          <main className="flex-1 overflow-y-auto bg-muted/20">
-            {/* Add padding-top on mobile for fixed header */}
-            <div className="p-4 md:p-6 pt-[72px] md:pt-6">
-              {children}
-            </div>
-          </main>
-        </div>
+        {children}
       </body>
     </html>
   );
