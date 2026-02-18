@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { verifyUser } from '@/lib/auth-store';
+import { verifyUserByToken } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,8 +15,8 @@ export async function GET(request: Request) {
       );
     }
 
-    // Verify the user
-    const user = verifyUser(token);
+    // Verify the user in database
+    const user = await verifyUserByToken(token);
     
     if (!user) {
       return NextResponse.json(
@@ -28,7 +28,11 @@ export async function GET(request: Request) {
     return NextResponse.json({
       success: true,
       message: 'Email verified successfully! Redirecting to dashboard...',
-      email: user.email
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }
     });
 
   } catch (error: any) {

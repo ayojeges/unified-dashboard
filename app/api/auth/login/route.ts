@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { getUser, createUser } from '@/lib/auth-store';
+import { signInUser, signUpUser } from '@/lib/supabase';
 
 export const dynamic = 'force-dynamic';
 
@@ -15,56 +15,57 @@ export async function POST(request: Request) {
       );
     }
 
-    // Check if user exists in our store
-    const user = getUser(email);
+    // Try to sign in first
+    const { data: signInData, error: signInError } = await signInUser(email, password);
     
-    if (user) {
-      // User exists - validate password
-      if (user.password !== password) {
-        return NextResponse.json(
-          { error: 'Invalid email or password' },
-          { status: 401 }
-        );
-      }
-
-      // Check if email is verified
-      if (!user.verified) {
-        return NextResponse.json(
-          { 
-            error: 'Email not verified',
-            requiresVerification: true,
-            email: user.email
-          },
-          { status: 403 }
-        );
-      }
-
-      // Successful login for existing user
+    if (!signInError && signInData.user) {
+      // Successful login
       return NextResponse.json({
         success: true,
         message: 'Login successful',
         user: {
-          email: user.email,
-          name: user.name,
-          verified: user.verified
+          id: signInData.user.id,
+          email: signInData.user.email,
+          name: signInData.user.user_metadata?.name || email.split('@')[0],
+          verified: signInData.user.email_confirmed_at ? true : false
         }
       });
     }
 
-    // User doesn't exist in memory - DEMO MODE
-    // Create a temporary verified user and allow login
-    // This handles the case where server restarted and lost user data
-    const newUser = createUser(email, password, email.split('@')[0], true);
-
-    return NextResponse.json({
-      success: true,
-      message: 'Login successful',
-      user: {
-        email: newUser.email,
-        name: newUser.name,
-        verified: newUser.verified
+    // If login failed with "Invalid login credentials", try to create account (demo mode)
+    if (signInError?.message?.includes('Invalid login credentials')) {
+      const { data: signUpData, error: signUpError } = await signUpUser(
+        email, 
+        password, 
+        email.split('@')[0]
+      );
+      
+      if (signUpError) {
+        return NextResponse.json(
+          { error: signUpError.message || 'Failed to create account' },
+          { status: 400 }
+        );
       }
-    });
+
+      if (signUpData.user) {
+        return NextResponse.json({
+          success: true,
+          message: 'Account created and logged in',
+          user: {
+            id: signUpData.user.id,
+            email: signUpData.user.email,
+            name: signUpData.user.user_metadata?.name || email.split('@')[0],
+            verified: true // Auto-verify for demo
+          }
+        });
+      }
+    }
+
+    // Other errors
+    return NextResponse.json(
+      { error: signInError?.message || 'Login failed' },
+      { status: 401 }
+    );
 
   } catch (error: any) {
     console.error('Login error:', error);
