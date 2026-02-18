@@ -13,14 +13,21 @@ export async function POST(request: Request) {
       );
     }
 
-    // Sign up with Supabase Auth
+    if (password.length < 6) {
+      return NextResponse.json(
+        { error: 'Password must be at least 6 characters' },
+        { status: 400 }
+      );
+    }
+
+    // Sign up with Supabase Auth (auto-confirmed, no email needed)
     const { data, error } = await signUpUser(email, password, name);
     
     if (error) {
       // Check for duplicate email
-      if (error.message?.includes('already registered')) {
+      if (error.message?.includes('already been registered')) {
         return NextResponse.json(
-          { error: 'An account with this email already exists' },
+          { error: 'An account with this email already exists. Please login instead.' },
           { status: 400 }
         );
       }
@@ -31,22 +38,23 @@ export async function POST(request: Request) {
       );
     }
 
-    if (!data.user) {
+    const user = data?.user;
+    if (!user) {
       return NextResponse.json(
         { error: 'Failed to create account' },
         { status: 500 }
       );
     }
 
-    // Supabase sends verification email automatically if enabled
+    // User is auto-confirmed - they can login immediately
     return NextResponse.json({
       success: true,
-      message: 'Account created! Please check your email to verify your account.',
-      requiresVerification: !data.user.email_confirmed_at,
+      message: 'Account created successfully! You can now log in.',
+      requiresVerification: false, // No email verification needed
       user: {
-        id: data.user.id,
-        email: data.user.email,
-        name: data.user.user_metadata?.name || name
+        id: user.id,
+        email: user.email,
+        name: user.user_metadata?.name || name
       }
     });
 

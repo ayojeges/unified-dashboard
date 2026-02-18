@@ -90,24 +90,18 @@ export default function RegisterPage() {
               <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-green-100 flex items-center justify-center">
                 <CheckCircle className="h-8 w-8 text-green-600" />
               </div>
-              <CardTitle className="text-2xl">Check your email!</CardTitle>
+              <CardTitle className="text-2xl">Account Created!</CardTitle>
               <CardDescription>
-                We've sent a verification link to <strong>{formData.email}</strong>
+                Your account has been created successfully.
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center space-y-4">
               <p className="text-sm text-muted-foreground">
-                Click the link in the email to verify your account and get started.
-              </p>
-              <p className="text-xs text-muted-foreground">
-                Didn't receive the email? Check your spam folder or{" "}
-                <button onClick={() => setSuccess(false)} className="text-primary hover:underline">
-                  try again
-                </button>
+                You can now log in with your email and password.
               </p>
             </CardContent>
             <CardFooter className="flex flex-col gap-2">
-              <Button variant="outline" className="w-full" asChild>
+              <Button className="w-full" asChild>
                 <Link href="/auth/login">
                   Go to Login
                 </Link>

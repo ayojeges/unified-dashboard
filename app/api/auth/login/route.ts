@@ -27,12 +27,12 @@ export async function POST(request: Request) {
           id: signInData.user.id,
           email: signInData.user.email,
           name: signInData.user.user_metadata?.name || email.split('@')[0],
-          verified: signInData.user.email_confirmed_at ? true : false
+          verified: true
         }
       });
     }
 
-    // If login failed with "Invalid login credentials", try to create account (demo mode)
+    // If login failed with "Invalid login credentials", create new account
     if (signInError?.message?.includes('Invalid login credentials')) {
       const { data: signUpData, error: signUpError } = await signUpUser(
         email, 
@@ -41,22 +41,32 @@ export async function POST(request: Request) {
       );
       
       if (signUpError) {
+        // Check if user already exists
+        if (signUpError.message?.includes('already been registered')) {
+          return NextResponse.json(
+            { error: 'Invalid password. Please try again.' },
+            { status: 401 }
+          );
+        }
         return NextResponse.json(
           { error: signUpError.message || 'Failed to create account' },
           { status: 400 }
         );
       }
 
-      if (signUpData.user) {
+      // admin.createUser returns { user } not { user, session }
+      const user = signUpData?.user;
+      if (user) {
         return NextResponse.json({
           success: true,
-          message: 'Account created and logged in',
+          message: 'Account created! You can now log in.',
           user: {
-            id: signUpData.user.id,
-            email: signUpData.user.email,
-            name: signUpData.user.user_metadata?.name || email.split('@')[0],
-            verified: true // Auto-verify for demo
-          }
+            id: user.id,
+            email: user.email,
+            name: user.user_metadata?.name || email.split('@')[0],
+            verified: true
+          },
+          newAccount: true
         });
       }
     }
