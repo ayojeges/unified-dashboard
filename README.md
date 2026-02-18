@@ -172,4 +172,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 - UI components from [Radix UI](https://www.radix-ui.com/)
 - Icons from [Lucide React](https://lucide.dev/)
 - Charts from [Recharts](https://recharts.org/)
-- Styling with [Tailwind CSS](https://tailwindcss.com/)
+- Styling with [Tailwind CSS](https://tailwindcss.com/)# Trigger redeploy with Supabase env vars
