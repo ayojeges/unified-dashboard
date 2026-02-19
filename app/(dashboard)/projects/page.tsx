@@ -79,6 +79,24 @@ const projects = [
       dark: "#6D28D9"
     }
   },
+  { 
+    id: 4, 
+    name: "SchoolRegistry", 
+    description: "Nigerian school registry and accreditation platform",
+    status: "active", 
+    progress: 0,
+    team: 0,
+    dueDate: "No deadline set",
+    tasks: 0,
+    completed: 0,
+    features: ["Kanban Board", "Notes", "Parking Lot", "School Management"],
+    color: {
+      primary: "#059669", // Emerald green
+      secondary: "#10B981",
+      light: "#ECFDF5",
+      dark: "#047857"
+    }
+  },
 ];
 
 export default function ProjectsPage() {
