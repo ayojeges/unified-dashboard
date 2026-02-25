@@ -97,6 +97,24 @@ const projects = [
       dark: "#047857"
     }
   },
+  { 
+    id: 5, 
+    name: "Mark's Team", 
+    description: "World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative",
+    status: "active", 
+    progress: 25,
+    team: 8,
+    dueDate: "Ongoing",
+    tasks: 42,
+    completed: 12,
+    features: ["Enhanced Kanban", "Team Profiles", "Real-time Chat", "Task Assignment", "Performance Metrics", "Documentation Hub"],
+    color: {
+      primary: "#DC2626", // Red
+      secondary: "#EF4444",
+      light: "#FEF2F2",
+      dark: "#B91C1C"
+    }
+  },
 ];
 
 export default function ProjectsPage() {
