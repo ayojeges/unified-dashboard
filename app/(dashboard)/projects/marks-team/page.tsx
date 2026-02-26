@@ -27,111 +27,160 @@ import {
   Settings
 } from "lucide-react";
 
-// Team members data
+// Team members data - Enhanced with detailed profiles
 const teamMembers = [
   {
     id: 1,
     name: "Mark",
-    role: "Project Manager",
+    role: "PMO / Program Manager",
     email: "mark@blueprintcreations.com",
     avatar: "M",
-    skills: ["Leadership", "Strategy", "Project Management", "Client Relations"],
-    responsibilities: ["Team Coordination", "Quality Control", "Client Communication", "Timeline Management"],
+    skills: [
+      "Strategic Planning", "Team Coordination", "Sprint Management", "CEO Communication",
+      "Risk Management", "Cross-team Handoffs", "Memory Curation", "Compliance Oversight"
+    ],
+    responsibilities: [
+      "Coordinate Product, Engineering, Growth, and Ops leads",
+      "Daily CEO brief via Telegram @Jeguz_bot",
+      "Sprint planning, standups, and velocity tracking",
+      "Task board management and blocker resolution",
+      "Memory curation and cross-team knowledge sharing",
+      "Simulates Product Lead and Ops when those bots are not active"
+    ],
     activeTasks: 8,
     completedTasks: 24,
     status: "online",
-    color: "#DC2626"
+    color: "#DC2626",
+    department: "PMO",
+    joinDate: "2024-01-15",
+    performance: 95,
+    botId: "main",
+    missingSkills: [
+      "Advanced data analytics for project forecasting",
+      "AI-powered project management tools"
+    ]
   },
   {
     id: 2,
-    name: "Sarah Chen",
-    role: "Lead Developer",
-    email: "sarah@blueprintcreations.com",
-    avatar: "S",
-    skills: ["React", "TypeScript", "Next.js", "Node.js", "AWS"],
-    responsibilities: ["Technical Architecture", "Code Review", "Team Mentoring", "Deployment"],
-    activeTasks: 6,
-    completedTasks: 18,
-    status: "online",
-    color: "#3B82F6"
+    name: "Product Lead Bot",
+    role: "Product Lead",
+    email: "product@blueprintcreations.com",
+    avatar: "P",
+    skills: [
+      "Product Discovery", "User Research", "PRD Writing", "Acceptance Criteria",
+      "Roadmap Management", "UX Direction", "A/B Experimentation", "Funnel Analysis"
+    ],
+    responsibilities: [
+      "Turn CEO vision into clear product specs and roadmaps",
+      "Write PRDs, user stories, and acceptance criteria",
+      "Maintain product backlogs per business line",
+      "Coordinate with Engineering on sprint planning",
+      "Define positioning with Growth for feature launches",
+      "Track product metrics (NPS, DAU, activation)"
+    ],
+    activeTasks: 5,
+    completedTasks: 15,
+    status: "away",
+    color: "#8B5CF6",
+    department: "Product",
+    joinDate: "2026-02-26",
+    performance: 0,
+    botId: "product_lead_bot",
+    missingSkills: [
+      "Autonomous execution (currently simulated by Mark)"
+    ]
   },
   {
     id: 3,
-    name: "Alex Rodriguez",
-    role: "UI/UX Designer",
-    email: "alex@blueprintcreations.com",
-    avatar: "A",
-    skills: ["Figma", "User Research", "Prototyping", "Design Systems"],
-    responsibilities: ["User Experience", "Visual Design", "Design System", "User Testing"],
-    activeTasks: 5,
-    completedTasks: 15,
+    name: "Engineering Lead Bot",
+    role: "Engineering Lead",
+    email: "engineering@blueprintcreations.com",
+    avatar: "E",
+    skills: [
+      "System Architecture", "Code Quality", "CI/CD", "Security",
+      "Performance Optimization", "Technical Debt Management", "Incident Response", "Testing"
+    ],
+    responsibilities: [
+      "Design, implement, and maintain reliable systems",
+      "Code review and quality standards",
+      "Deployment pipelines and infrastructure",
+      "Technical debt management and documentation",
+      "Incident response and post-mortems",
+      "Track engineering metrics (deploy freq, MTTR, bug rate)"
+    ],
+    activeTasks: 6,
+    completedTasks: 18,
     status: "online",
-    color: "#8B5CF6"
+    color: "#3B82F6",
+    department: "Engineering",
+    joinDate: "2026-02-26",
+    performance: 0,
+    botId: "engineering_lead_bot",
+    missingSkills: [
+      "ML integration for predictive features",
+      "Real-time collaboration tooling"
+    ]
   },
   {
     id: 4,
-    name: "Jamie Wilson",
-    role: "Marketing Strategist",
-    email: "jamie@blueprintcreations.com",
-    avatar: "J",
-    skills: ["Content Strategy", "SEO", "Social Media", "Analytics"],
-    responsibilities: ["Marketing Campaigns", "Content Creation", "Brand Strategy", "Lead Generation"],
+    name: "Growth & Revenue Bot",
+    role: "Growth & Revenue Lead",
+    email: "growth@blueprintcreations.com",
+    avatar: "G",
+    skills: [
+      "Growth Strategy", "SEO/SEM", "Content Marketing", "Campaign Management",
+      "Funnel Design", "A/B Testing", "Sales Enablement", "Analytics"
+    ],
+    responsibilities: [
+      "Drive traffic, leads, and revenue across all brands",
+      "Campaign planning, execution, and reporting",
+      "SEO, content, email, social, and paid channels",
+      "Sales one-pagers, scripts, and partnership playbooks",
+      "GuardianCryo compliance checks on ALL content",
+      "Weekly growth reports with CAC, LTV, conversion metrics"
+    ],
     activeTasks: 7,
     completedTasks: 20,
-    status: "away",
-    color: "#10B981"
+    status: "online",
+    color: "#10B981",
+    department: "Growth & Revenue",
+    joinDate: "2026-02-26",
+    performance: 0,
+    botId: "growth_revenue_bot",
+    missingSkills: [
+      "AI-driven marketing personalization",
+      "Advanced attribution modeling"
+    ]
   },
   {
     id: 5,
-    name: "Taylor Kim",
-    role: "Sales Lead",
-    email: "taylor@blueprintcreations.com",
-    avatar: "T",
-    skills: ["Sales Strategy", "CRM", "Negotiation", "Client Onboarding"],
-    responsibilities: ["Sales Pipeline", "Client Acquisition", "Revenue Growth", "Partnerships"],
-    activeTasks: 4,
-    completedTasks: 12,
-    status: "online",
-    color: "#F59E0B"
-  },
-  {
-    id: 6,
-    name: "Morgan Lee",
-    role: "Content Creator",
-    email: "morgan@blueprintcreations.com",
-    avatar: "M",
-    skills: ["Copywriting", "Video Production", "Storytelling", "Social Media"],
-    responsibilities: ["Content Production", "Blog Management", "Video Content", "Social Engagement"],
-    activeTasks: 6,
-    completedTasks: 16,
-    status: "online",
-    color: "#EC4899"
-  },
-  {
-    id: 7,
-    name: "Jordan Patel",
-    role: "QA Engineer",
-    email: "jordan@blueprintcreations.com",
-    avatar: "J",
-    skills: ["Testing", "Automation", "Bug Tracking", "Performance"],
-    responsibilities: ["Quality Assurance", "Testing Strategy", "Bug Reports", "Release Management"],
-    activeTasks: 5,
-    completedTasks: 14,
-    status: "offline",
-    color: "#6366F1"
-  },
-  {
-    id: 8,
-    name: "Casey Brooks",
-    role: "DevOps Engineer",
-    email: "casey@blueprintcreations.com",
-    avatar: "C",
-    skills: ["Docker", "Kubernetes", "CI/CD", "Cloud Infrastructure"],
-    responsibilities: ["Infrastructure", "Deployment Pipelines", "Monitoring", "Security"],
+    name: "Ops & Success Bot",
+    role: "Ops & Customer Success Lead",
+    email: "ops@blueprintcreations.com",
+    avatar: "O",
+    skills: [
+      "Customer Support", "Onboarding Flows", "SOP Management", "SLA Tracking",
+      "Incident Management", "NPS/CSAT Monitoring", "Retention Playbooks", "Documentation"
+    ],
+    responsibilities: [
+      "Ensure smooth operations and great customer experiences",
+      "Customer support workflows and help center",
+      "Onboarding flows and in-product guidance",
+      "SOPs, SLAs, and incident post-mortems",
+      "NPS/CSAT monitoring and churn risk flagging",
+      "Feed customer feedback back to Product"
+    ],
     activeTasks: 3,
     completedTasks: 10,
-    status: "online",
-    color: "#14B8A6"
+    status: "away",
+    color: "#F59E0B",
+    department: "Ops & Success",
+    joinDate: "2026-02-26",
+    performance: 0,
+    botId: "ops_success_bot",
+    missingSkills: [
+      "Autonomous execution (currently simulated by Mark)"
+    ]
   }
 ];
 
