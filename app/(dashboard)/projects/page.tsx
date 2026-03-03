@@ -63,8 +63,8 @@ const projects = [
   },
   { 
     id: 3, 
-    name: "Apply Intelligent", 
-    description: "AI-powered college application platform with predictive analytics",
+    name: "ChatAutomate", 
+    description: "chatautomate.ng - AI-powered chat automation platform",
     status: "active", 
     progress: 0,
     team: 0,
@@ -73,7 +73,7 @@ const projects = [
     completed: 0,
     features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"],
     color: {
-      primary: "#7C3AED", // Purple
+      primary: "#7C3AED",
       secondary: "#8B5CF6",
       light: "#F5F3FF",
       dark: "#6D28D9"
