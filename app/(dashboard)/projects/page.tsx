@@ -208,7 +208,7 @@ export default function ProjectsPage() {
                       className="text-sm font-medium"
                       style={{ color: project.color.primary }}
                     >
-                      {Math.round((project.completed / project.tasks) * 100)}%
+                      {project.tasks > 0 ? Math.round((project.completed / project.tasks) * 100) : 0}%
                     </p>
                     <p className="text-xs text-muted-foreground">Complete</p>
                   </div>
