@@ -13,9 +13,6 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  GraduationCap,
-  Brain,
-  Package,
   Home,
   Menu,
   X,
@@ -23,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { PROJECT_NAV_ITEMS } from "@/lib/data";
 
 const mainNavItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -33,12 +31,6 @@ const mainNavItems = [
   { href: "/chat", icon: MessageSquare, label: "Chat" },
   { href: "/audio", icon: Mic, label: "Audio" },
   { href: "/settings", icon: Settings, label: "Settings" },
-];
-
-const projectNavItems = [
-  { href: "/projects/guardiancryo", icon: Package, label: "GuardianCryo" },
-  { href: "/projects/cdl-schools", icon: GraduationCap, label: "CDL Schools" },
-  { href: "/projects/chatautomate", icon: Brain, label: "ChatAutomate" },
 ];
 
 export function Sidebar() {
@@ -144,7 +136,7 @@ export function Sidebar() {
             </h2>
           )}
           <ul className="space-y-1">
-            {projectNavItems.map((item) => {
+            {PROJECT_NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
               
               return (
