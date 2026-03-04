@@ -16,11 +16,22 @@ import {
   Home,
   Menu,
   X,
-  Film
+  Film,
+  Package,
+  GraduationCap,
+  Brain,
+  School,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { PROJECT_NAV_ITEMS } from "@/lib/data";
+
+const ICON_MAP: Record<string, any> = {
+  "package": Package,
+  "graduation-cap": GraduationCap,
+  "brain": Brain,
+  "school": School,
+};
 
 const mainNavItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
@@ -138,6 +149,7 @@ export function Sidebar() {
           <ul className="space-y-1">
             {PROJECT_NAV_ITEMS.map((item) => {
               const isActive = pathname === item.href;
+              const IconComp = ICON_MAP[item.iconKey] || FolderKanban;
               
               return (
                 <li key={item.href}>
@@ -149,7 +161,7 @@ export function Sidebar() {
                         collapsed && "justify-center px-2"
                       )}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <IconComp className="h-4 w-4" />
                       {!collapsed && <span>{item.label}</span>}
                     </Button>
                   </Link>

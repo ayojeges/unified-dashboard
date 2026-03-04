@@ -1,11 +1,3 @@
-import {
-  Package,
-  GraduationCap,
-  Brain,
-  School,
-  Users as UsersIcon,
-} from "lucide-react";
-
 /* ------------------------------------------------------------------ */
 /*  Brand Colors                                                       */
 /* ------------------------------------------------------------------ */
@@ -166,10 +158,10 @@ export const PROJECTS: Project[] = [
 /* ------------------------------------------------------------------ */
 
 export const PROJECT_NAV_ITEMS = [
-  { href: "/projects/guardiancryo", icon: Package, label: "GuardianCryo" },
-  { href: "/projects/cdl-schools", icon: GraduationCap, label: "CDL Schools" },
-  { href: "/projects/chatautomate", icon: Brain, label: "ChatAutomate" },
-  { href: "/projects/schoolregistry", icon: School, label: "SchoolRegistry" },
+  { href: "/projects/guardiancryo", iconKey: "package", label: "GuardianCryo" },
+  { href: "/projects/cdl-schools", iconKey: "graduation-cap", label: "CDL Schools" },
+  { href: "/projects/chatautomate", iconKey: "brain", label: "ChatAutomate" },
+  { href: "/projects/schoolregistry", iconKey: "school", label: "SchoolRegistry" },
 ];
 
 /* ------------------------------------------------------------------ */
