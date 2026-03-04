@@ -23,7 +23,104 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { PROJECTS } from "@/lib/data";
+
+const projects = [
+  { 
+    id: 1, 
+    slug: "guardiancryo",
+    name: "GuardianCryo", 
+    description: "Cryogenic shipping and storage solutions for fertility clinics",
+    status: "active", 
+    progress: 0,
+    team: 0,
+    dueDate: "No deadline set",
+    tasks: 0,
+    completed: 0,
+    features: ["Kanban Board", "Notes", "Parking Lot", "Shipping Requests"],
+    color: {
+      primary: "#0D9488",
+      secondary: "#14B8A6",
+      light: "#F0FDFA",
+      dark: "#0F766E"
+    }
+  },
+  { 
+    id: 2, 
+    slug: "cdl-schools",
+    name: "CDL Schools", 
+    description: "Commercial Driver's License training and certification platform",
+    status: "active", 
+    progress: 0,
+    team: 0,
+    dueDate: "No deadline set",
+    tasks: 0,
+    completed: 0,
+    features: ["Kanban Board", "Notes", "Parking Lot", "Partner Management"],
+    color: {
+      primary: "#1E40AF",
+      secondary: "#3B82F6",
+      light: "#EFF6FF",
+      dark: "#1E3A8A"
+    }
+  },
+  { 
+    id: 3, 
+    slug: "chatautomate",
+    name: "ChatAutomate", 
+    description: "chatautomate.ng - AI-powered chat automation platform",
+    status: "active", 
+    progress: 0,
+    team: 0,
+    dueDate: "No deadline set",
+    tasks: 0,
+    completed: 0,
+    features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"],
+    color: {
+      primary: "#7C3AED",
+      secondary: "#8B5CF6",
+      light: "#F5F3FF",
+      dark: "#6D28D9"
+    }
+  },
+  { 
+    id: 4, 
+    slug: "schoolregistry",
+    name: "SchoolRegistry", 
+    description: "Nigerian school registry and accreditation platform - schoolregistry.ng",
+    status: "active", 
+    progress: 0,
+    team: 0,
+    dueDate: "No deadline set",
+    tasks: 0,
+    completed: 0,
+    features: ["Kanban Board", "Notes", "Parking Lot", "School Management"],
+    color: {
+      primary: "#059669",
+      secondary: "#10B981",
+      light: "#ECFDF5",
+      dark: "#047857"
+    }
+  },
+  { 
+    id: 5, 
+    slug: "marks-team",
+    name: "Mark's Team", 
+    description: "World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative",
+    status: "active", 
+    progress: 25,
+    team: 8,
+    dueDate: "Ongoing",
+    tasks: 42,
+    completed: 12,
+    features: ["Enhanced Kanban", "Team Profiles", "Real-time Chat", "Task Assignment", "Performance Metrics", "Documentation Hub"],
+    color: {
+      primary: "#DC2626",
+      secondary: "#EF4444",
+      light: "#FEF2F2",
+      dark: "#B91C1C"
+    }
+  },
+];
 
 export default function ProjectsPage() {
   const [isDemoUser, setIsDemoUser] = useState(false);
@@ -109,7 +206,7 @@ export default function ProjectsPage() {
 
       {/* Projects Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {PROJECTS.map((project) => (
+        {projects.map((project) => (
           <Card key={project.id} className="overflow-hidden">
             <CardHeader className="pb-3">
               <div className="flex items-start justify-between">
