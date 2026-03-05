@@ -27,6 +27,7 @@ import {
 const projects = [
   { 
     id: 1, 
+    slug: "guardiancryo",
     name: "GuardianCryo", 
     description: "Cryogenic shipping and storage solutions for fertility clinics",
     status: "active", 
@@ -37,7 +38,7 @@ const projects = [
     completed: 0,
     features: ["Kanban Board", "Notes", "Parking Lot", "Shipping Requests"],
     color: {
-      primary: "#0D9488", // Teal
+      primary: "#0D9488",
       secondary: "#14B8A6",
       light: "#F0FDFA",
       dark: "#0F766E"
@@ -45,6 +46,7 @@ const projects = [
   },
   { 
     id: 2, 
+    slug: "cdl-schools",
     name: "CDL Schools", 
     description: "Commercial Driver's License training and certification platform",
     status: "active", 
@@ -55,7 +57,7 @@ const projects = [
     completed: 0,
     features: ["Kanban Board", "Notes", "Parking Lot", "Partner Management"],
     color: {
-      primary: "#1E40AF", // Deep blue
+      primary: "#1E40AF",
       secondary: "#3B82F6",
       light: "#EFF6FF",
       dark: "#1E3A8A"
@@ -63,8 +65,9 @@ const projects = [
   },
   { 
     id: 3, 
-    name: "Apply Intelligent", 
-    description: "AI-powered college application platform with predictive analytics",
+    slug: "chatautomate",
+    name: "ChatAutomate", 
+    description: "chatautomate.ng - AI-powered chat automation platform",
     status: "active", 
     progress: 0,
     team: 0,
@@ -73,7 +76,7 @@ const projects = [
     completed: 0,
     features: ["Kanban Board", "Notes", "Parking Lot", "AI Analytics"],
     color: {
-      primary: "#7C3AED", // Purple
+      primary: "#7C3AED",
       secondary: "#8B5CF6",
       light: "#F5F3FF",
       dark: "#6D28D9"
@@ -81,8 +84,9 @@ const projects = [
   },
   { 
     id: 4, 
+    slug: "schoolregistry",
     name: "SchoolRegistry", 
-    description: "Nigerian school registry and accreditation platform",
+    description: "Nigerian school registry and accreditation platform - schoolregistry.ng",
     status: "active", 
     progress: 0,
     team: 0,
@@ -91,7 +95,7 @@ const projects = [
     completed: 0,
     features: ["Kanban Board", "Notes", "Parking Lot", "School Management"],
     color: {
-      primary: "#059669", // Emerald green
+      primary: "#059669",
       secondary: "#10B981",
       light: "#ECFDF5",
       dark: "#047857"
@@ -99,6 +103,7 @@ const projects = [
   },
   { 
     id: 5, 
+    slug: "marks-team",
     name: "Mark's Team", 
     description: "World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative",
     status: "active", 
@@ -109,7 +114,7 @@ const projects = [
     completed: 12,
     features: ["Enhanced Kanban", "Team Profiles", "Real-time Chat", "Task Assignment", "Performance Metrics", "Documentation Hub"],
     color: {
-      primary: "#DC2626", // Red
+      primary: "#DC2626",
       secondary: "#EF4444",
       light: "#FEF2F2",
       dark: "#B91C1C"
@@ -300,7 +305,7 @@ export default function ProjectsPage() {
                       className="text-sm font-medium"
                       style={{ color: project.color.primary }}
                     >
-                      {Math.round((project.completed / project.tasks) * 100)}%
+                      {project.tasks > 0 ? Math.round((project.completed / project.tasks) * 100) : 0}%
                     </p>
                     <p className="text-xs text-muted-foreground">Complete</p>
                   </div>
@@ -326,8 +331,7 @@ export default function ProjectsPage() {
                   className="flex-1" 
                   size="sm"
                   onClick={() => {
-                    const projectPath = project.name.toLowerCase().replace(/\s+/g, '-');
-                    window.location.href = `/projects/${projectPath}`;
+                    window.location.href = `/projects/${project.slug}`;
                   }}
                 >
                   View Details
@@ -340,8 +344,7 @@ export default function ProjectsPage() {
                     borderColor: project.color.primary
                   }}
                   onClick={() => {
-                    const projectPath = project.name.toLowerCase().replace(/\s+/g, '-');
-                    window.location.href = `/projects/${projectPath}`;
+                    window.location.href = `/projects/${project.slug}`;
                   }}
                 >
                   Open Board

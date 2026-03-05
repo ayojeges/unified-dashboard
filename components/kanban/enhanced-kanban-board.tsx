@@ -20,7 +20,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem } from "@/components/ui/simple-select";
-import { Plus, X, GripVertical, User } from "lucide-react";
+import { Plus, X, GripVertical, User, ArrowRight, Trash2 } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+  DropdownMenuLabel,
+} from "@/components/ui/dropdown-menu";
 
 interface Task {
   id: string;
@@ -41,11 +49,13 @@ interface EnhancedKanbanBoardProps {
 }
 
 // Draggable Task Card Component
-function DraggableTask({ task, columnId, onDelete, getPriorityColor }: { 
+function DraggableTask({ task, columnId, onDelete, getPriorityColor, columns, onMoveToColumn }: { 
   task: Task; 
   columnId: string;
   onDelete: (columnId: string, taskId: string) => void;
   getPriorityColor: (priority: Task["priority"]) => string;
+  columns: Column[];
+  onMoveToColumn: (taskId: string, targetColumnId: string) => void;
 }) {
   const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
     id: task.id,
@@ -57,9 +67,11 @@ function DraggableTask({ task, columnId, onDelete, getPriorityColor }: {
     opacity: isDragging ? 0.5 : 1,
   } : undefined;
 
+  const otherColumns = columns.filter(c => c.id !== columnId);
+
   return (
-    <div ref={setNodeRef} style={style}>
-      <Card className={`cursor-grab hover:shadow-md transition-shadow ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}>
+    <div ref={setNodeRef} style={style} data-testid={`task-card-${task.id}`}>
+      <Card className={`cursor-grab hover:shadow-md transition-shadow group ${isDragging ? 'shadow-lg ring-2 ring-primary' : ''}`}>
         <CardHeader className="p-4 pb-2">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
@@ -70,17 +82,47 @@ function DraggableTask({ task, columnId, onDelete, getPriorityColor }: {
                 {task.title}
               </CardTitle>
             </div>
-            <Button 
-              variant="ghost" 
-              size="icon" 
-              className="h-6 w-6 hover:bg-destructive/10 hover:text-destructive"
-              onClick={(e) => {
-                e.stopPropagation();
-                onDelete(columnId, task.id);
-              }}
-            >
-              <X className="h-4 w-4" />
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"
+                  data-testid={`task-actions-${task.id}`}
+                >
+                  <ArrowRight className="h-3.5 w-3.5" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                {otherColumns.length > 0 && (
+                  <>
+                    <DropdownMenuLabel className="text-xs">Move to column</DropdownMenuLabel>
+                    {otherColumns.map(col => (
+                      <DropdownMenuItem
+                        key={col.id}
+                        onClick={() => onMoveToColumn(task.id, col.id)}
+                        data-testid={`move-task-${task.id}-to-${col.id}`}
+                      >
+                        <ArrowRight className="mr-2 h-3 w-3" />
+                        {col.title}
+                      </DropdownMenuItem>
+                    ))}
+                    <DropdownMenuSeparator />
+                  </>
+                )}
+                <DropdownMenuItem
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDelete(columnId, task.id);
+                  }}
+                  className="text-destructive focus:text-destructive"
+                  data-testid={`delete-task-${task.id}`}
+                >
+                  <Trash2 className="mr-2 h-3 w-3" />
+                  Delete Task
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </CardHeader>
         <CardContent className="p-4 pt-2 space-y-3">
@@ -280,6 +322,26 @@ export function EnhancedKanbanBoard({ storageKey = "kanban-board-data" }: Enhanc
     });
   };
 
+  const moveTaskToColumn = (taskId: string, targetColumnId: string) => {
+    updateColumns(prevColumns => {
+      const newColumns = prevColumns.map(col => ({ ...col, tasks: [...col.tasks] }));
+      let task: Task | null = null;
+      for (const col of newColumns) {
+        const idx = col.tasks.findIndex(t => t.id === taskId);
+        if (idx !== -1) {
+          if (col.id === targetColumnId) return prevColumns;
+          task = col.tasks[idx];
+          col.tasks.splice(idx, 1);
+          break;
+        }
+      }
+      if (!task) return prevColumns;
+      const target = newColumns.find(c => c.id === targetColumnId);
+      if (target) target.tasks.push(task);
+      return newColumns;
+    });
+  };
+
   const getPriorityColor = (priority: Task["priority"]) => {
     switch (priority) {
       case "high": return "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
@@ -439,6 +501,8 @@ export function EnhancedKanbanBoard({ storageKey = "kanban-board-data" }: Enhanc
                       columnId={column.id}
                       onDelete={handleDeleteTask}
                       getPriorityColor={getPriorityColor}
+                      columns={columns}
+                      onMoveToColumn={moveTaskToColumn}
                     />
                   ))
                 )}

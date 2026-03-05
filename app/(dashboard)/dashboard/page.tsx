@@ -40,8 +40,8 @@ export default function DashboardPage() {
       bgColor: "bg-green-100"
     },
     { 
-      name: "Apply Intelligent", 
-      description: "College application AI",
+      name: "ChatAutomate", 
+      description: "chatautomate.ng - AI chat automation",
       progress: 0,
       tasks: 0,
       completed: 0,

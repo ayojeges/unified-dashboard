@@ -13,12 +13,14 @@ import {
   Settings,
   ChevronLeft,
   ChevronRight,
-  GraduationCap,
-  Brain,
-  Package,
   Home,
   Menu,
-  X
+  X,
+  Film,
+  Package,
+  GraduationCap,
+  Brain,
+  School,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -26,6 +28,7 @@ import { cn } from "@/lib/utils";
 const mainNavItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
+  { href: "/data-studio", icon: Film, label: "Data Studio" },
   { href: "/analytics", icon: BarChart3, label: "Analytics" },
   { href: "/calendar", icon: Calendar, label: "Calendar" },
   { href: "/chat", icon: MessageSquare, label: "Chat" },
@@ -36,7 +39,8 @@ const mainNavItems = [
 const projectNavItems = [
   { href: "/projects/guardiancryo", icon: Package, label: "GuardianCryo" },
   { href: "/projects/cdl-schools", icon: GraduationCap, label: "CDL Schools" },
-  { href: "/projects/apply-intelligent", icon: Brain, label: "Apply Intelligent" },
+  { href: "/projects/chatautomate", icon: Brain, label: "ChatAutomate" },
+  { href: "/projects/schoolregistry", icon: School, label: "SchoolRegistry" },
 ];
 
 export function Sidebar() {
