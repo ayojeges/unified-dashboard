@@ -7,6 +7,17 @@ import { BarRaceTemplate } from "./templates/bar-race";
 import { ComparisonDuelTemplate } from "./templates/comparison-duel";
 import { StatCounterTemplate } from "./templates/stat-counter";
 import { StackedAreaTemplate } from "./templates/stacked-area";
+import { FunnelChartTemplate } from "./templates/funnel-chart";
+import { DonutChartTemplate } from "./templates/donut-chart";
+import { HeatmapGridTemplate } from "./templates/heatmap-grid";
+import { GaugeTemplate } from "./templates/gauge";
+import { BeforeAfterTemplate } from "./templates/before-after";
+import { TimelineTemplate } from "./templates/timeline";
+import { LeaderboardTemplate } from "./templates/leaderboard";
+import { QuoteCardTemplate } from "./templates/quote-card";
+import { MapVizTemplate } from "./templates/map-viz";
+import { ScatterRaceTemplate } from "./templates/scatter-race";
+import { WaterfallTemplate } from "./templates/waterfall";
 
 interface PreviewPlayerProps {
   template: string;
@@ -32,6 +43,17 @@ const TEMPLATE_MAP: Record<string, React.FC<any>> = {
   comparison_duel: ComparisonDuelTemplate,
   stat_counter: StatCounterTemplate,
   stacked_area: StackedAreaTemplate,
+  funnel_chart: FunnelChartTemplate,
+  donut_chart: DonutChartTemplate,
+  heatmap_grid: HeatmapGridTemplate,
+  gauge: GaugeTemplate,
+  before_after: BeforeAfterTemplate,
+  timeline: TimelineTemplate,
+  leaderboard: LeaderboardTemplate,
+  quote_card: QuoteCardTemplate,
+  map_viz: MapVizTemplate,
+  scatter_race: ScatterRaceTemplate,
+  waterfall: WaterfallTemplate,
 };
 
 export const PreviewPlayer: React.FC<PreviewPlayerProps> = ({ template, data, brand, colors, playing, aspectRatio = "16:9" }) => {
@@ -39,16 +61,10 @@ export const PreviewPlayer: React.FC<PreviewPlayerProps> = ({ template, data, br
   const dims = ASPECT_DIMENSIONS[aspectRatio] || ASPECT_DIMENSIONS["16:9"];
   const Component = TEMPLATE_MAP[template] || LineRaceTemplate;
 
+  // Generic prop passthrough — spread all data fields + standard props
   const getInputProps = () => {
     const base = { brand, colors, sourceLabel: data?.sourceLabel || brand };
-    switch (template) {
-      case "line_race": return { ...base, data: data?.data || [], title: data?.title || "", subtitle: data?.subtitle, endNote: data?.endNote };
-      case "bar_race": return { ...base, data: data?.data || [], title: data?.title || "", subtitle: data?.subtitle, valueSuffix: data?.valueSuffix || "", maxBars: data?.maxBars || 8 };
-      case "comparison_duel": return { ...base, left: data?.left, right: data?.right, categories: data?.categories || [], title: data?.title || "", subtitle: data?.subtitle };
-      case "stat_counter": return { ...base, value: data?.value || 0, prefix: data?.prefix || "", suffix: data?.suffix || "+", title: data?.title || "", subtitle: data?.subtitle, contextLine: data?.contextLine, miniChartData: data?.miniChartData };
-      case "stacked_area": return { ...base, series: data?.series || [], years: data?.years || [], title: data?.title || "", subtitle: data?.subtitle };
-      default: return base;
-    }
+    return { ...base, ...data };
   };
 
   return (
