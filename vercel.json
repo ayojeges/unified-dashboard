@@ -6,7 +6,10 @@
   "outputDirectory": ".next",
   "regions": ["iad1"],
   "env": {
-    "NEXT_PUBLIC_APP_URL": "https://unified-dashboard.vercel.app"
+    "NEXT_PUBLIC_APP_URL": "https://unified-dashboard.vercel.app",
+    "RENDER_SERVICE_URL": "http://72.61.8.193:4100",
+    "NEXT_PUBLIC_RENDER_SERVICE_URL": "http://72.61.8.193:4100",
+    "SOCIAL_API_URL": "http://72.61.8.193:3333"
   },
   "redirects": [
     {
