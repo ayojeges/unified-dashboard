@@ -10,7 +10,7 @@ import {
   TrendingUp, BarChart3, GitCompare, Hash, Layers, Play, Palette, Database,
   ChevronLeft, ChevronRight, Download, FileText, Monitor, Square, Smartphone,
   Sparkles, AlertCircle, CheckCircle2, Filter, PieChart, Grid3X3, Gauge,
-  ArrowLeftRight, Clock, Trophy, Quote, Map, ScatterChart, CandlestickChart,
+  ArrowLeftRight, Clock, Trophy, Quote, Map, ScatterChart, CandlestickChart, Send,
 } from "lucide-react";
 
 type TemplateType = "line_race" | "bar_race" | "comparison_duel" | "stat_counter" | "stacked_area" | "funnel_chart" | "donut_chart" | "heatmap_grid" | "gauge" | "before_after" | "timeline" | "leaderboard" | "quote_card" | "map_viz" | "scatter_race" | "waterfall";
@@ -112,6 +112,9 @@ export default function DataStudioPage() {
   const [suggestedTemplate, setSuggestedTemplate] = useState<TemplateType | null>(null);
   const [isRendering, setIsRendering] = useState(false);
   const [renderProgress, setRenderProgress] = useState<string | null>(null);
+  const [isPublishing, setIsPublishing] = useState(false);
+  const [publishResult, setPublishResult] = useState<string | null>(null);
+  const [caption, setCaption] = useState("");
 
   const brandColors = selectedBrand === "custom" ? customColors : BRAND_PRESETS[selectedBrand];
 
@@ -186,6 +189,37 @@ export default function DataStudioPage() {
       alert(err.message || "Export failed. Make sure the render service is running on the VPS.");
     } finally {
       setIsRendering(false);
+    }
+  };
+
+  const handlePublishAll = async () => {
+    if (!parsedData) return;
+    setIsPublishing(true);
+    setPublishResult(null);
+    try {
+      const postCaption = caption || parsedData.title || `Check out this ${TEMPLATES.find(t => t.id === selectedTemplate)?.name} visualization!`;
+      const res = await fetch("/api/social-publish", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          template: selectedTemplate,
+          data: parsedData,
+          brand: brandColors.name,
+          colors: brandColors,
+          aspectRatio: aspectRatio === "16:9" ? "16:9" : "1:1",
+          caption: postCaption,
+          platforms: ["facebook", "instagram", "linkedin", "x"],
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || "Publish failed");
+      setPublishResult(result.message || "Published successfully!");
+      setTimeout(() => setPublishResult(null), 5000);
+    } catch (err: any) {
+      setPublishResult(null);
+      alert(err.message || "Publishing failed. Check social media API configuration.");
+    } finally {
+      setIsPublishing(false);
     }
   };
 
@@ -357,6 +391,9 @@ export default function DataStudioPage() {
                   </div>
                   <Button variant="outline" size="sm" onClick={() => setIsPlaying(!isPlaying)} data-testid="play-toggle-btn">{isPlaying ? "Pause" : "Play"}</Button>
                   <Button size="sm" onClick={handleExportMP4} disabled={isRendering} data-testid="export-mp4-btn"><Download className="h-4 w-4 mr-1" />{isRendering ? (renderProgress || "Rendering...") : "Export MP4"}</Button>
+                  <Button size="sm" variant="default" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700" onClick={handlePublishAll} disabled={isPublishing || isRendering} data-testid="publish-all-btn">
+                    <Send className="h-4 w-4 mr-1" />{isPublishing ? "Publishing..." : "Generate & Post All"}
+                  </Button>
                 </div>
               </div>
               <CardDescription>{TEMPLATES.find(t => t.id === selectedTemplate)?.name} | {brandColors.name} | {aspectRatio}</CardDescription>
@@ -365,6 +402,27 @@ export default function DataStudioPage() {
               <div className={`bg-black rounded-lg overflow-hidden relative mx-auto ${aspectRatio === "9:16" ? "max-w-[400px]" : aspectRatio === "1:1" ? "max-w-[600px]" : ""}`} style={{ aspectRatio: aspectRatio === "16:9" ? "16/9" : aspectRatio === "1:1" ? "1/1" : "9/16", minHeight: aspectRatio === "9:16" ? 500 : 400 }}>
                 <PreviewPlayer template={selectedTemplate} data={parsedData} brand={brandColors.name} colors={brandColors} playing={isPlaying} aspectRatio={aspectRatio} />
               </div>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader>
+              <div className="flex items-center gap-2"><Send className="h-5 w-5 text-primary" /><CardTitle className="text-base">Post Caption</CardTitle></div>
+              <CardDescription>This caption will be used when posting to social media platforms</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <textarea
+                className="w-full rounded-md border bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                rows={3}
+                placeholder={parsedData?.title ? `${parsedData.title} - Powered by SchoolRegistry.ng` : "Enter a caption for your social media post..."}
+                value={caption}
+                onChange={e => setCaption(e.target.value)}
+                data-testid="publish-caption-input"
+              />
+              {publishResult && (
+                <div className="mt-3 flex items-center gap-2 text-sm text-green-600" data-testid="publish-result">
+                  <CheckCircle2 className="h-4 w-4" />{publishResult}
+                </div>
+              )}
             </CardContent>
           </Card>
           <Card>
