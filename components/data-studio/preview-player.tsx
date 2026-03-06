@@ -18,6 +18,12 @@ import { QuoteCardTemplate } from "./templates/quote-card";
 import { MapVizTemplate } from "./templates/map-viz";
 import { ScatterRaceTemplate } from "./templates/scatter-race";
 import { WaterfallTemplate } from "./templates/waterfall";
+import { RadarChartTemplate } from "./templates/radar-chart";
+import { TierListTemplate } from "./templates/tier-list";
+import { TournamentBracketTemplate } from "./templates/tournament-bracket";
+import { SchoolMatrixTemplate } from "./templates/school-matrix";
+import { StackedRankingTemplate } from "./templates/stacked-ranking";
+import { ProgressGridTemplate } from "./templates/progress-grid";
 
 interface PreviewPlayerProps {
   template: string;
@@ -54,6 +60,12 @@ const TEMPLATE_MAP: Record<string, React.FC<any>> = {
   map_viz: MapVizTemplate,
   scatter_race: ScatterRaceTemplate,
   waterfall: WaterfallTemplate,
+  radar_chart: RadarChartTemplate,
+  tier_list: TierListTemplate,
+  tournament_bracket: TournamentBracketTemplate,
+  school_matrix: SchoolMatrixTemplate,
+  stacked_ranking: StackedRankingTemplate,
+  progress_grid: ProgressGridTemplate,
 };
 
 export const PreviewPlayer: React.FC<PreviewPlayerProps> = ({ template, data, brand, colors, playing, aspectRatio = "16:9" }) => {

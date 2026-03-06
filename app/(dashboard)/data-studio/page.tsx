@@ -11,9 +11,10 @@ import {
   ChevronLeft, ChevronRight, Download, FileText, Monitor, Square, Smartphone,
   Sparkles, AlertCircle, CheckCircle2, Filter, PieChart, Grid3X3, Gauge,
   ArrowLeftRight, Clock, Trophy, Quote, Map, ScatterChart, CandlestickChart, Send,
+  Radar, ListOrdered, Swords, LayoutGrid, BarChart, Activity,
 } from "lucide-react";
 
-type TemplateType = "line_race" | "bar_race" | "comparison_duel" | "stat_counter" | "stacked_area" | "funnel_chart" | "donut_chart" | "heatmap_grid" | "gauge" | "before_after" | "timeline" | "leaderboard" | "quote_card" | "map_viz" | "scatter_race" | "waterfall";
+type TemplateType = "line_race" | "bar_race" | "comparison_duel" | "stat_counter" | "stacked_area" | "funnel_chart" | "donut_chart" | "heatmap_grid" | "gauge" | "before_after" | "timeline" | "leaderboard" | "quote_card" | "map_viz" | "scatter_race" | "waterfall" | "radar_chart" | "tier_list" | "tournament_bracket" | "school_matrix" | "stacked_ranking" | "progress_grid";
 
 interface BrandColors {
   name: string;
@@ -33,22 +34,33 @@ const BRAND_PRESETS: Record<string, BrandColors> = {
 };
 
 const TEMPLATES: { id: TemplateType; name: string; description: string; example: string; category: string }[] = [
-  { id: "line_race", name: "Line Race", description: "Animated line chart showing trends over time", example: "WAEC Performance Lagos 2016-2025", category: "Charts" },
-  { id: "bar_race", name: "Bar Race", description: "Horizontal bars reordering dynamically over time", example: "Top 10 States by WAEC Score", category: "Charts" },
-  { id: "comparison_duel", name: "Comparison Duel", description: "Head-to-head split screen comparison", example: "Lagos vs Abuja: WAEC Head-to-Head", category: "Charts" },
-  { id: "stat_counter", name: "Stat Counter", description: "Large animated number with context", example: "13,360+ Schools Verified", category: "Charts" },
-  { id: "stacked_area", name: "Stacked Area", description: "Composition changes over time", example: "Public vs Private School Growth", category: "Charts" },
-  { id: "funnel_chart", name: "Funnel Chart", description: "Conversion funnel with animated stages", example: "Website Visitors to Enrollment", category: "Analytics" },
-  { id: "donut_chart", name: "Donut Chart", description: "Animated percentage breakdown with legend", example: "School Types: Public vs Private vs Mission", category: "Analytics" },
-  { id: "heatmap_grid", name: "Heatmap Grid", description: "Region heatmap with color intensity", example: "Pass Rate by State and Subject", category: "Analytics" },
-  { id: "gauge", name: "Gauge", description: "KPI speedometer with animated needle", example: "Platform Uptime: 99.7%", category: "Analytics" },
-  { id: "before_after", name: "Before / After", description: "Side-by-side comparison with reveal animation", example: "Before vs After SchoolRegistry", category: "Story" },
-  { id: "timeline", name: "Timeline", description: "Milestones appearing on animated vertical timeline", example: "Company Journey 2020-2026", category: "Story" },
-  { id: "leaderboard", name: "Leaderboard", description: "Ranked list with bars and rank-change indicators", example: "Top Schools by Student Performance", category: "Story" },
-  { id: "quote_card", name: "Quote Card", description: "Animated testimonial with typing effect", example: "Customer Testimonial + Stat", category: "Story" },
-  { id: "map_viz", name: "Nigeria Map", description: "State-level data visualization on grid map", example: "School Density by State", category: "Advanced" },
-  { id: "scatter_race", name: "Scatter Race", description: "Animated bubble chart with positions over time", example: "Schools: Enrollment vs Pass Rate", category: "Advanced" },
-  { id: "waterfall", name: "Waterfall", description: "Financial-style incremental gain/loss chart", example: "Revenue Breakdown by Quarter", category: "Advanced" },
+  // ── Comparison ──
+  { id: "comparison_duel", name: "Comparison Duel", description: "Head-to-head split screen comparison", example: "Public vs Private: WAEC Head-to-Head", category: "Comparison" },
+  { id: "before_after", name: "Before / After", description: "Side-by-side with wipe reveal animation", example: "Before vs After SchoolRegistry", category: "Comparison" },
+  { id: "radar_chart", name: "Radar Chart", description: "Multi-dimensional spider chart comparison", example: "School A vs B: 6 Metrics Compared", category: "Comparison" },
+  { id: "tournament_bracket", name: "Tournament Bracket", description: "Elimination-style head-to-head matchups", example: "Top 8 Schools: Who Wins?", category: "Comparison" },
+  { id: "school_matrix", name: "School Matrix", description: "Price vs Quality scatter with quadrants", example: "Schools: Fees vs Pass Rate", category: "Comparison" },
+  { id: "progress_grid", name: "Progress Grid", description: "Side-by-side progress bars across metrics", example: "3 Schools: 5 Metrics Compared", category: "Comparison" },
+  // ── Rankings ──
+  { id: "leaderboard", name: "Leaderboard", description: "Ranked list with bars and rank-change indicators", example: "Top Schools by WAEC Performance", category: "Rankings" },
+  { id: "bar_race", name: "Bar Race", description: "Horizontal bars reordering dynamically over time", example: "Top 10 States by WAEC Score", category: "Rankings" },
+  { id: "tier_list", name: "Tier List", description: "S/A/B/C/D tier classification with items", example: "Lagos Schools Tier Ranking", category: "Rankings" },
+  { id: "stacked_ranking", name: "Stacked Ranking", description: "Composite scores with category breakdown", example: "Schools Ranked by Combined Metrics", category: "Rankings" },
+  // ── Trends ──
+  { id: "line_race", name: "Line Race", description: "Animated line chart showing trends over time", example: "WAEC Performance 2016-2025", category: "Trends" },
+  { id: "stacked_area", name: "Stacked Area", description: "Composition changes over time", example: "Public vs Private School Growth", category: "Trends" },
+  { id: "scatter_race", name: "Scatter Race", description: "Animated bubble chart positions over time", example: "Schools: Enrollment vs Pass Rate", category: "Trends" },
+  { id: "timeline", name: "Timeline", description: "Milestones on animated vertical timeline", example: "Company Journey 2020-2026", category: "Trends" },
+  // ── Distribution ──
+  { id: "donut_chart", name: "Donut Chart", description: "Animated percentage breakdown with legend", example: "School Types: Public vs Private", category: "Distribution" },
+  { id: "funnel_chart", name: "Funnel Chart", description: "Conversion funnel with animated stages", example: "Visitors to Enrollment", category: "Distribution" },
+  { id: "heatmap_grid", name: "Heatmap Grid", description: "Region heatmap with color intensity", example: "Pass Rate by State and Subject", category: "Distribution" },
+  { id: "waterfall", name: "Waterfall", description: "Incremental gain/loss breakdown", example: "Revenue Breakdown by Quarter", category: "Distribution" },
+  // ── Highlights ──
+  { id: "stat_counter", name: "Stat Counter", description: "Large animated number with context", example: "13,360+ Schools Verified", category: "Highlights" },
+  { id: "gauge", name: "Gauge", description: "KPI speedometer with animated needle", example: "Platform Uptime: 99.7%", category: "Highlights" },
+  { id: "quote_card", name: "Quote Card", description: "Animated testimonial with typing effect", example: "Customer Testimonial + Stat", category: "Highlights" },
+  { id: "map_viz", name: "Nigeria Map", description: "State-level data visualization on grid map", example: "School Density by State", category: "Highlights" },
 ];
 
 const SAMPLE_DATA: Record<TemplateType, string> = {
@@ -68,6 +80,12 @@ const SAMPLE_DATA: Record<TemplateType, string> = {
   map_viz: JSON.stringify({ title: "School Density by State", subtitle: "Number of verified schools", sourceLabel: "SchoolRegistry.ng", valueSuffix: " schools", states: [{ name: "Lagos", value: 2800 }, { name: "Oyo", value: 1200 }, { name: "Rivers", value: 950 }, { name: "FCT", value: 880 }, { name: "Kano", value: 1100 }, { name: "Kaduna", value: 750 }, { name: "Ogun", value: 680 }, { name: "Enugu", value: 520 }, { name: "Delta", value: 480 }, { name: "Anambra", value: 460 }, { name: "Edo", value: 380 }, { name: "Ondo", value: 320 }, { name: "Osun", value: 290 }, { name: "Kwara", value: 270 }, { name: "Abia", value: 250 }] }, null, 2),
   scatter_race: JSON.stringify({ title: "Schools: Enrollment vs Pass Rate", subtitle: "Bubble size = Student count", sourceLabel: "SchoolRegistry.ng", xLabel: "Enrollment", yLabel: "Pass Rate (%)", timeLabels: ["2020", "2022", "2024"], bubbles: [{ label: "Lagos Model", snapshots: [{ x: 800, y: 72, size: 80 }, { x: 1200, y: 78, size: 120 }, { x: 1800, y: 85, size: 180 }], color: "#3B82F6" }, { label: "Queens College", snapshots: [{ x: 600, y: 80, size: 60 }, { x: 900, y: 85, size: 90 }, { x: 1200, y: 92, size: 120 }], color: "#10B981" }, { label: "Rivers Academy", snapshots: [{ x: 500, y: 55, size: 50 }, { x: 700, y: 62, size: 70 }, { x: 1100, y: 70, size: 110 }], color: "#F59E0B" }] }, null, 2),
   waterfall: JSON.stringify({ title: "Revenue Breakdown Q1 2026", subtitle: "Sources of growth and costs", sourceLabel: "SchoolRegistry.ng", valuePrefix: "N", valueSuffix: "K", items: [{ label: "Starting", value: 5000, type: "total" }, { label: "New Subs", value: 3200, type: "increase" }, { label: "Upgrades", value: 1500, type: "increase" }, { label: "Ads", value: 800, type: "increase" }, { label: "Refunds", value: -400, type: "decrease" }, { label: "Hosting", value: -1200, type: "decrease" }, { label: "Salaries", value: -2800, type: "decrease" }, { label: "Ending", value: 0, type: "total" }] }, null, 2),
+  radar_chart: JSON.stringify({ title: "School Performance Radar", subtitle: "Multi-dimensional comparison", sourceLabel: "SchoolRegistry.ng", maxValue: 100, dimensions: ["Academics", "Facilities", "Sports", "Arts", "Tech", "Community"], entries: [{ name: "Kings College", values: [92, 78, 85, 70, 88, 75], color: "#3B82F6" }, { name: "Queens College", values: [88, 82, 72, 85, 76, 90], color: "#EF4444" }] }, null, 2),
+  tier_list: JSON.stringify({ title: "Lagos Schools Tier Ranking", subtitle: "Based on 2024 WAEC results", sourceLabel: "SchoolRegistry.ng", tiers: [{ tier: "S", color: "#FF7F7F", items: [{ name: "Kings College", score: 96 }, { name: "Queens College", score: 94 }] }, { tier: "A", color: "#FFBF7F", items: [{ name: "FGC Abuja", score: 92 }, { name: "Loyola Jesuit", score: 90 }] }, { tier: "B", color: "#FFDF7F", items: [{ name: "British Nigerian Academy", score: 89 }, { name: "Chrisland", score: 87 }] }, { tier: "C", color: "#FFFF7F", items: [{ name: "Greensprings", score: 85 }, { name: "Atlantic Hall", score: 83 }] }] }, null, 2),
+  tournament_bracket: JSON.stringify({ title: "Top 8 Schools Showdown", subtitle: "Who takes the crown?", sourceLabel: "SchoolRegistry.ng", champion: "Kings College", rounds: [{ name: "Quarter Finals", matches: [{ a: { name: "Kings College", score: 96 }, b: { name: "Atlantic Hall", score: 83 } }, { a: { name: "Queens College", score: 94 }, b: { name: "Greensprings", score: 85 } }, { a: { name: "FGC Abuja", score: 92 }, b: { name: "Chrisland", score: 87 } }, { a: { name: "Loyola Jesuit", score: 90 }, b: { name: "BNA", score: 89 } }] }, { name: "Semi Finals", matches: [{ a: { name: "Kings College", score: 96 }, b: { name: "Queens College", score: 94 } }, { a: { name: "FGC Abuja", score: 92 }, b: { name: "Loyola Jesuit", score: 90 } }] }, { name: "Final", matches: [{ a: { name: "Kings College", score: 96 }, b: { name: "FGC Abuja", score: 92 } }] }] }, null, 2),
+  school_matrix: JSON.stringify({ title: "Schools: Fees vs Pass Rate", subtitle: "Price-quality matrix", sourceLabel: "SchoolRegistry.ng", xLabel: "Annual Fees (NGN '000)", yLabel: "WAEC Pass Rate (%)", quadrants: { topLeft: "High Value", topRight: "Premium", bottomLeft: "Budget", bottomRight: "Overpriced" }, schools: [{ name: "Kings College", x: 150, y: 96, size: 30, color: "#3B82F6" }, { name: "Queens College", x: 120, y: 94, size: 25 }, { name: "Loyola Jesuit", x: 800, y: 90, size: 20, color: "#F59E0B" }, { name: "BNA", x: 1200, y: 89, size: 18, color: "#8B5CF6" }, { name: "Greensprings", x: 900, y: 85, size: 22, color: "#10B981" }, { name: "Public School A", x: 50, y: 55, size: 35, color: "#EF4444" }] }, null, 2),
+  stacked_ranking: JSON.stringify({ title: "Schools Ranked by Combined Score", subtitle: "Across 4 key metrics", sourceLabel: "SchoolRegistry.ng", categories: ["Academics", "Facilities", "Sports", "Arts"], entries: [{ name: "Kings College", scores: [96, 78, 85, 70] }, { name: "Queens College", scores: [94, 82, 72, 85] }, { name: "FGC Abuja", scores: [92, 80, 68, 75] }, { name: "Loyola Jesuit", scores: [90, 88, 65, 72] }, { name: "Chrisland", scores: [87, 75, 80, 68] }, { name: "Greensprings", scores: [85, 85, 78, 65] }] }, null, 2),
+  progress_grid: JSON.stringify({ title: "3 Schools: 5 Metrics Compared", subtitle: "Side-by-side performance", sourceLabel: "SchoolRegistry.ng", maxValue: 100, valueSuffix: "%", metricLabels: ["Pass Rate", "Attendance", "Satisfaction", "Facilities", "Tech"], schools: [{ name: "Kings College", metrics: [96, 88, 82, 78, 85], color: "#3B82F6" }, { name: "Queens College", metrics: [94, 90, 85, 82, 76], color: "#EF4444" }, { name: "FGC Abuja", metrics: [92, 85, 80, 80, 72], color: "#10B981" }] }, null, 2),
 };
 
 const TEMPLATE_ICONS: Record<TemplateType, any> = {
@@ -87,6 +105,12 @@ const TEMPLATE_ICONS: Record<TemplateType, any> = {
   map_viz: Map,
   scatter_race: ScatterChart,
   waterfall: CandlestickChart,
+  radar_chart: Radar,
+  tier_list: ListOrdered,
+  tournament_bracket: Swords,
+  school_matrix: LayoutGrid,
+  stacked_ranking: BarChart,
+  progress_grid: Activity,
 };
 
 const STEPS = [
@@ -137,7 +161,7 @@ export default function DataStudioPage() {
 
       // Handle template auto-suggestion
       if (json.suggestedTemplate && json.suggestedTemplate !== selectedTemplate) {
-        const valid: TemplateType[] = ["line_race", "bar_race", "comparison_duel", "stat_counter", "stacked_area", "funnel_chart", "donut_chart", "heatmap_grid", "gauge", "before_after", "timeline", "leaderboard", "quote_card", "map_viz", "scatter_race", "waterfall"];
+        const valid: TemplateType[] = ["line_race", "bar_race", "comparison_duel", "stat_counter", "stacked_area", "funnel_chart", "donut_chart", "heatmap_grid", "gauge", "before_after", "timeline", "leaderboard", "quote_card", "map_viz", "scatter_race", "waterfall", "radar_chart", "tier_list", "tournament_bracket", "school_matrix", "stacked_ranking", "progress_grid"];
         if (valid.includes(json.suggestedTemplate)) {
           setSuggestedTemplate(json.suggestedTemplate);
         }
@@ -251,7 +275,7 @@ export default function DataStudioPage() {
       {/* Step 1: Template */}
       {step === "template" && (
         <div className="space-y-6" data-testid="template-gallery">
-          {["Charts", "Analytics", "Story", "Advanced"].map(category => {
+          {["Comparison", "Rankings", "Trends", "Distribution", "Highlights"].map(category => {
             const categoryTemplates = TEMPLATES.filter(t => t.category === category);
             return (
               <div key={category}>
