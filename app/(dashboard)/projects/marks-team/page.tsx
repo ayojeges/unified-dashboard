@@ -27,78 +27,52 @@ import {
   Settings
 } from "lucide-react";
 
-// Team members data - Enhanced with detailed profiles
+// Team members data - Lean 3-person team
 const teamMembers = [
   {
     id: 1,
     name: "Mark",
-    role: "PMO / Program Manager",
+    role: "Program Director (PMO + Product + Ops)",
     email: "mark@blueprintcreations.com",
     avatar: "M",
     skills: [
       "Strategic Planning", "Team Coordination", "Sprint Management", "CEO Communication",
-      "Risk Management", "Cross-team Handoffs", "Memory Curation", "Compliance Oversight"
+      "Risk Management", "Cross-team Handoffs", "Memory Curation", "Compliance Oversight",
+      "Product Discovery", "PRD Writing", "Roadmap Management", "UX Direction",
+      "Customer Support Workflows", "Onboarding Flows", "SOP Management", "Retention Playbooks"
     ],
     responsibilities: [
-      "Coordinate Product, Engineering, Growth, and Ops leads",
+      "Own product strategy, PRDs, roadmaps, and acceptance criteria",
       "Daily CEO brief via Telegram @Jeguz_bot",
       "Sprint planning, standups, and velocity tracking",
+      "Customer support workflows, onboarding, and SOPs",
+      "Delegate engineering tasks to Engineering Lead Bot",
+      "Delegate growth/marketing tasks to Growth & Revenue Bot",
       "Task board management and blocker resolution",
-      "Memory curation and cross-team knowledge sharing",
-      "Simulates Product Lead and Ops when those bots are not active"
+      "NPS/CSAT monitoring and retention playbooks"
     ],
-    activeTasks: 8,
-    completedTasks: 24,
+    activeTasks: 12,
+    completedTasks: 42,
     status: "online",
     color: "#DC2626",
-    department: "PMO",
+    department: "PMO + Product + Ops",
     joinDate: "2024-01-15",
     performance: 95,
     botId: "main",
     missingSkills: [
-      "Advanced data analytics for project forecasting",
-      "AI-powered project management tools"
+      "Advanced data analytics for project forecasting"
     ]
   },
   {
     id: 2,
-    name: "Product Lead Bot",
-    role: "Product Lead",
-    email: "product@blueprintcreations.com",
-    avatar: "P",
-    skills: [
-      "Product Discovery", "User Research", "PRD Writing", "Acceptance Criteria",
-      "Roadmap Management", "UX Direction", "A/B Experimentation", "Funnel Analysis"
-    ],
-    responsibilities: [
-      "Turn CEO vision into clear product specs and roadmaps",
-      "Write PRDs, user stories, and acceptance criteria",
-      "Maintain product backlogs per business line",
-      "Coordinate with Engineering on sprint planning",
-      "Define positioning with Growth for feature launches",
-      "Track product metrics (NPS, DAU, activation)"
-    ],
-    activeTasks: 5,
-    completedTasks: 15,
-    status: "away",
-    color: "#8B5CF6",
-    department: "Product",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "product_lead_bot",
-    missingSkills: [
-      "Autonomous execution (currently simulated by Mark)"
-    ]
-  },
-  {
-    id: 3,
     name: "Engineering Lead Bot",
     role: "Engineering Lead",
     email: "engineering@blueprintcreations.com",
     avatar: "E",
     skills: [
       "System Architecture", "Code Quality", "CI/CD", "Security",
-      "Performance Optimization", "Technical Debt Management", "Incident Response", "Testing"
+      "Performance Optimization", "Technical Debt Management", "Incident Response", "Testing",
+      "Frontend Design", "GitHub Deploy", "Vercel Deploy", "Browser Automation"
     ],
     responsibilities: [
       "Design, implement, and maintain reliable systems",
@@ -114,22 +88,22 @@ const teamMembers = [
     color: "#3B82F6",
     department: "Engineering",
     joinDate: "2026-02-26",
-    performance: 0,
+    performance: 88,
     botId: "engineering_lead_bot",
     missingSkills: [
-      "ML integration for predictive features",
-      "Real-time collaboration tooling"
+      "ML integration for predictive features"
     ]
   },
   {
-    id: 4,
+    id: 3,
     name: "Growth & Revenue Bot",
     role: "Growth & Revenue Lead",
     email: "growth@blueprintcreations.com",
     avatar: "G",
     skills: [
       "Growth Strategy", "SEO/SEM", "Content Marketing", "Campaign Management",
-      "Funnel Design", "A/B Testing", "Sales Enablement", "Analytics"
+      "Funnel Design", "A/B Testing", "Sales Enablement", "Analytics",
+      "Social Media Automation", "Email Outreach", "Lead Generation", "Data Studio Video"
     ],
     responsibilities: [
       "Drive traffic, leads, and revenue across all brands",
@@ -137,7 +111,8 @@ const teamMembers = [
       "SEO, content, email, social, and paid channels",
       "Sales one-pagers, scripts, and partnership playbooks",
       "GuardianCryo compliance checks on ALL content",
-      "Weekly growth reports with CAC, LTV, conversion metrics"
+      "Weekly growth reports with CAC, LTV, conversion metrics",
+      "Data Studio video creation and social media publishing"
     ],
     activeTasks: 7,
     completedTasks: 20,
@@ -145,41 +120,10 @@ const teamMembers = [
     color: "#10B981",
     department: "Growth & Revenue",
     joinDate: "2026-02-26",
-    performance: 0,
+    performance: 85,
     botId: "growth_revenue_bot",
     missingSkills: [
-      "AI-driven marketing personalization",
-      "Advanced attribution modeling"
-    ]
-  },
-  {
-    id: 5,
-    name: "Ops & Success Bot",
-    role: "Ops & Customer Success Lead",
-    email: "ops@blueprintcreations.com",
-    avatar: "O",
-    skills: [
-      "Customer Support", "Onboarding Flows", "SOP Management", "SLA Tracking",
-      "Incident Management", "NPS/CSAT Monitoring", "Retention Playbooks", "Documentation"
-    ],
-    responsibilities: [
-      "Ensure smooth operations and great customer experiences",
-      "Customer support workflows and help center",
-      "Onboarding flows and in-product guidance",
-      "SOPs, SLAs, and incident post-mortems",
-      "NPS/CSAT monitoring and churn risk flagging",
-      "Feed customer feedback back to Product"
-    ],
-    activeTasks: 3,
-    completedTasks: 10,
-    status: "away",
-    color: "#F59E0B",
-    department: "Ops & Success",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "ops_success_bot",
-    missingSkills: [
-      "Autonomous execution (currently simulated by Mark)"
+      "AI-driven marketing personalization"
     ]
   }
 ];
@@ -212,7 +156,7 @@ export default function MarksTeamPage() {
           <div>
             <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Mark's Team</h1>
             <p className="text-muted-foreground">
-              World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative
+              Lean 3-person team: Mark (PMO + Product + Ops), Engineering Lead, Growth & Revenue Lead
             </p>
           </div>
         </div>

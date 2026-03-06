@@ -105,7 +105,7 @@ const projects = [
     id: 5, 
     slug: "marks-team",
     name: "Mark's Team", 
-    description: "World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative",
+    description: "Lean 3-person AI team: Mark (Director), Engineering Lead, Growth & Revenue Lead",
     status: "active", 
     progress: 25,
     team: 8,
