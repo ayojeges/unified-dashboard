@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { PreviewPlayer } from "@/components/data-studio/preview-player";
+import { TemplateThumbnail } from "@/components/data-studio/template-thumbnail";
 import {
   TrendingUp, BarChart3, GitCompare, Hash, Layers, Play, Palette, Database,
   ChevronLeft, ChevronRight, Download, FileText, Monitor, Square, Smartphone,
@@ -280,17 +281,30 @@ export default function DataStudioPage() {
             return (
               <div key={category}>
                 <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider mb-3">{category}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                   {categoryTemplates.map(t => {
                     const Icon = TEMPLATE_ICONS[t.id];
+                    const sampleParsed = (() => { try { return JSON.parse(SAMPLE_DATA[t.id]); } catch { return null; } })();
                     return (
-                      <Card key={t.id} className={`cursor-pointer transition-all hover:shadow-md ${selectedTemplate === t.id ? "ring-2 ring-primary" : ""}`} onClick={() => { setSelectedTemplate(t.id); setDataJson(SAMPLE_DATA[t.id]); }} data-testid={`template-${t.id}`}>
-                        <CardHeader className="p-4">
-                          <div className="flex items-center gap-3">
-                            <div className={`p-2 rounded-lg ${selectedTemplate === t.id ? "bg-primary text-primary-foreground" : "bg-muted"}`}><Icon className="h-4 w-4" /></div>
+                      <Card key={t.id} className={`cursor-pointer transition-all hover:shadow-lg group overflow-hidden ${selectedTemplate === t.id ? "ring-2 ring-primary shadow-md" : "hover:ring-1 hover:ring-muted-foreground/20"}`} onClick={() => { setSelectedTemplate(t.id); setDataJson(SAMPLE_DATA[t.id]); }} data-testid={`template-${t.id}`}>
+                        <div className="relative">
+                          <TemplateThumbnail
+                            templateId={t.id}
+                            sampleData={sampleParsed}
+                            colors={brandColors}
+                          />
+                          {selectedTemplate === t.id && (
+                            <div className="absolute top-2 right-2 bg-primary text-primary-foreground text-[10px] font-bold px-2 py-0.5 rounded-full">
+                              SELECTED
+                            </div>
+                          )}
+                        </div>
+                        <CardHeader className="p-3 pt-2">
+                          <div className="flex items-center gap-2">
+                            <div className={`p-1.5 rounded-md ${selectedTemplate === t.id ? "bg-primary text-primary-foreground" : "bg-muted"}`}><Icon className="h-3.5 w-3.5" /></div>
                             <div className="min-w-0">
-                              <CardTitle className="text-sm">{t.name}</CardTitle>
-                              <CardDescription className="text-xs truncate">{t.description}</CardDescription>
+                              <CardTitle className="text-xs font-semibold leading-tight">{t.name}</CardTitle>
+                              <CardDescription className="text-[10px] truncate leading-tight mt-0.5">{t.description}</CardDescription>
                             </div>
                           </div>
                         </CardHeader>
