@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Send, Users, MessageSquare, Bot, User, Loader2, RefreshCw } from "lucide-react";
 
-const API_URL = "http://72.61.8.193:3333/api";
+const API_URL = "/api/chat";
 
 interface Message {
   _id?: string;
@@ -71,7 +71,7 @@ export default function ChatPage() {
 
   const fetchMessages = useCallback(async (channelName: string) => {
     try {
-      const res = await fetch(`${API_URL}/messages?channel_name=${channelName}&limit=100`);
+      const res = await fetch(`${API_URL}?channel_name=${channelName}&limit=100`);
       const data = await res.json();
       if (data.success) {
         setMessages(data.messages);
@@ -114,7 +114,7 @@ export default function ChatPage() {
 
     try {
       const agentId = AGENT_MAP[activeChannel] || "main";
-      const res = await fetch(`${API_URL}/chat/agent`, {
+      const res = await fetch(`${API_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, agentId, channel_name: activeChannel }),
