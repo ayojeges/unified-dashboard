@@ -1,430 +1,367 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { EnhancedKanbanBoard } from "@/components/kanban/enhanced-kanban-board";
-import { TeamProfiles } from "@/components/team/team-profiles";
-import { RealTimeChat } from "@/components/chat/real-time-chat";
-import { PerformanceMetrics } from "@/components/analytics/performance-metrics";
-import { DocumentationHub } from "@/components/docs/documentation-hub";
-import { ProjectBoard } from "@/components/project-board";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { 
-  Plus, 
-  Users,
-  MessageSquare,
-  BarChart,
-  FileText,
-  Kanban,
-  Target,
-  Calendar,
-  CheckCircle,
-  Clock,
-  ArrowLeft,
-  TrendingUp,
-  UserPlus,
-  Settings
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem } from "@/components/ui/simple-select";
+import {
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenuSeparator, DropdownMenuLabel
+} from "@/components/ui/dropdown-menu";
+import {
+  Plus, Users, BarChart, Kanban, Target, CheckCircle, Clock,
+  ArrowLeft, TrendingUp, ArrowRight, Trash2, GripVertical, User,
+  Building2, Globe, RefreshCw
 } from "lucide-react";
 
-// Team members data - Enhanced with detailed profiles
+const TEAM_API = "https://mark.bluprintcreations.com/team-api/api";
+
+// Real agent team
 const teamMembers = [
   {
-    id: 1,
-    name: "Mark",
-    role: "PMO / Program Manager",
-    email: "mark@blueprintcreations.com",
-    avatar: "M",
-    skills: [
-      "Strategic Planning", "Team Coordination", "Sprint Management", "CEO Communication",
-      "Risk Management", "Cross-team Handoffs", "Memory Curation", "Compliance Oversight"
-    ],
-    responsibilities: [
-      "Coordinate Product, Engineering, Growth, and Ops leads",
-      "Daily CEO brief via Telegram @Jeguz_bot",
-      "Sprint planning, standups, and velocity tracking",
-      "Task board management and blocker resolution",
-      "Memory curation and cross-team knowledge sharing",
-      "Simulates Product Lead and Ops when those bots are not active"
-    ],
-    activeTasks: 8,
-    completedTasks: 24,
-    status: "online",
-    color: "#DC2626",
-    department: "PMO",
-    joinDate: "2024-01-15",
-    performance: 95,
-    botId: "main",
-    missingSkills: [
-      "Advanced data analytics for project forecasting",
-      "AI-powered project management tools"
-    ]
+    id: 1, name: "Mark", role: "PMO Director", avatar: "M",
+    skills: ["Strategic Planning", "Team Coordination", "Sprint Management", "Compliance Oversight", "Analytics & Metrics", "Task Delegation"],
+    department: "PMO", color: "#DC2626", status: "online", botId: "main",
   },
   {
-    id: 2,
-    name: "Product Lead Bot",
-    role: "Product Lead",
-    email: "product@blueprintcreations.com",
-    avatar: "P",
-    skills: [
-      "Product Discovery", "User Research", "PRD Writing", "Acceptance Criteria",
-      "Roadmap Management", "UX Direction", "A/B Experimentation", "Funnel Analysis"
-    ],
-    responsibilities: [
-      "Turn CEO vision into clear product specs and roadmaps",
-      "Write PRDs, user stories, and acceptance criteria",
-      "Maintain product backlogs per business line",
-      "Coordinate with Engineering on sprint planning",
-      "Define positioning with Growth for feature launches",
-      "Track product metrics (NPS, DAU, activation)"
-    ],
-    activeTasks: 5,
-    completedTasks: 15,
-    status: "away",
-    color: "#8B5CF6",
-    department: "Product",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "product_lead_bot",
-    missingSkills: [
-      "Autonomous execution (currently simulated by Mark)"
-    ]
+    id: 2, name: "Innocent", role: "Engineering Lead", avatar: "I",
+    skills: ["CI/CD", "Vercel Deploy", "GitHub Deploy", "E2E Testing", "Security", "Observability", "Terminal Access", "Coolify"],
+    department: "Engineering", color: "#3B82F6", status: "online", botId: "engineering_lead_bot",
   },
   {
-    id: 3,
-    name: "Engineering Lead Bot",
-    role: "Engineering Lead",
-    email: "engineering@blueprintcreations.com",
-    avatar: "E",
-    skills: [
-      "System Architecture", "Code Quality", "CI/CD", "Security",
-      "Performance Optimization", "Technical Debt Management", "Incident Response", "Testing"
-    ],
-    responsibilities: [
-      "Design, implement, and maintain reliable systems",
-      "Code review and quality standards",
-      "Deployment pipelines and infrastructure",
-      "Technical debt management and documentation",
-      "Incident response and post-mortems",
-      "Track engineering metrics (deploy freq, MTTR, bug rate)"
-    ],
-    activeTasks: 6,
-    completedTasks: 18,
-    status: "online",
-    color: "#3B82F6",
-    department: "Engineering",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "engineering_lead_bot",
-    missingSkills: [
-      "ML integration for predictive features",
-      "Real-time collaboration tooling"
-    ]
+    id: 3, name: "Deb", role: "Growth & Revenue Lead", avatar: "D",
+    skills: ["Social Media", "Email Outreach", "SEO", "Content Marketing", "Video Content", "Reddit", "Instagram", "Document Generation"],
+    department: "Growth & Revenue", color: "#10B981", status: "online", botId: "growth_revenue_bot",
   },
   {
-    id: 4,
-    name: "Growth & Revenue Bot",
-    role: "Growth & Revenue Lead",
-    email: "growth@blueprintcreations.com",
-    avatar: "G",
-    skills: [
-      "Growth Strategy", "SEO/SEM", "Content Marketing", "Campaign Management",
-      "Funnel Design", "A/B Testing", "Sales Enablement", "Analytics"
-    ],
-    responsibilities: [
-      "Drive traffic, leads, and revenue across all brands",
-      "Campaign planning, execution, and reporting",
-      "SEO, content, email, social, and paid channels",
-      "Sales one-pagers, scripts, and partnership playbooks",
-      "GuardianCryo compliance checks on ALL content",
-      "Weekly growth reports with CAC, LTV, conversion metrics"
-    ],
-    activeTasks: 7,
-    completedTasks: 20,
-    status: "online",
-    color: "#10B981",
-    department: "Growth & Revenue",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "growth_revenue_bot",
-    missingSkills: [
-      "AI-driven marketing personalization",
-      "Advanced attribution modeling"
-    ]
+    id: 4, name: "Akan", role: "Lead Generation Specialist", avatar: "A",
+    skills: ["Enterprise Scraping", "Web Crawling", "Email Discovery", "LinkedIn Prospecting", "Deep Research", "Social Intelligence", "NER Extraction"],
+    department: "Lead Generation", color: "#F59E0B", status: "online", botId: "akan",
   },
-  {
-    id: 5,
-    name: "Ops & Success Bot",
-    role: "Ops & Customer Success Lead",
-    email: "ops@blueprintcreations.com",
-    avatar: "O",
-    skills: [
-      "Customer Support", "Onboarding Flows", "SOP Management", "SLA Tracking",
-      "Incident Management", "NPS/CSAT Monitoring", "Retention Playbooks", "Documentation"
-    ],
-    responsibilities: [
-      "Ensure smooth operations and great customer experiences",
-      "Customer support workflows and help center",
-      "Onboarding flows and in-product guidance",
-      "SOPs, SLAs, and incident post-mortems",
-      "NPS/CSAT monitoring and churn risk flagging",
-      "Feed customer feedback back to Product"
-    ],
-    activeTasks: 3,
-    completedTasks: 10,
-    status: "away",
-    color: "#F59E0B",
-    department: "Ops & Success",
-    joinDate: "2026-02-26",
-    performance: 0,
-    botId: "ops_success_bot",
-    missingSkills: [
-      "Autonomous execution (currently simulated by Mark)"
-    ]
-  }
 ];
 
+const companies = [
+  { id: "guardiancryo", name: "Guardian Cryo", url: "https://guardiancryo.com", color: "#0D9488" },
+  { id: "cdlschoolsusa", name: "CDL Schools USA", url: "https://cdlschoolsusa.com", color: "#1E40AF" },
+  { id: "schoolregistry", name: "School Registry", url: "https://schoolregistry.ng", color: "#059669" },
+  { id: "truststayng", name: "TrustStay NG", url: "https://truststayng.com", color: "#7C3AED" },
+];
+
+interface Task {
+  id: string; title: string; description: string; assignee: string;
+  priority: string; status: string; product: string; stage: string;
+  type: string; owner_clawbot: string;
+}
+
+const STATUS_COLUMNS = ["Backlog", "To Do", "In Progress", "Review", "Done"];
+const PRIORITY_COLORS: Record<string, string> = {
+  P0: "bg-red-100 text-red-700", P1: "bg-orange-100 text-orange-700",
+  P2: "bg-yellow-100 text-yellow-700", P3: "bg-green-100 text-green-700",
+};
+
+function TaskCard({ task, onMove, onDelete }: { task: Task; onMove: (id: string, status: string) => void; onDelete: (id: string) => void }) {
+  const company = companies.find(c => c.id === task.product);
+  return (
+    <Card className="cursor-default hover:shadow-md transition-shadow group mb-2" data-testid={`task-card-${task.id}`}>
+      <CardContent className="p-3 space-y-2">
+        <div className="flex justify-between items-start">
+          <p className="text-sm font-medium leading-tight">{task.title}</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 shrink-0" data-testid={`task-actions-${task.id}`}>
+                <ArrowRight className="h-3.5 w-3.5" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="text-xs">Move to</DropdownMenuLabel>
+              {STATUS_COLUMNS.filter(s => s !== task.status).map(s => (
+                <DropdownMenuItem key={s} onClick={() => onMove(task.id, s)} data-testid={`move-${task.id}-${s}`}>
+                  <ArrowRight className="mr-2 h-3 w-3" />{s}
+                </DropdownMenuItem>
+              ))}
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => onDelete(task.id)} className="text-destructive" data-testid={`delete-${task.id}`}>
+                <Trash2 className="mr-2 h-3 w-3" />Delete
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+        <p className="text-xs text-muted-foreground line-clamp-2">{task.description}</p>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <div className="flex items-center gap-1.5">
+            <div className="h-5 w-5 rounded-full flex items-center justify-center text-[10px] text-white font-bold"
+              style={{ backgroundColor: teamMembers.find(m => m.name === task.assignee)?.color || "#666" }}>
+              {task.assignee?.[0] || "?"}
+            </div>
+            <span className="text-[11px] text-muted-foreground">{task.assignee}</span>
+          </div>
+          <div className="flex items-center gap-1.5">
+            {company && <span className="text-[10px] px-1.5 py-0.5 rounded-full font-medium text-white" style={{ backgroundColor: company.color }}>{company.name.split(" ")[0]}</span>}
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full font-medium ${PRIORITY_COLORS[task.priority] || "bg-gray-100 text-gray-700"}`}>{task.priority}</span>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
 export default function MarksTeamPage() {
-  const [activeTab, setActiveTab] = useState("kanban");
-  const [teamStats, setTeamStats] = useState({
-    totalTasks: 42,
-    completedTasks: 12,
-    inProgress: 18,
-    pending: 12,
-    teamVelocity: 8.2,
-    satisfactionScore: 92
-  });
+  const [activeTab, setActiveTab] = useState("board");
+  const [tasks, setTasks] = useState<Task[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [filterProduct, setFilterProduct] = useState("all");
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [newTask, setNewTask] = useState({ title: "", description: "", assignee: "Mark", priority: "P1", product: "guardiancryo", status: "Backlog", type: "Feature" });
+
+  const fetchTasks = useCallback(async () => {
+    try {
+      const url = filterProduct === "all" ? `${TEAM_API}/tasks` : `${TEAM_API}/tasks?product=${filterProduct}`;
+      const res = await fetch(url);
+      const data = await res.json();
+      setTasks(data.tasks || []);
+    } catch (e) { console.error("Failed to fetch tasks:", e); }
+    setLoading(false);
+  }, [filterProduct]);
+
+  useEffect(() => { fetchTasks(); }, [fetchTasks]);
+
+  const moveTask = async (id: string, newStatus: string) => {
+    try {
+      await fetch(`${TEAM_API}/tasks/${id}`, { method: "PATCH", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ status: newStatus }) });
+      setTasks(prev => prev.map(t => t.id === id ? { ...t, status: newStatus } : t));
+    } catch (e) { console.error("Move failed:", e); }
+  };
+
+  const deleteTask = async (id: string) => {
+    try {
+      await fetch(`${TEAM_API}/tasks/${id}`, { method: "DELETE" });
+      setTasks(prev => prev.filter(t => t.id !== id));
+    } catch (e) { console.error("Delete failed:", e); }
+  };
+
+  const createTask = async () => {
+    try {
+      const res = await fetch(`${TEAM_API}/tasks`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...newTask, owner_clawbot: "PMO", stage: "Ideation" }) });
+      const data = await res.json();
+      if (data.task) { setTasks(prev => [data.task, ...prev]); setAddDialogOpen(false); setNewTask({ title: "", description: "", assignee: "Mark", priority: "P1", product: "guardiancryo", status: "Backlog", type: "Feature" }); }
+    } catch (e) { console.error("Create failed:", e); }
+  };
+
+  const tasksByStatus = STATUS_COLUMNS.reduce((acc, s) => { acc[s] = tasks.filter(t => t.status === s); return acc; }, {} as Record<string, Task[]>);
+  const stats = { total: tasks.length, backlog: tasksByStatus["Backlog"].length, todo: tasksByStatus["To Do"].length, inProgress: tasksByStatus["In Progress"].length, review: tasksByStatus["Review"].length, done: tasksByStatus["Done"].length };
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
-          <Button 
-            variant="outline" 
-            size="sm"
-            onClick={() => window.location.href = "/projects"}
-            className="gap-2"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            Back to Projects
+          <Button variant="outline" size="sm" onClick={() => window.location.href = "/projects"} className="gap-2" data-testid="back-btn">
+            <ArrowLeft className="h-4 w-4" />Back
           </Button>
           <div>
-            <h1 className="text-xl sm:text-2xl md:text-3xl font-bold tracking-tight">Mark's Team</h1>
-            <p className="text-muted-foreground">
-              World-class project team with 5-layer structure: Ideation, Development, Marketing, Sales, Creative
-            </p>
+            <h1 className="text-xl sm:text-2xl font-bold tracking-tight" data-testid="page-title">Blueprint Creations — Command Center</h1>
+            <p className="text-sm text-muted-foreground">4 agents, 4 companies, real-time task tracking</p>
           </div>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button>
-            <UserPlus className="mr-2 h-4 w-4" />
-            Add Team Member
-          </Button>
-          <Button variant="outline">
-            <Settings className="mr-2 h-4 w-4" />
-            Team Settings
-          </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={fetchTasks} data-testid="refresh-btn"><RefreshCw className="h-4 w-4 mr-1" />Refresh</Button>
+          <Dialog open={addDialogOpen} onOpenChange={setAddDialogOpen}>
+            <DialogTrigger asChild><Button size="sm" data-testid="add-task-btn"><Plus className="h-4 w-4 mr-1" />Add Task</Button></DialogTrigger>
+            <DialogContent>
+              <DialogHeader><DialogTitle>New Task</DialogTitle></DialogHeader>
+              <div className="space-y-3">
+                <div><Label>Title</Label><Input value={newTask.title} onChange={e => setNewTask(p => ({ ...p, title: e.target.value }))} data-testid="new-task-title" /></div>
+                <div><Label>Description</Label><Textarea value={newTask.description} onChange={e => setNewTask(p => ({ ...p, description: e.target.value }))} data-testid="new-task-desc" /></div>
+                <div className="grid grid-cols-2 gap-3">
+                  <div><Label>Assignee</Label>
+                    <Select value={newTask.assignee} onValueChange={v => setNewTask(p => ({ ...p, assignee: v }))} data-testid="new-task-assignee">
+                      <SelectContent>{teamMembers.map(m => <SelectItem key={m.name} value={m.name}>{m.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label>Company</Label>
+                    <Select value={newTask.product} onValueChange={v => setNewTask(p => ({ ...p, product: v }))} data-testid="new-task-product">
+                      <SelectContent>{companies.map(c => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label>Priority</Label>
+                    <Select value={newTask.priority} onValueChange={v => setNewTask(p => ({ ...p, priority: v }))} data-testid="new-task-priority">
+                      <SelectContent>
+                        <SelectItem value="P0">P0 - Critical</SelectItem>
+                        <SelectItem value="P1">P1 - High</SelectItem>
+                        <SelectItem value="P2">P2 - Medium</SelectItem>
+                        <SelectItem value="P3">P3 - Low</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div><Label>Status</Label>
+                    <Select value={newTask.status} onValueChange={v => setNewTask(p => ({ ...p, status: v }))} data-testid="new-task-status">
+                      <SelectContent>{STATUS_COLUMNS.map(s => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
+                    </Select>
+                  </div>
+                </div>
+                <Button onClick={createTask} className="w-full" disabled={!newTask.title} data-testid="submit-task-btn">Create Task</Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </div>
       </div>
 
-      {/* Team Stats */}
-      <div className="grid gap-3 grid-cols-2 md:grid-cols-4 lg:grid-cols-6">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Team Members</p>
-                <p className="text-2xl font-bold">{teamMembers.length}</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-red-100 flex items-center justify-center">
-                <Users className="h-5 w-5 text-red-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Total Tasks</p>
-                <p className="text-2xl font-bold">{teamStats.totalTasks}</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Target className="h-5 w-5 text-blue-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Completed</p>
-                <p className="text-2xl font-bold">{teamStats.completedTasks}</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center">
-                <CheckCircle className="h-5 w-5 text-green-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">In Progress</p>
-                <p className="text-2xl font-bold">{teamStats.inProgress}</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-yellow-100 flex items-center justify-center">
-                <Clock className="h-5 w-5 text-yellow-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Team Velocity</p>
-                <p className="text-2xl font-bold">{teamStats.teamVelocity}</p>
-                <p className="text-xs text-muted-foreground">tasks/week</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <TrendingUp className="h-5 w-5 text-purple-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-muted-foreground">Satisfaction</p>
-                <p className="text-2xl font-bold">{teamStats.satisfactionScore}%</p>
-              </div>
-              <div className="h-10 w-10 rounded-full bg-pink-100 flex items-center justify-center">
-                <Users className="h-5 w-5 text-pink-600" />
-              </div>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Company filter */}
+      <div className="flex gap-2 flex-wrap">
+        <Button variant={filterProduct === "all" ? "default" : "outline"} size="sm" onClick={() => setFilterProduct("all")} data-testid="filter-all">All ({tasks.length})</Button>
+        {companies.map(c => {
+          const count = tasks.filter(t => t.product === c.id).length;
+          return <Button key={c.id} variant={filterProduct === c.id ? "default" : "outline"} size="sm" onClick={() => setFilterProduct(c.id)} style={filterProduct === c.id ? { backgroundColor: c.color } : {}} data-testid={`filter-${c.id}`}>
+            {c.name} ({count})
+          </Button>;
+        })}
       </div>
 
-      {/* Main Tabs */}
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
-        <TabsList className="grid grid-cols-5 lg:grid-cols-8">
-          <TabsTrigger value="kanban" className="flex items-center gap-2">
-            <Kanban className="h-4 w-4" />
-            <span className="hidden sm:inline">Kanban Board</span>
-          </TabsTrigger>
-          <TabsTrigger value="team" className="flex items-center gap-2">
-            <Users className="h-4 w-4" />
-            <span className="hidden sm:inline">Team Profiles</span>
-          </TabsTrigger>
-          <TabsTrigger value="chat" className="flex items-center gap-2">
-            <MessageSquare className="h-4 w-4" />
-            <span className="hidden sm:inline">Real-time Chat</span>
-          </TabsTrigger>
-          <TabsTrigger value="analytics" className="flex items-center gap-2">
-            <BarChart className="h-4 w-4" />
-            <span className="hidden sm:inline">Analytics</span>
-          </TabsTrigger>
-          <TabsTrigger value="docs" className="flex items-center gap-2">
-            <FileText className="h-4 w-4" />
-            <span className="hidden sm:inline">Documentation</span>
-          </TabsTrigger>
+      {/* Stats */}
+      <div className="grid gap-3 grid-cols-3 md:grid-cols-6">
+        {[
+          { label: "Total", value: stats.total, icon: Target, color: "bg-blue-100 text-blue-600" },
+          { label: "Backlog", value: stats.backlog, icon: Clock, color: "bg-gray-100 text-gray-600" },
+          { label: "To Do", value: stats.todo, icon: Target, color: "bg-yellow-100 text-yellow-600" },
+          { label: "In Progress", value: stats.inProgress, icon: TrendingUp, color: "bg-purple-100 text-purple-600" },
+          { label: "Review", value: stats.review, icon: CheckCircle, color: "bg-orange-100 text-orange-600" },
+          { label: "Done", value: stats.done, icon: CheckCircle, color: "bg-green-100 text-green-600" },
+        ].map(s => (
+          <Card key={s.label}>
+            <CardContent className="pt-4 pb-3 px-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground">{s.label}</p>
+                  <p className="text-xl font-bold">{s.value}</p>
+                </div>
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center ${s.color}`}>
+                  <s.icon className="h-4 w-4" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      <Tabs value={activeTab} onValueChange={setActiveTab}>
+        <TabsList>
+          <TabsTrigger value="board" data-testid="tab-board"><Kanban className="h-4 w-4 mr-1" />Board</TabsTrigger>
+          <TabsTrigger value="team" data-testid="tab-team"><Users className="h-4 w-4 mr-1" />Team</TabsTrigger>
+          <TabsTrigger value="companies" data-testid="tab-companies"><Building2 className="h-4 w-4 mr-1" />Companies</TabsTrigger>
         </TabsList>
 
-        {/* Kanban Board Tab */}
-        <TabsContent value="kanban" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Enhanced Kanban Board</CardTitle>
-              <CardDescription>
-                Drag-and-drop task management with team assignment and priority tracking
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <EnhancedKanbanBoard storageKey="marks-team-kanban" />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Team Profiles Tab */}
-        <TabsContent value="team" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Team Member Profiles</CardTitle>
-              <CardDescription>
-                Skills, responsibilities, and performance metrics for each team member
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <TeamProfiles teamMembers={teamMembers} />
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* Real-time Chat Tab */}
-        <TabsContent value="chat" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Real-time Team Chat</CardTitle>
-                <CardDescription>
-                  Monitor and participate in team conversations
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <RealTimeChat teamId="marks-team" />
-              </CardContent>
-            </Card>
-            <Card>
-              <CardHeader>
-                <CardTitle>Online Team Members</CardTitle>
-                <CardDescription>
-                  Currently active team members
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-3">
-                  {teamMembers.filter(member => member.status === "online").map(member => (
-                    <div key={member.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-muted">
-                      <div className="flex items-center gap-3">
-                        <div 
-                          className="h-8 w-8 rounded-full flex items-center justify-center text-white font-medium"
-                          style={{ backgroundColor: member.color }}
-                        >
-                          {member.avatar}
-                        </div>
-                        <div>
-                          <p className="font-medium">{member.name}</p>
-                          <p className="text-xs text-muted-foreground">{member.role}</p>
-                        </div>
-                      </div>
-                      <div className="h-2 w-2 rounded-full bg-green-500"></div>
-                    </div>
-                  ))}
+        {/* BOARD TAB */}
+        <TabsContent value="board">
+          {loading ? <p className="text-center py-10 text-muted-foreground">Loading tasks...</p> : (
+            <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+              {STATUS_COLUMNS.map(status => (
+                <div key={status} className="space-y-2">
+                  <div className="flex items-center justify-between px-1">
+                    <h3 className="font-semibold text-sm">{status}</h3>
+                    <span className="text-xs bg-muted px-2 py-0.5 rounded-full">{tasksByStatus[status].length}</span>
+                  </div>
+                  <div className="min-h-[200px] bg-muted/30 rounded-lg p-2 space-y-2">
+                    {tasksByStatus[status].map(task => (
+                      <TaskCard key={task.id} task={task} onMove={moveTask} onDelete={deleteTask} />
+                    ))}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              ))}
+            </div>
+          )}
+        </TabsContent>
+
+        {/* TEAM TAB */}
+        <TabsContent value="team">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {teamMembers.map(member => {
+              const memberTasks = tasks.filter(t => t.assignee === member.name);
+              const activeTasks = memberTasks.filter(t => t.status === "In Progress").length;
+              const todoTasks = memberTasks.filter(t => t.status === "To Do").length;
+              const doneTasks = memberTasks.filter(t => t.status === "Done").length;
+              return (
+                <Card key={member.id} data-testid={`team-member-${member.name}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style={{ backgroundColor: member.color }}>
+                        {member.avatar}
+                      </div>
+                      <div>
+                        <CardTitle className="text-base">{member.name}</CardTitle>
+                        <CardDescription className="text-xs">{member.role}</CardDescription>
+                      </div>
+                      <div className="ml-auto h-2.5 w-2.5 rounded-full bg-green-500" title="Online" />
+                    </div>
+                  </CardHeader>
+                  <CardContent className="space-y-3">
+                    <div className="grid grid-cols-3 gap-2 text-center">
+                      <div className="bg-yellow-50 rounded p-1.5"><p className="text-lg font-bold text-yellow-700">{todoTasks}</p><p className="text-[10px] text-muted-foreground">To Do</p></div>
+                      <div className="bg-purple-50 rounded p-1.5"><p className="text-lg font-bold text-purple-700">{activeTasks}</p><p className="text-[10px] text-muted-foreground">Active</p></div>
+                      <div className="bg-green-50 rounded p-1.5"><p className="text-lg font-bold text-green-700">{doneTasks}</p><p className="text-[10px] text-muted-foreground">Done</p></div>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {member.skills.slice(0, 4).map(s => (
+                        <span key={s} className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full">{s}</span>
+                      ))}
+                      {member.skills.length > 4 && <span className="text-[10px] bg-muted px-1.5 py-0.5 rounded-full">+{member.skills.length - 4}</span>}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         </TabsContent>
 
-        {/* Analytics Tab */}
-        <TabsContent value="analytics" className="space-y-4">
-          <PerformanceMetrics teamId="marks-team" />
-        </TabsContent>
-
-        {/* Documentation Tab */}
-        <TabsContent value="docs" className="space-y-4">
-          <DocumentationHub projectId="marks-team" />
+        {/* COMPANIES TAB */}
+        <TabsContent value="companies">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {companies.map(company => {
+              const companyTasks = tasks.filter(t => t.product === company.id);
+              const byStatus = STATUS_COLUMNS.reduce((a, s) => { a[s] = companyTasks.filter(t => t.status === s).length; return a; }, {} as Record<string, number>);
+              return (
+                <Card key={company.id} data-testid={`company-${company.id}`}>
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="h-10 w-10 rounded-lg flex items-center justify-center text-white font-bold" style={{ backgroundColor: company.color }}>
+                          {company.name[0]}
+                        </div>
+                        <div>
+                          <CardTitle className="text-base">{company.name}</CardTitle>
+                          <a href={company.url} target="_blank" rel="noopener" className="text-xs text-blue-500 hover:underline flex items-center gap-1">
+                            <Globe className="h-3 w-3" />{company.url.replace("https://", "")}
+                          </a>
+                        </div>
+                      </div>
+                      <span className="text-2xl font-bold">{companyTasks.length}</span>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-5 gap-1 text-center mb-3">
+                      {STATUS_COLUMNS.map(s => (
+                        <div key={s} className="bg-muted/50 rounded p-1">
+                          <p className="text-sm font-bold">{byStatus[s]}</p>
+                          <p className="text-[9px] text-muted-foreground">{s}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-1">
+                      {companyTasks.filter(t => ["To Do", "In Progress"].includes(t.status)).slice(0, 3).map(t => (
+                        <div key={t.id} className="flex items-center justify-between text-xs p-1.5 rounded bg-muted/30">
+                          <span className="truncate flex-1">{t.title}</span>
+                          <span className={`ml-2 px-1.5 py-0.5 rounded-full text-[10px] ${PRIORITY_COLORS[t.priority]}`}>{t.priority}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
