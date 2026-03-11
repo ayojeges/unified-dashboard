@@ -20,6 +20,12 @@ const TEMPLATE_SCHEMAS: Record<string, string> = {
   map_viz: `{ "title": string, "subtitle": string, "sourceLabel": string, "valueSuffix": string, "states": [{ "name": string (Nigerian state name), "value": number }, ...] }`,
   scatter_race: `{ "title": string, "subtitle": string, "sourceLabel": string, "xLabel": string, "yLabel": string, "timeLabels": [string, ...], "bubbles": [{ "label": string, "snapshots": [{ "x": number, "y": number, "size": number }, ...], "color": "#hex" }, ...] }`,
   waterfall: `{ "title": string, "subtitle": string, "sourceLabel": string, "valuePrefix": string, "valueSuffix": string, "items": [{ "label": string, "value": number, "type": "increase"|"decrease"|"total" }, ...] }`,
+  radar_chart: `{ "title": string, "subtitle": string, "sourceLabel": string, "maxValue": number, "dimensions": [string, ...], "entries": [{ "name": string, "values": [number, ...], "color": "#hex" }, ...] }`,
+  tier_list: `{ "title": string, "subtitle": string, "sourceLabel": string, "tiers": [{ "tier": "S"|"A"|"B"|"C"|"D", "color": "#hex", "items": [{ "name": string, "score": number }, ...] }, ...] }`,
+  tournament_bracket: `{ "title": string, "subtitle": string, "sourceLabel": string, "champion": string, "rounds": [{ "name": string, "matches": [{ "a": { "name": string, "score": number }, "b": { "name": string, "score": number } }, ...] }, ...] }`,
+  school_matrix: `{ "title": string, "subtitle": string, "sourceLabel": string, "xLabel": string, "yLabel": string, "quadrants": { "topLeft": string, "topRight": string, "bottomLeft": string, "bottomRight": string }, "schools": [{ "name": string, "x": number, "y": number, "size": number, "color": "#hex" }, ...] }`,
+  stacked_ranking: `{ "title": string, "subtitle": string, "sourceLabel": string, "categories": [string, ...], "entries": [{ "name": string, "scores": [number, ...] }, ...] }`,
+  progress_grid: `{ "title": string, "subtitle": string, "sourceLabel": string, "maxValue": number, "valueSuffix": string, "metricLabels": [string, ...], "schools": [{ "name": string, "metrics": [number, ...], "color": "#hex" }, ...] }`,
 };
 
 export async function POST(req: NextRequest) {
@@ -29,8 +35,8 @@ export async function POST(req: NextRequest) {
     if (!process.env.OPENAI_API_KEY) return NextResponse.json({ error: "OpenAI API key not configured. Add OPENAI_API_KEY to Vercel environment variables." }, { status: 500 });
 
     const schemaHint = template && TEMPLATE_SCHEMAS[template]
-      ? `The user has selected the "${template}" template. Output MUST match this schema:\n${TEMPLATE_SCHEMAS[template]}\n\nHowever, also include a "suggestedTemplate" field if a different template would be a BETTER fit for this data. Valid templates: line_race, bar_race, comparison_duel, stat_counter, stacked_area, funnel_chart, donut_chart, heatmap_grid, gauge, before_after, timeline, leaderboard, quote_card, map_viz, scatter_race, waterfall.`
-      : `Choose the best template from: line_race, bar_race, comparison_duel, stat_counter, stacked_area, funnel_chart, donut_chart, heatmap_grid, gauge, before_after, timeline, leaderboard, quote_card, map_viz, scatter_race, waterfall. Include a "suggestedTemplate" field with your choice.`;
+      ? `The user has selected the "${template}" template. Output MUST match this schema:\n${TEMPLATE_SCHEMAS[template]}\n\nHowever, also include a "suggestedTemplate" field if a different template would be a BETTER fit for this data. Valid templates: line_race, bar_race, comparison_duel, stat_counter, stacked_area, funnel_chart, donut_chart, heatmap_grid, gauge, before_after, timeline, leaderboard, quote_card, map_viz, scatter_race, waterfall, radar_chart, tier_list, tournament_bracket, school_matrix, stacked_ranking, progress_grid.`
+      : `Choose the best template from: line_race, bar_race, comparison_duel, stat_counter, stacked_area, funnel_chart, donut_chart, heatmap_grid, gauge, before_after, timeline, leaderboard, quote_card, map_viz, scatter_race, waterfall, radar_chart, tier_list, tournament_bracket, school_matrix, stacked_ranking, progress_grid. Include a "suggestedTemplate" field with your choice.`;
 
     const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
@@ -58,6 +64,12 @@ Rules:
   * map_viz: Nigeria state-level geographic data (school density, pass rates by state)
   * scatter_race: relationship between 2 variables evolving over time (enrollment vs performance)
   * waterfall: incremental gains and losses (revenue breakdown, budget changes)
+  * radar_chart: multi-dimensional comparison of 2+ entities across 4+ metrics (school comparison, player stats)
+  * tier_list: S/A/B/C/D ranking classification (school rankings, product tiers)
+  * tournament_bracket: elimination-style head-to-head matchups (top 8 competition)
+  * school_matrix: scatter plot with quadrants showing two variables (fees vs quality, price vs performance)
+  * stacked_ranking: composite scores with category breakdown bars (combined metrics ranking)
+  * progress_grid: side-by-side progress bars comparing 2-4 entities across metrics
 - For colors, use professional hex colors (#059669, #3B82F6, #F59E0B, #EF4444, #8B5CF6, #06B6D4)
 - Always include a descriptive title and subtitle
 - Set sourceLabel to "data-studio" unless the text mentions a specific source
