@@ -114,38 +114,44 @@ export default function ChatPage() {
 
     try {
       const agentId = AGENT_MAP[activeChannel] || "main";
-      const res = await fetch(`${API_URL}`, {
+      // Fire async - returns immediately while agent processes in background
+      await fetch(`${API_URL}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: text, agentId, channel_name: activeChannel }),
       });
-      const data = await res.json();
-      if (data.success) {
-        // Add agent response
-        const agentMsg: Message = {
-          channel_name: activeChannel,
-          sender: agentId === "main" ? "MarkPMO" : agentId,
-          text: data.response,
-          meta: { source: "openclaw", type: "agent_response" },
-          created_at: new Date().toISOString(),
-        };
-        setMessages((prev) => [...prev, agentMsg]);
-      } else {
-        setMessages((prev) => [...prev, {
-          channel_name: activeChannel, sender: "system",
-          text: `Error: ${data.error}`, meta: { type: "error" },
-          created_at: new Date().toISOString(),
-        }]);
-      }
+      // Poll more frequently while waiting for response
+      const pollFast = setInterval(() => fetchMessages(activeChannel), 3000);
+      setTimeout(() => {
+        clearInterval(pollFast);
+        setSending(false);
+      }, 120000); // Stop fast polling after 2 minutes
+      // Also set a check at reasonable intervals
+      const checkResponse = async () => {
+        const res = await fetch(`${API_URL}?channel_name=${activeChannel}&limit=5`);
+        const data = await res.json();
+        if (data.success && data.messages) {
+          const latestMsg = data.messages[data.messages.length - 1];
+          if (latestMsg && latestMsg.sender !== "CEO" && latestMsg.sender !== "system") {
+            clearInterval(pollFast);
+            setMessages(data.messages);
+            setSending(false);
+            setTimeout(scrollToBottom, 100);
+          }
+        }
+      };
+      setTimeout(checkResponse, 10000);
+      setTimeout(checkResponse, 20000);
+      setTimeout(checkResponse, 40000);
+      setTimeout(checkResponse, 60000);
+      setTimeout(checkResponse, 90000);
     } catch (err: any) {
       setMessages((prev) => [...prev, {
         channel_name: activeChannel, sender: "system",
         text: `Connection error: ${err.message}`, meta: { type: "error" },
         created_at: new Date().toISOString(),
       }]);
-    } finally {
       setSending(false);
-      setTimeout(scrollToBottom, 100);
     }
   };
 
