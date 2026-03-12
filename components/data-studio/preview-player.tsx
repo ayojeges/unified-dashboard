@@ -24,6 +24,19 @@ import { TournamentBracketTemplate } from "./templates/tournament-bracket";
 import { SchoolMatrixTemplate } from "./templates/school-matrix";
 import { StackedRankingTemplate } from "./templates/stacked-ranking";
 import { ProgressGridTemplate } from "./templates/progress-grid";
+// New templates
+import { ColumnRaceTemplate } from "./templates/column-race";
+import { TreemapTemplate } from "./templates/treemap";
+import { BoxPlotTemplate } from "./templates/box-plot";
+import { ParliamentTemplate } from "./templates/parliament";
+import { BubbleChartTemplate } from "./templates/bubble-chart";
+import { ChoroplethTemplate } from "./templates/choropleth";
+import { BeeswarmTemplate } from "./templates/beeswarm";
+import { RouteMapTemplate } from "./templates/route-map";
+import { CardSliderTemplate } from "./templates/card-slider";
+import { DualRaceLineTemplate } from "./templates/dual-race-line";
+import { PointMapTemplate } from "./templates/point-map";
+import { StorySliderTemplate } from "./templates/story-slider";
 
 interface PreviewPlayerProps {
   template: string;
@@ -66,6 +79,19 @@ const TEMPLATE_MAP: Record<string, React.FC<any>> = {
   school_matrix: SchoolMatrixTemplate,
   stacked_ranking: StackedRankingTemplate,
   progress_grid: ProgressGridTemplate,
+  // New templates
+  column_race: ColumnRaceTemplate,
+  treemap: TreemapTemplate,
+  box_plot: BoxPlotTemplate,
+  parliament: ParliamentTemplate,
+  bubble_chart: BubbleChartTemplate,
+  choropleth: ChoroplethTemplate,
+  beeswarm: BeeswarmTemplate,
+  route_map: RouteMapTemplate,
+  card_slider: CardSliderTemplate,
+  dual_race_line: DualRaceLineTemplate,
+  point_map: PointMapTemplate,
+  story_slider: StorySliderTemplate,
 };
 
 export const PreviewPlayer: React.FC<PreviewPlayerProps> = ({ template, data, brand, colors, playing, aspectRatio = "16:9" }) => {
@@ -73,7 +99,6 @@ export const PreviewPlayer: React.FC<PreviewPlayerProps> = ({ template, data, br
   const dims = ASPECT_DIMENSIONS[aspectRatio] || ASPECT_DIMENSIONS["16:9"];
   const Component = TEMPLATE_MAP[template] || LineRaceTemplate;
 
-  // Generic prop passthrough — spread all data fields + standard props
   const getInputProps = () => {
     const base = { brand, colors, sourceLabel: data?.sourceLabel || brand };
     return { ...base, ...data };
