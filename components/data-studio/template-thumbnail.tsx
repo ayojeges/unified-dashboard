@@ -37,6 +37,22 @@ import { CardSliderTemplate } from "./templates/card-slider";
 import { DualRaceLineTemplate } from "./templates/dual-race-line";
 import { PointMapTemplate } from "./templates/point-map";
 import { StorySliderTemplate } from "./templates/story-slider";
+// Advanced templates (batch 2)
+import { LineChartRaceTemplate } from "./templates/line-chart-race";
+import { AreaRaceTemplate } from "./templates/area-race";
+import { ForecastLineTemplate } from "./templates/forecast-line";
+import { SlopeChartTemplate } from "./templates/slope-chart";
+import { PackedBubbleTemplate } from "./templates/packed-bubble";
+import { WordCloudTemplate } from "./templates/word-cloud";
+import { PictogramTemplate } from "./templates/pictogram";
+import { NightingaleRoseTemplate } from "./templates/nightingale-rose";
+import { RadarCompareTemplate } from "./templates/radar-compare";
+import { GroupedBarTemplate } from "./templates/grouped-bar";
+import { LollipopTemplate } from "./templates/lollipop";
+import { DotPlotTemplate } from "./templates/dot-plot";
+import { SankeyTemplate } from "./templates/sankey";
+import { BulletChartTemplate } from "./templates/bullet-chart";
+import { HeatmapMatrixTemplate } from "./templates/heatmap-matrix";
 
 const COMPONENT_MAP: Record<string, React.FC<any>> = {
   line_race: LineRaceTemplate,
@@ -74,6 +90,22 @@ const COMPONENT_MAP: Record<string, React.FC<any>> = {
   dual_race_line: DualRaceLineTemplate,
   point_map: PointMapTemplate,
   story_slider: StorySliderTemplate,
+  // Advanced templates (batch 2)
+  line_chart_race: LineChartRaceTemplate,
+  area_race: AreaRaceTemplate,
+  forecast_line: ForecastLineTemplate,
+  slope_chart: SlopeChartTemplate,
+  packed_bubble: PackedBubbleTemplate,
+  word_cloud: WordCloudTemplate,
+  pictogram: PictogramTemplate,
+  nightingale_rose: NightingaleRoseTemplate,
+  radar_compare: RadarCompareTemplate,
+  grouped_bar: GroupedBarTemplate,
+  lollipop: LollipopTemplate,
+  dot_plot: DotPlotTemplate,
+  sankey: SankeyTemplate,
+  bullet_chart: BulletChartTemplate,
+  heatmap_matrix: HeatmapMatrixTemplate,
 };
 
 interface TemplateThumbnailProps {

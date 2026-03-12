@@ -13,10 +13,11 @@ import {
   ArrowLeftRight, Clock, Trophy, Quote, Map, ScatterChart, CandlestickChart, Send,
   Radar, ListOrdered, Swords, LayoutGrid, BarChart, Activity,
   Columns, TreePine, BoxSelect, Vote, Circle, MapPin, Navigation, GalleryHorizontalEnd,
-  SplitSquareVertical, Locate, BookOpen,
+  SplitSquareVertical, Locate, BookOpen, Zap, AreaChart, Target, ArrowUpDown,
+  Cloudy, Type, Image, Flower, Hexagon, BarChart2, Minus, Dot, GitBranch, Crosshair, Table2,
 } from "lucide-react";
 
-type TemplateType = "line_race" | "bar_race" | "comparison_duel" | "stat_counter" | "stacked_area" | "funnel_chart" | "donut_chart" | "heatmap_grid" | "gauge" | "before_after" | "timeline" | "leaderboard" | "quote_card" | "map_viz" | "scatter_race" | "waterfall" | "radar_chart" | "tier_list" | "tournament_bracket" | "school_matrix" | "stacked_ranking" | "progress_grid" | "column_race" | "treemap" | "box_plot" | "parliament" | "bubble_chart" | "choropleth" | "beeswarm" | "route_map" | "card_slider" | "dual_race_line" | "point_map" | "story_slider";
+type TemplateType = "line_race" | "bar_race" | "comparison_duel" | "stat_counter" | "stacked_area" | "funnel_chart" | "donut_chart" | "heatmap_grid" | "gauge" | "before_after" | "timeline" | "leaderboard" | "quote_card" | "map_viz" | "scatter_race" | "waterfall" | "radar_chart" | "tier_list" | "tournament_bracket" | "school_matrix" | "stacked_ranking" | "progress_grid" | "column_race" | "treemap" | "box_plot" | "parliament" | "bubble_chart" | "choropleth" | "beeswarm" | "route_map" | "card_slider" | "dual_race_line" | "point_map" | "story_slider" | "line_chart_race" | "area_race" | "forecast_line" | "slope_chart" | "packed_bubble" | "word_cloud" | "pictogram" | "nightingale_rose" | "radar_compare" | "grouped_bar" | "lollipop" | "dot_plot" | "sankey" | "bullet_chart" | "heatmap_matrix";
 
 interface BrandColors {
   name: string;
@@ -77,6 +78,22 @@ const TEMPLATES: { id: TemplateType; name: string; description: string; useCase:
   // ── Narrative ──
   { id: "card_slider", name: "Card Slider", description: "Scrolling showcase cards", useCase: "Featured schools, product catalogs", example: "Featured CDL School Showcase", category: "Narrative" },
   { id: "story_slider", name: "Story Slider", description: "Step-by-step journey guide", useCase: "Onboarding journeys, how-it-works guides", example: "CDL License: 3-Step Journey", category: "Narrative" },
+  // ── Advanced Visualizations ──
+  { id: "line_chart_race", name: "Line Chart Race", description: "Trajectory ranking lines", useCase: "State ranking evolution, volatility tracking", example: "State Ranking Trajectories 2020-2024", category: "Trends" },
+  { id: "area_race", name: "Area Race", description: "Stacked area animation", useCase: "Cumulative market share, segment growth", example: "School Type Market Share Over Time", category: "Trends" },
+  { id: "forecast_line", name: "Forecast Line", description: "Historical + projected with confidence", useCase: "Growth projections, scenario planning", example: "Projected Growth 2024-2028", category: "Trends" },
+  { id: "slope_chart", name: "Slope Chart", description: "Before/after connecting lines", useCase: "Period-over-period comparison, gain/loss", example: "2020 vs 2024 State Comparison", category: "Comparison" },
+  { id: "packed_bubble", name: "Packed Bubble", description: "Hierarchical circle packing", useCase: "Proportional category comparison, drill-down", example: "School Distribution by State", category: "Distribution" },
+  { id: "word_cloud", name: "Word Cloud", description: "Weighted word visualization", useCase: "Naming trends, keyword frequency, review analysis", example: "Most Common School Names & Features", category: "Highlights" },
+  { id: "pictogram", name: "Pictogram", description: "Icon-based unit chart", useCase: "Engaging count displays, social media content", example: "School Count by State (1 icon = 50)", category: "Highlights" },
+  { id: "nightingale_rose", name: "Nightingale Rose", description: "Polar area chart", useCase: "Seasonal patterns, cyclical data", example: "Monthly Enrollment Patterns", category: "Distribution" },
+  { id: "radar_compare", name: "Radar Compare", description: "Multi-series spider chart", useCase: "Multi-dimensional type comparison", example: "Private vs Community vs Company", category: "Comparison" },
+  { id: "grouped_bar", name: "Grouped Bar", description: "Side-by-side bar groups", useCase: "Category comparison across groups", example: "Tuition by State & School Type", category: "Comparison" },
+  { id: "lollipop", name: "Lollipop Chart", description: "Minimalist ranked display", useCase: "Clean rankings, precise value comparison", example: "Top Schools by Job Placement", category: "Rankings" },
+  { id: "dot_plot", name: "Dot Plot", description: "Min/median/max range display", useCase: "Distribution ranges, outlier detection", example: "Tuition Range by School Type", category: "Distribution" },
+  { id: "sankey", name: "Sankey Diagram", description: "Flow visualization", useCase: "Student journeys, conversion paths", example: "School Type to Carrier to Region", category: "Distribution" },
+  { id: "bullet_chart", name: "Bullet Chart", description: "KPI with target ranges", useCase: "Progress vs targets, compliance tracking", example: "FMCSA Verification by State", category: "Highlights" },
+  { id: "heatmap_matrix", name: "Heatmap Matrix", description: "Two-dimensional intensity grid", useCase: "State x Type density, gap analysis", example: "School Density: State x Type", category: "Distribution" },
 ];
 
 const TEMPLATE_ICONS: Record<TemplateType, any> = {
@@ -115,6 +132,22 @@ const TEMPLATE_ICONS: Record<TemplateType, any> = {
   dual_race_line: SplitSquareVertical,
   point_map: MapPin,
   story_slider: BookOpen,
+  // Advanced templates
+  line_chart_race: AreaChart,
+  area_race: Layers,
+  forecast_line: Target,
+  slope_chart: ArrowUpDown,
+  packed_bubble: Hexagon,
+  word_cloud: Type,
+  pictogram: Image,
+  nightingale_rose: Flower,
+  radar_compare: Radar,
+  grouped_bar: BarChart2,
+  lollipop: Minus,
+  dot_plot: Dot,
+  sankey: GitBranch,
+  bullet_chart: Crosshair,
+  heatmap_matrix: Table2,
 };
 
 const SAMPLE_DATA: Record<TemplateType, string> = {
@@ -153,6 +186,22 @@ const SAMPLE_DATA: Record<TemplateType, string> = {
   dual_race_line: JSON.stringify({ title: "CDL Market: Rankings + Growth", subtitle: "Top schools vs total market trend", sourceLabel: "CDLSchoolsUSA.com", valueSuffix: " schools", raceData: [{ name: "Texas", value: 320 }, { name: "California", value: 280 }, { name: "Florida", value: 240 }, { name: "New York", value: 180 }, { name: "Illinois", value: 160 }, { name: "Pennsylvania", value: 150 }], lineData: [{ year: 2020, total: 1200 }, { year: 2021, total: 1450 }, { year: 2022, total: 1680 }, { year: 2023, total: 1920 }, { year: 2024, total: 2200 }] }, null, 2),
   point_map: JSON.stringify({ title: "CDL School Locations", subtitle: "Interactive school finder", sourceLabel: "CDLSchoolsUSA.com", points: [{ name: "Southwest Trucking Academy", lat: 33.45, lng: -112.07, type: "verified", city: "Phoenix, AZ" }, { name: "Great Lakes CDL Training", lat: 42.33, lng: -83.05, type: "premium", city: "Detroit, MI" }, { name: "Pacific Coast Truck Driving", lat: 38.58, lng: -121.49, type: "verified", city: "Sacramento, CA" }, { name: "Lone Star CDL School", lat: 32.78, lng: -96.80, type: "premium", city: "Dallas, TX" }, { name: "Florida Trucking Institute", lat: 28.54, lng: -81.38, type: "verified", city: "Orlando, FL" }] }, null, 2),
   story_slider: JSON.stringify({ title: "Your CDL Journey", subtitle: "3 steps to your commercial license", sourceLabel: "CDLSchoolsUSA.com", steps: [{ title: "Choose Your Path", description: "Decide between Class A, B, or C license based on your career goals. Class A offers the highest earning potential with average salaries of $65K+.", stat: { value: "65%", label: "Choose Class A" } }, { title: "Verify Your School", description: "Only FMCSA-registered schools can legally provide ELDT training. Use our verification tool to ensure compliance.", stat: { value: "85%", label: "Verified Schools" } }, { title: "Compare Costs", description: "Factor in tuition, duration, and job placement rates. Company-sponsored programs offer $0 upfront costs.", stat: { value: "$0-$8K", label: "Cost Range" } }] }, null, 2),
+  // ── Advanced Templates Sample Data ──
+  line_chart_race: JSON.stringify({ title: "State Ranking Trajectories", subtitle: "CDL school count by state over time", sourceLabel: "CDLSchoolsUSA.com", data: [{ state: "Texas", values: [{ year: 2020, value: 180 }, { year: 2021, value: 210 }, { year: 2022, value: 250 }, { year: 2023, value: 290 }, { year: 2024, value: 320 }] }, { state: "California", values: [{ year: 2020, value: 200 }, { year: 2021, value: 220 }, { year: 2022, value: 245 }, { year: 2023, value: 265 }, { year: 2024, value: 280 }] }, { state: "Florida", values: [{ year: 2020, value: 120 }, { year: 2021, value: 155 }, { year: 2022, value: 190 }, { year: 2023, value: 218 }, { year: 2024, value: 240 }] }, { state: "New York", values: [{ year: 2020, value: 150 }, { year: 2021, value: 160 }, { year: 2022, value: 168 }, { year: 2023, value: 175 }, { year: 2024, value: 180 }] }, { state: "Illinois", values: [{ year: 2020, value: 130 }, { year: 2021, value: 138 }, { year: 2022, value: 145 }, { year: 2023, value: 152 }, { year: 2024, value: 160 }] }] }, null, 2),
+  area_race: JSON.stringify({ title: "School Type Market Share", subtitle: "Cumulative enrollment by school type", sourceLabel: "CDLSchoolsUSA.com", years: [2020, 2021, 2022, 2023, 2024], series: [{ label: "Private", values: [180, 210, 240, 265, 290], color: "#64ffda" }, { label: "Community", values: [150, 165, 180, 200, 220], color: "#ff6b6b" }, { label: "Company", values: [100, 130, 155, 180, 210], color: "#ffd93d" }, { label: "Trade", values: [80, 88, 95, 105, 115], color: "#a78bfa" }] }, null, 2),
+  forecast_line: JSON.stringify({ title: "CDL Market Growth Forecast", subtitle: "Historical + AI-projected through 2028", sourceLabel: "CDLSchoolsUSA.com", historical: [{ year: 2020, value: 1200 }, { year: 2021, value: 1400 }, { year: 2022, value: 1650 }, { year: 2023, value: 1900 }, { year: 2024, value: 2200 }], forecast: [{ year: 2025, value: 2450, low: 2200, high: 2700 }, { year: 2026, value: 2700, low: 2350, high: 3050 }, { year: 2027, value: 2950, low: 2500, high: 3400 }, { year: 2028, value: 3200, low: 2650, high: 3750 }] }, null, 2),
+  slope_chart: JSON.stringify({ title: "2020 vs 2024 State Comparison", subtitle: "School count change by state", sourceLabel: "CDLSchoolsUSA.com", startYear: "2020", endYear: "2024", data: [{ state: "Texas", start: 180, end: 320 }, { state: "California", start: 200, end: 280 }, { state: "Florida", start: 120, end: 240 }, { state: "New York", start: 150, end: 180 }, { state: "Illinois", start: 130, end: 160 }, { state: "Pennsylvania", start: 110, end: 150 }, { state: "Ohio", start: 100, end: 140 }, { state: "Georgia", start: 85, end: 130 }] }, null, 2),
+  packed_bubble: JSON.stringify({ title: "CDL Schools by State", subtitle: "Bubble size = number of schools", sourceLabel: "CDLSchoolsUSA.com", data: [{ name: "Texas", value: 320 }, { name: "California", value: 280 }, { name: "Florida", value: 240 }, { name: "New York", value: 180 }, { name: "Illinois", value: 160 }, { name: "Pennsylvania", value: 150 }, { name: "Ohio", value: 140 }, { name: "Georgia", value: 130 }] }, null, 2),
+  word_cloud: JSON.stringify({ title: "Most Common School Features", subtitle: "Weighted by frequency in reviews", sourceLabel: "CDLSchoolsUSA.com", words: [{ text: "Job Placement", size: 50 }, { text: "Financial Aid", size: 42 }, { text: "FMCSA Verified", size: 48 }, { text: "Weekend Classes", size: 35 }, { text: "CDL Training", size: 55 }, { text: "Class A License", size: 45 }, { text: "Truck Simulator", size: 30 }, { text: "Housing", size: 25 }, { text: "Career Services", size: 38 }, { text: "Flexible Hours", size: 28 }, { text: "Veteran Friendly", size: 32 }, { text: "ELDT Certified", size: 40 }] }, null, 2),
+  pictogram: JSON.stringify({ title: "Schools by State", subtitle: "Each icon represents 50 schools", sourceLabel: "CDLSchoolsUSA.com", icon: "\u{1F69B}", scale: 50, data: [{ state: "Texas", count: 320 }, { state: "California", count: 280 }, { state: "Florida", count: 240 }, { state: "New York", count: 180 }, { state: "Illinois", count: 160 }, { state: "Pennsylvania", count: 150 }, { state: "Ohio", count: 140 }, { state: "Georgia", count: 130 }] }, null, 2),
+  nightingale_rose: JSON.stringify({ title: "Seasonal Enrollment Patterns", subtitle: "Monthly new student enrollment 2024", sourceLabel: "CDLSchoolsUSA.com", data: [{ month: "Jan", value: 65 }, { month: "Feb", value: 72 }, { month: "Mar", value: 85 }, { month: "Apr", value: 92 }, { month: "May", value: 110 }, { month: "Jun", value: 120 }, { month: "Jul", value: 105 }, { month: "Aug", value: 115 }, { month: "Sep", value: 130 }, { month: "Oct", value: 95 }, { month: "Nov", value: 78 }, { month: "Dec", value: 55 }] }, null, 2),
+  radar_compare: JSON.stringify({ title: "School Type Comparison", subtitle: "6-dimensional performance radar", sourceLabel: "CDLSchoolsUSA.com", maxValue: 10, dimensions: ["Cost Efficiency", "Training Speed", "Quality", "Job Placement", "Facilities", "Flexibility"], entries: [{ name: "Private", values: [6, 7, 9, 8, 9, 7], color: "#64ffda" }, { name: "Community", values: [9, 5, 7, 7, 6, 8], color: "#ff6b6b" }, { name: "Company", values: [10, 9, 6, 10, 5, 4], color: "#ffd93d" }] }, null, 2),
+  grouped_bar: JSON.stringify({ title: "Tuition by State & Type", subtitle: "Average tuition comparison", sourceLabel: "CDLSchoolsUSA.com", valuePrefix: "$", data: [{ state: "Texas", values: [{ type: "Private", value: 5500 }, { type: "Community", value: 3200 }, { type: "Trade", value: 4100 }] }, { state: "California", values: [{ type: "Private", value: 6800 }, { type: "Community", value: 3800 }, { type: "Trade", value: 4500 }] }, { state: "Florida", values: [{ type: "Private", value: 5200 }, { type: "Community", value: 2900 }, { type: "Trade", value: 3800 }] }, { state: "New York", values: [{ type: "Private", value: 7200 }, { type: "Community", value: 4100 }, { type: "Trade", value: 5200 }] }, { state: "Illinois", values: [{ type: "Private", value: 5800 }, { type: "Community", value: 3500 }, { type: "Trade", value: 4300 }] }] }, null, 2),
+  lollipop: JSON.stringify({ title: "Top Schools by Job Placement", subtitle: "Verified placement rates", sourceLabel: "CDLSchoolsUSA.com", valueSuffix: "%", data: [{ name: "Swift Academy", value: 98.5 }, { name: "Werner Training", value: 97.2 }, { name: "Elite CDL Academy", value: 95.8 }, { name: "Great Lakes CDL", value: 94.1 }, { name: "Pacific Coast", value: 93.5 }, { name: "Lone Star Institute", value: 92.8 }, { name: "State Tech", value: 91.4 }, { name: "Metro Truck School", value: 90.2 }, { name: "Sunshine CDL", value: 89.7 }, { name: "Heartland Training", value: 88.3 }] }, null, 2),
+  dot_plot: JSON.stringify({ title: "Tuition Range Distribution", subtitle: "Min, median, and max by school type", sourceLabel: "CDLSchoolsUSA.com", valuePrefix: "$", data: [{ type: "Private", min: 3000, median: 6000, max: 10000, outliers: [12000, 15000] }, { type: "Community", min: 1500, median: 3500, max: 6000, outliers: [] }, { type: "Company", min: 0, median: 0, max: 0, outliers: [5000] }, { type: "Trade", min: 2500, median: 4200, max: 7000, outliers: [9000] }] }, null, 2),
+  sankey: JSON.stringify({ title: "Student Journey Flow", subtitle: "School type to carrier to job region", sourceLabel: "CDLSchoolsUSA.com", nodes: [{ name: "Private School" }, { name: "Community College" }, { name: "Company Training" }, { name: "Swift" }, { name: "Werner" }, { name: "Schneider" }, { name: "Other" }, { name: "Local" }, { name: "Regional" }, { name: "OTR" }], links: [{ source: 0, target: 3, value: 30 }, { source: 0, target: 4, value: 25 }, { source: 1, target: 3, value: 20 }, { source: 1, target: 5, value: 15 }, { source: 2, target: 3, value: 40 }, { source: 2, target: 6, value: 10 }, { source: 3, target: 7, value: 20 }, { source: 3, target: 8, value: 30 }, { source: 3, target: 9, value: 20 }, { source: 4, target: 8, value: 25 }, { source: 5, target: 9, value: 15 }] }, null, 2),
+  bullet_chart: JSON.stringify({ title: "FMCSA Verification by State", subtitle: "Actual vs target compliance rates", sourceLabel: "CDLSchoolsUSA.com", valueSuffix: "%", data: [{ state: "Texas", actual: 92, target: 85, ranges: [50, 75, 100] }, { state: "California", actual: 88, target: 85, ranges: [50, 75, 100] }, { state: "Florida", actual: 78, target: 85, ranges: [50, 75, 100] }, { state: "New York", actual: 95, target: 85, ranges: [50, 75, 100] }, { state: "Illinois", actual: 82, target: 85, ranges: [50, 75, 100] }, { state: "Pennsylvania", actual: 73, target: 85, ranges: [50, 75, 100] }, { state: "Ohio", actual: 86, target: 85, ranges: [50, 75, 100] }, { state: "Georgia", actual: 69, target: 85, ranges: [50, 75, 100] }] }, null, 2),
+  heatmap_matrix: JSON.stringify({ title: "School Density Matrix", subtitle: "State x Type distribution", sourceLabel: "CDLSchoolsUSA.com", states: ["Texas", "California", "Florida", "New York", "Illinois", "Pennsylvania", "Ohio", "Georgia"], types: ["Private", "Community", "Company", "Trade"], data: [{ state: "Texas", type: "Private", value: 120 }, { state: "Texas", type: "Community", value: 80 }, { state: "Texas", type: "Company", value: 60 }, { state: "Texas", type: "Trade", value: 60 }, { state: "California", type: "Private", value: 95 }, { state: "California", type: "Community", value: 75 }, { state: "California", type: "Company", value: 55 }, { state: "California", type: "Trade", value: 55 }, { state: "Florida", type: "Private", value: 80 }, { state: "Florida", type: "Community", value: 60 }, { state: "Florida", type: "Company", value: 50 }, { state: "Florida", type: "Trade", value: 50 }, { state: "New York", type: "Private", value: 70 }, { state: "New York", type: "Community", value: 50 }, { state: "New York", type: "Company", value: 30 }, { state: "New York", type: "Trade", value: 30 }, { state: "Illinois", type: "Private", value: 55 }, { state: "Illinois", type: "Community", value: 45 }, { state: "Illinois", type: "Company", value: 30 }, { state: "Illinois", type: "Trade", value: 30 }, { state: "Pennsylvania", type: "Private", value: 50 }, { state: "Pennsylvania", type: "Community", value: 40 }, { state: "Pennsylvania", type: "Company", value: 30 }, { state: "Pennsylvania", type: "Trade", value: 30 }, { state: "Ohio", type: "Private", value: 48 }, { state: "Ohio", type: "Community", value: 38 }, { state: "Ohio", type: "Company", value: 28 }, { state: "Ohio", type: "Trade", value: 26 }, { state: "Georgia", type: "Private", value: 45 }, { state: "Georgia", type: "Community", value: 35 }, { state: "Georgia", type: "Company", value: 25 }, { state: "Georgia", type: "Trade", value: 25 }] }, null, 2),
 };
 
 const STEPS = [
@@ -184,6 +233,9 @@ export default function DataStudioPage() {
   const [publishResult, setPublishResult] = useState<string | null>(null);
   const [caption, setCaption] = useState("");
   const [expandedCategory, setExpandedCategory] = useState<string | null>(null);
+  const [showQuickGenerate, setShowQuickGenerate] = useState(false);
+  const [quickData, setQuickData] = useState("");
+  const [quickAnalysis, setQuickAnalysis] = useState<{ template: TemplateType; confidence: string; reason: string } | null>(null);
 
   const brandColors = selectedBrand === "custom" ? customColors : BRAND_PRESETS[selectedBrand];
 
@@ -204,6 +256,75 @@ export default function DataStudioPage() {
   };
 
   const applySuggestedTemplate = () => { if (suggestedTemplate) { setSelectedTemplate(suggestedTemplate); setSuggestedTemplate(null); parseNaturalLanguage(naturalText); } };
+
+  const analyzeQuickData = (text: string) => {
+    if (!text.trim()) { setQuickAnalysis(null); return; }
+    const lines = text.trim().split("\n").filter(l => l.trim());
+    const hasCommas = lines.some(l => l.includes(","));
+    const hasTabs = lines.some(l => l.includes("\t"));
+    const sep = hasTabs ? "\t" : hasCommas ? "," : null;
+
+    if (!sep && lines.length < 2) { setQuickAnalysis(null); return; }
+
+    // Parse CSV/TSV
+    const rows = lines.map(l => l.split(sep || ",").map(c => c.trim().replace(/^"|"$/g, "")));
+    const headers = rows[0] || [];
+    const dataRows = rows.slice(1);
+    const numCols = headers.length;
+    const numRows = dataRows.length;
+
+    // Detect column types
+    const colTypes = headers.map((_, ci) => {
+      const vals = dataRows.map(r => r[ci] || "");
+      const numericCount = vals.filter(v => !isNaN(Number(v)) && v !== "").length;
+      const yearLike = vals.filter(v => /^20\d{2}$/.test(v)).length;
+      if (yearLike > vals.length * 0.5) return "year";
+      if (numericCount > vals.length * 0.6) return "numeric";
+      return "text";
+    });
+
+    const numericCols = colTypes.filter(t => t === "numeric").length;
+    const textCols = colTypes.filter(t => t === "text").length;
+    const hasYears = colTypes.includes("year") || headers.some(h => /year|date|time/i.test(h));
+    const hasMultipleTimeCols = headers.filter(h => /20\d{2}/.test(h)).length >= 2;
+
+    let template: TemplateType = "bar_race";
+    let confidence = "Medium";
+    let reason = "";
+
+    if (hasMultipleTimeCols && numRows >= 3) {
+      template = "line_chart_race"; confidence = "High"; reason = "Time-series data with multiple years → trajectory visualization";
+    } else if (hasYears && numericCols >= 2) {
+      template = "forecast_line"; confidence = "High"; reason = "Year-based data with values → trend/forecast chart";
+    } else if (numCols === 3 && textCols === 1 && numericCols === 2) {
+      template = "slope_chart"; confidence = "High"; reason = "Two value columns per category → before/after comparison";
+    } else if (numCols === 2 && textCols === 1 && numericCols === 1 && numRows > 5) {
+      template = "lollipop"; confidence = "High"; reason = "Category + value pairs → ranked display";
+    } else if (numCols === 2 && textCols === 1 && numericCols === 1) {
+      template = "column_race"; confidence = "Medium"; reason = "Category + value pairs → bar comparison";
+    } else if (numericCols >= 3 && textCols === 1) {
+      template = "radar_compare"; confidence = "Medium"; reason = "Multi-dimensional numeric data → radar comparison";
+    } else if (numCols >= 3 && textCols >= 2 && numericCols >= 1) {
+      template = "heatmap_matrix"; confidence = "Medium"; reason = "Cross-category data → density matrix";
+    } else if (textCols >= 1 && numericCols >= 1 && numRows >= 5) {
+      template = "grouped_bar"; confidence = "Medium"; reason = "Multi-category data → grouped comparison";
+    } else if (numRows <= 3 && numericCols >= 1) {
+      template = "stat_counter"; confidence = "Low"; reason = "Small dataset → highlight key numbers";
+    }
+
+    setQuickAnalysis({ template, confidence, reason });
+  };
+
+  const applyQuickGenerate = () => {
+    if (!quickAnalysis || !quickData.trim()) return;
+    const template = quickAnalysis.template;
+    setSelectedTemplate(template);
+    setDataJson(SAMPLE_DATA[template]);
+    setNaturalText(quickData);
+    setDataInputMode("natural");
+    setShowQuickGenerate(false);
+    setStep("data");
+  };
 
   const handleExportMP4 = async () => {
     if (!parsedData) return;
@@ -242,6 +363,60 @@ export default function DataStudioPage() {
         <h1 className="text-2xl font-bold tracking-tight" data-testid="data-studio-title">Data Studio</h1>
         <p className="text-muted-foreground text-sm">Create animated data visualization videos — {TEMPLATES.length} templates available</p>
       </div>
+
+      {/* Quick Generate Button */}
+      <div className="flex gap-3 items-center" data-testid="quick-generate-section">
+        <Button
+          variant={showQuickGenerate ? "default" : "outline"}
+          size="sm"
+          onClick={() => setShowQuickGenerate(!showQuickGenerate)}
+          className={showQuickGenerate ? "" : "border-dashed border-2 hover:border-primary"}
+          data-testid="quick-generate-toggle"
+        >
+          <Zap className="h-4 w-4 mr-1.5" />Quick Generate
+        </Button>
+        {!showQuickGenerate && <span className="text-xs text-muted-foreground">Paste CSV or text data — AI picks the best template</span>}
+      </div>
+
+      {/* Quick Generate Panel */}
+      {showQuickGenerate && (
+        <Card data-testid="quick-generate-panel">
+          <CardHeader className="pb-3">
+            <div className="flex items-center gap-2">
+              <Zap className="h-5 w-5 text-primary" />
+              <CardTitle className="text-base">Quick Generate</CardTitle>
+            </div>
+            <CardDescription>Paste your CSV, tab-separated, or text data below. We'll analyze the structure and recommend the best visualization.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Textarea
+              value={quickData}
+              onChange={(e) => { setQuickData(e.target.value); analyzeQuickData(e.target.value); }}
+              className="font-mono text-xs min-h-[140px]"
+              placeholder={"State,2020,2024\nTexas,180,320\nCalifornia,200,280\nFlorida,120,240\nNew York,150,180"}
+              data-testid="quick-generate-input"
+            />
+            {quickAnalysis && (
+              <div className="flex items-start gap-3 p-3 bg-primary/5 border border-primary/20 rounded-lg" data-testid="quick-generate-result">
+                <CheckCircle2 className="h-5 w-5 text-primary flex-shrink-0 mt-0.5" />
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm font-semibold">{TEMPLATES.find(t => t.id === quickAnalysis.template)?.name}</span>
+                    <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${quickAnalysis.confidence === "High" ? "bg-green-500/20 text-green-600" : quickAnalysis.confidence === "Medium" ? "bg-yellow-500/20 text-yellow-600" : "bg-orange-500/20 text-orange-600"}`}>{quickAnalysis.confidence} confidence</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground mt-1">{quickAnalysis.reason}</p>
+                </div>
+                <Button size="sm" onClick={applyQuickGenerate} data-testid="quick-generate-apply">
+                  <Sparkles className="h-3.5 w-3.5 mr-1" />Use This
+                </Button>
+              </div>
+            )}
+            {quickData.trim() && !quickAnalysis && (
+              <p className="text-xs text-muted-foreground">Add more data rows (at least 2 lines with headers) for analysis...</p>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Step indicator */}
       <div className="flex items-center gap-2" data-testid="step-indicator">
