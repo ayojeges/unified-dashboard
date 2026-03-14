@@ -4,23 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { 
-  LayoutDashboard, 
-  FolderKanban, 
-  BarChart3, 
-  Calendar, 
-  MessageSquare, 
-  Mic, 
-  Settings,
-  ChevronLeft,
-  ChevronRight,
-  Home,
-  Menu,
-  X,
-  Film,
-  Package,
-  GraduationCap,
-  Brain,
-  School,
+  LayoutDashboard, FolderKanban, BarChart3, Calendar, MessageSquare, Mic, Settings,
+  ChevronLeft, ChevronRight, Home, Menu, X, Film, Package, GraduationCap, Brain, School,
+  Mail, Kanban, Database, Users
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -28,8 +14,11 @@ import { cn } from "@/lib/utils";
 const mainNavItems = [
   { href: "/dashboard", icon: Home, label: "Dashboard" },
   { href: "/projects", icon: FolderKanban, label: "Projects" },
-  { href: "/data-studio", icon: Film, label: "Data Studio" },
-  { href: "/analytics", icon: BarChart3, label: "Analytics" },
+  { href: "/dashboard/analytics", icon: BarChart3, label: "Analytics" },
+  { href: "/dashboard/kanban", icon: Kanban, label: "Kanban" },
+  { href: "/dashboard/email", icon: Mail, label: "Email Hub" },
+  { href: "/dashboard/leads", icon: Users, label: "Leads" },
+  { href: "/dashboard/data-studio", icon: Database, label: "Data Studio" },
   { href: "/calendar", icon: Calendar, label: "Calendar" },
   { href: "/chat", icon: MessageSquare, label: "Chat" },
   { href: "/audio", icon: Mic, label: "Audio" },
@@ -48,25 +37,15 @@ export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // Close mobile menu on route change
+  useEffect(() => { setMobileOpen(false); }, [pathname]);
   useEffect(() => {
-    setMobileOpen(false);
-  }, [pathname]);
-
-  // Close mobile menu on resize to desktop
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth >= 768) {
-        setMobileOpen(false);
-      }
-    };
+    const handleResize = () => { if (window.innerWidth >= 768) setMobileOpen(false); };
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
   const SidebarContent = () => (
     <>
-      {/* Header */}
       <div className="flex items-center justify-between p-4 border-b">
         {!collapsed && (
           <div className="flex items-center gap-2">
@@ -84,50 +63,23 @@ export function Sidebar() {
             <LayoutDashboard className="h-5 w-5 text-white" />
           </div>
         )}
-        {/* Desktop collapse button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setCollapsed(!collapsed)}
-          className="ml-auto hidden md:flex"
-        >
+        <Button variant="ghost" size="icon" onClick={() => setCollapsed(!collapsed)} className="ml-auto hidden md:flex">
           {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
         </Button>
-        {/* Mobile close button */}
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileOpen(false)}
-          className="ml-auto md:hidden"
-        >
+        <Button variant="ghost" size="icon" onClick={() => setMobileOpen(false)} className="ml-auto md:hidden">
           <X className="h-5 w-5" />
         </Button>
       </div>
-
-      {/* Navigation */}
       <nav className="flex-1 overflow-y-auto p-4 space-y-6">
-        {/* Main Navigation */}
         <div>
-          {!collapsed && (
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Navigation
-            </h2>
-          )}
+          {!collapsed && <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Navigation</h2>}
           <ul className="space-y-1">
             {mainNavItems.map((item) => {
-              const isActive = pathname === item.href || 
-                (item.href !== "/" && pathname?.startsWith(item.href));
-              
+              const isActive = pathname === item.href || (item.href !== "/" && pathname?.startsWith(item.href));
               return (
                 <li key={item.href}>
                   <Link href={item.href}>
-                    <Button
-                      variant={isActive ? "secondary" : "ghost"}
-                      className={cn(
-                        "w-full justify-start gap-3",
-                        collapsed && "justify-center px-2"
-                      )}
-                    >
+                    <Button variant={isActive ? "secondary" : "ghost"} className={cn("w-full justify-start gap-3", collapsed && "justify-center px-2")}>
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.label}</span>}
                     </Button>
@@ -137,28 +89,15 @@ export function Sidebar() {
             })}
           </ul>
         </div>
-
-        {/* Projects Section */}
         <div>
-          {!collapsed && (
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">
-              Projects
-            </h2>
-          )}
+          {!collapsed && <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2">Projects</h2>}
           <ul className="space-y-1">
             {projectNavItems.map((item) => {
               const isActive = pathname === item.href;
-              
               return (
                 <li key={item.href}>
                   <Link href={item.href}>
-                    <Button
-                      variant={isActive ? "secondary" : "ghost"}
-                      className={cn(
-                        "w-full justify-start gap-3",
-                        collapsed && "justify-center px-2"
-                      )}
-                    >
+                    <Button variant={isActive ? "secondary" : "ghost"} className={cn("w-full justify-start gap-3", collapsed && "justify-center px-2")}>
                       <item.icon className="h-4 w-4" />
                       {!collapsed && <span>{item.label}</span>}
                     </Button>
@@ -169,12 +108,7 @@ export function Sidebar() {
           </ul>
         </div>
       </nav>
-
-      {/* User Profile */}
-      <div className={cn(
-        "border-t p-4",
-        collapsed && "p-2"
-      )}>
+      <div className={cn("border-t p-4", collapsed && "p-2")}>
         {!collapsed ? (
           <div className="flex items-center gap-3">
             <div className="h-8 w-8 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
@@ -196,46 +130,20 @@ export function Sidebar() {
 
   return (
     <>
-      {/* Mobile Header Bar */}
       <div className="md:hidden fixed top-0 left-0 right-0 h-14 bg-background border-b z-40 flex items-center px-4">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => setMobileOpen(true)}
-        >
-          <Menu className="h-5 w-5" />
-        </Button>
-        <div className="flex items-center gap-2 ml-3">
-          <div className="h-7 w-7 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
-            <LayoutDashboard className="h-4 w-4 text-white" />
-          </div>
-          <span className="font-semibold text-sm">Unified Dashboard</span>
+        <Button variant="ghost" size="icon" onClick={() => setMobileOpen(true)}><Menu className="h-5 w-5" /></Button>
+        <div className="flex items-center gap-2 ml-2">
+          <div className="h-8 w-8 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center"><LayoutDashboard className="h-5 w-5 text-white" /></div>
+          <span className="font-bold">Unified Dashboard</span>
         </div>
       </div>
-
-      {/* Mobile Sidebar Overlay */}
-      {mobileOpen && (
-        <div 
-          className="md:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={() => setMobileOpen(false)}
-        />
-      )}
-
-      {/* Mobile Sidebar */}
-      <aside className={cn(
-        "md:hidden fixed top-0 left-0 h-full w-64 bg-background z-50 transform transition-transform duration-300 ease-in-out flex flex-col",
-        mobileOpen ? "translate-x-0" : "-translate-x-full"
-      )}>
+      {mobileOpen && <div className="md:hidden fixed inset-0 bg-black/50 z-40" onClick={() => setMobileOpen(false)} />}
+      <div className={cn("md:hidden fixed inset-y-0 left-0 z-50 w-64 bg-background border-r transform transition-transform duration-200 ease-in-out", mobileOpen ? "translate-x-0" : "-translate-x-full")}>
         <SidebarContent />
-      </aside>
-
-      {/* Desktop Sidebar */}
-      <aside className={cn(
-        "hidden md:flex flex-col border-r bg-background transition-all duration-300",
-        collapsed ? "w-16" : "w-64"
-      )}>
+      </div>
+      <div className={cn("hidden md:flex flex-col bg-background border-r transition-all duration-300", collapsed ? "w-16" : "w-64")}>
         <SidebarContent />
-      </aside>
+      </div>
     </>
   );
 }
