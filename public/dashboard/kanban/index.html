@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Blueprint Creations — Team Kanban Board</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { slate: { 850: '#1a2332', 950: '#0b1120' } } } }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0f172a; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+    .task-card { background: #1e293b; border: 1px solid #334155; border-radius: 8px; padding: 12px; cursor: grab; transition: all 0.2s; }
+    .task-card:hover { border-color: #475569; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+    .task-card.dragging { opacity: 0.5; transform: rotate(2deg); }
+    .column { min-height: 500px; }
+    .column.drag-over { background: rgba(59,130,246,0.1); border: 2px dashed #3b82f6; border-radius: 8px; }
+    .drop-zone { min-height: 400px; }
+    .badge { padding: 2px 8px; border-radius: 9999px; font-size: 10px; font-weight: 600; }
+    .priority-p0 { border-left: 3px solid #ef4444; }
+    .priority-p1 { border-left: 3px solid #f59e0b; }
+    .priority-p2 { border-left: 3px solid #3b82f6; }
+    .priority-p3 { border-left: 3px solid #6b7280; }
+    .avatar { width: 24px; height: 24px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; }
+    .avatar-mark { background: #6366f1; color: white; }
+    .avatar-akan { background: #10b981; color: white; }
+    .avatar-deb { background: #f59e0b; color: white; }
+    .avatar-innocent { background: #ef4444; color: white; }
+    .avatar-tunde { background: #8b5cf6; color: white; }
+    .avatar-simi { background: #ec4899; color: white; }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    .tab-active { border-bottom: 2px solid #3b82f6; color: #3b82f6; }
+    .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 100; align-items: center; justify-content: center; }
+    .modal.show { display: flex; }
+    @keyframes slideIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .task-card { animation: slideIn 0.2s ease-out; }
+    .audio-toggle { position: fixed; bottom: 16px; right: 16px; z-index: 50; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-100 p-4 md:p-6">
+  <!-- Audio Toggle Button -->
+  <div class="audio-toggle">
+    <button onclick="toggleAudio()" id="audioToggleBtn" class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition shadow-lg border border-slate-600" title="Toggle sound effects">
+      🔊 Sound On
+    </button>
+  </div>
+
+  <div class="max-w-full mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 mb-6">
+      <div>
+        <h1 class="text-xl font-bold text-slate-100">📋 Blueprint Creations — Team Kanban Board</h1>
+        <p class="text-slate-400 text-xs mt-1">Real-time task tracking across all departments and products</p>
+      </div>
+      <div class="flex gap-2 flex-wrap">
+        <select id="filterProduct" onchange="renderBoard()" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+          <option value="all">All Products</option>
+          <option value="cdl">🚛 CDL Schools USA</option>
+          <option value="cryo">🏥 Guardian Cryo</option>
+          <option value="registry">🏫 School Registry</option>
+          <option value="truststay">🏠 TrustStay NG</option>
+          <option value="internal">⚙️ Internal</option>
+        </select>
+        <select id="filterPerson" onchange="renderBoard()" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+          <option value="all">All Team</option>
+          <option value="Mark">Mark (PMO)</option>
+          <option value="Akan">Akan (Lead Gen)</option>
+          <option value="Deb">Deb (Growth)</option>
+          <option value="Innocent">Innocent (Engineering)</option>
+          <option value="Tunde">Tunde (Product)</option>
+          <option value="Simi">Simi (Success)</option>
+        </select>
+        <button onclick="openNewTask()" class="px-3 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition">+ New Task</button>
+      </div>
+    </div>
+
+    <!-- KPI Strip -->
+    <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 mb-6">
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">Total Tasks</p>
+        <p class="text-xl font-bold" id="kpiTotal">0</p>
+      </div>
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">Backlog</p>
+        <p class="text-xl font-bold text-slate-500" id="kpiBacklog">0</p>
+      </div>
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">In Progress</p>
+        <p class="text-xl font-bold text-blue-400" id="kpiProgress">0</p>
+      </div>
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">Review</p>
+        <p class="text-xl font-bold text-yellow-400" id="kpiReview">0</p>
+      </div>
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">Done This Week</p>
+        <p class="text-xl font-bold text-green-400" id="kpiDone">0</p>
+      </div>
+      <div class="card p-3 text-center">
+        <p class="text-slate-400 text-[10px] uppercase">Blocked</p>
+        <p class="text-xl font-bold text-red-400" id="kpiBlocked">0</p>
+      </div>
+    </div>
+
+    <!-- Kanban Columns -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+      <!-- Backlog -->
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-slate-400">📥 BACKLOG</h3>
+          <span class="badge bg-slate-700 text-slate-300" id="countBacklog">0</span>
+        </div>
+        <div class="drop-zone space-y-2" id="col-backlog" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+      </div>
+      <!-- To Do -->
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-slate-300">📋 TO DO</h3>
+          <span class="badge bg-slate-700 text-slate-300" id="countTodo">0</span>
+        </div>
+        <div class="drop-zone space-y-2" id="col-todo" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+      </div>
+      <!-- In Progress -->
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-blue-400">🔄 IN PROGRESS</h3>
+          <span class="badge bg-blue-900/50 text-blue-300" id="countProgress">0</span>
+        </div>
+        <div class="drop-zone space-y-2" id="col-progress" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+      </div>
+      <!-- Review -->
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-yellow-400">🔍 REVIEW</h3>
+          <span class="badge bg-yellow-900/50 text-yellow-300" id="countReview">0</span>
+        </div>
+        <div class="drop-zone space-y-2" id="col-review" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+      </div>
+      <!-- Done -->
+      <div class="card p-3">
+        <div class="flex items-center justify-between mb-3">
+          <h3 class="text-sm font-semibold text-green-400">✅ DONE</h3>
+          <span class="badge bg-green-900/50 text-green-300" id="countDone">0</span>
+        </div>
+        <div class="drop-zone space-y-2" id="col-done" ondrop="drop(event)" ondragover="allowDrop(event)" ondragleave="dragLeave(event)"></div>
+      </div>
+    </div>
+
+    <!-- CEO Notes & Thoughts -->
+    <div class="mt-6 card p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-sm font-medium text-slate-300">📝 CEO Notes & Thoughts</h3>
+        <div class="flex gap-2">
+          <button onclick="startVoiceNote()" id="voiceBtn" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 rounded-lg text-xs font-medium transition flex items-center gap-1">
+            🎤 <span id="voiceLabel">Voice Note</span>
+          </button>
+          <button onclick="addNote()" class="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 rounded-lg text-xs font-medium transition">+ Add Note</button>
+        </div>
+      </div>
+      
+      <!-- Voice Status -->
+      <div id="voiceStatus" class="hidden mb-3 p-2 bg-red-900/30 border border-red-900/50 rounded-lg text-xs text-red-300 flex items-center gap-2">
+        <span class="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+        Listening... speak now
+      </div>
+      
+      <!-- Note Input -->
+      <div class="flex gap-2 mb-3">
+        <textarea id="noteInput" class="flex-1 bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 h-16 resize-none" placeholder="Quick thought, idea, or reminder... (or use 🎤 Voice Note)"></textarea>
+      </div>
+      
+      <!-- Notes List -->
+      <div class="space-y-2 max-h-[300px] overflow-y-auto" id="notesList"></div>
+    </div>
+
+    <!-- Team Status -->
+    <div class="mt-6 card p-4">
+      <h3 class="text-sm font-medium text-slate-300 mb-3">👥 Team Status</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-mark mx-auto mb-1">M</div>
+          <p class="text-xs font-medium">Mark</p>
+          <p class="text-[10px] text-slate-500">PMO Director</p>
+          <p class="text-[10px] text-green-400 mt-1" id="markTasks">0 tasks</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-akan mx-auto mb-1">A</div>
+          <p class="text-xs font-medium">Akan</p>
+          <p class="text-[10px] text-slate-500">Lead Gen</p>
+          <p class="text-[10px] text-green-400 mt-1" id="akanTasks">0 tasks</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-deb mx-auto mb-1">D</div>
+          <p class="text-xs font-medium">Deb</p>
+          <p class="text-[10px] text-slate-500">Growth Lead</p>
+          <p class="text-[10px] text-green-400 mt-1" id="debTasks">0 tasks</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-innocent mx-auto mb-1">I</div>
+          <p class="text-xs font-medium">Innocent</p>
+          <p class="text-[10px] text-slate-500">Engineering</p>
+          <p class="text-[10px] text-green-400 mt-1" id="innocentTasks">0 tasks</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-tunde mx-auto mb-1">T</div>
+          <p class="text-xs font-medium">Tunde</p>
+          <p class="text-[10px] text-slate-500">Product</p>
+          <p class="text-[10px] text-green-400 mt-1" id="tundeTasks">0 tasks</p>
+        </div>
+        <div class="bg-slate-800/50 rounded-lg p-3 text-center">
+          <div class="avatar avatar-simi mx-auto mb-1">S</div>
+          <p class="text-xs font-medium">Simi</p>
+          <p class="text-[10px] text-slate-500">Customer Success</p>
+          <p class="text-[10px] text-green-400 mt-1" id="simiTasks">0 tasks</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Task Modal -->
+  <div class="modal" id="taskModal">
+    <div class="card p-6 w-full max-w-lg mx-4">
+      <h3 class="text-lg font-bold mb-4">➕ New Task</h3>
+      <div class="space-y-3">
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Title</label>
+          <input type="text" id="taskTitle" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" placeholder="Task description...">
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Assign To</label>
+            <select id="taskAssignee" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+              <option value="Mark">Mark (PMO)</option>
+              <option value="Akan">Akan (Lead Gen)</option>
+              <option value="Deb">Deb (Growth)</option>
+              <option value="Innocent">Innocent (Engineering)</option>
+              <option value="Tunde">Tunde (Product)</option>
+              <option value="Simi">Simi (Success)</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Product</label>
+            <select id="taskProduct" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+              <option value="cdl">🚛 CDL Schools USA</option>
+              <option value="cryo">🏥 Guardian Cryo</option>
+              <option value="registry">🏫 School Registry</option>
+              <option value="truststay">🏠 TrustStay NG</option>
+              <option value="internal">⚙️ Internal</option>
+            </select>
+          </div>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Priority</label>
+            <select id="taskPriority" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+              <option value="P0">🔴 P0 - Critical</option>
+              <option value="P1">🟡 P1 - High</option>
+              <option value="P2" selected>🔵 P2 - Medium</option>
+              <option value="P3">⚪ P3 - Low</option>
+            </select>
+          </div>
+          <div>
+            <label class="text-xs text-slate-400 block mb-1">Type</label>
+            <select id="taskType" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none">
+              <option value="Growth">📈 Growth</option>
+              <option value="Engineering">🔧 Engineering</option>
+              <option value="Product">🎨 Product</option>
+              <option value="Operations">⚙️ Operations</option>
+              <option value="Research">🔍 Research</option>
+            </select>
+          </div>
+        </div>
+        <div>
+          <label class="text-xs text-slate-400 block mb-1">Description (optional)</label>
+          <textarea id="taskDesc" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500 h-20 resize-none" placeholder="Additional context..."></textarea>
+        </div>
+        <div class="flex gap-2 justify-end">
+          <button onclick="closeModal()" class="px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition">Cancel</button>
+          <button onclick="createTask()" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition">Create Task</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ============ AUDIO ENGINE ============
+    let audioEnabled = localStorage.getItem('kanban_audio') !== 'off';
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    let audioCtx = null;
+
+    function getAudioCtx() {
+      if (!audioCtx) audioCtx = new AudioCtx();
+      return audioCtx;
+    }
+
+    function playTone(freq, duration, type = 'sine', volume = 0.15) {
+      if (!audioEnabled) return;
+      try {
+        const ctx = getAudioCtx();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+        gain.gain.setValueAtTime(volume, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + duration);
+      } catch(e) {}
+    }
+
+    // Sound effects
+    function soundDrop() { playTone(520, 0.12, 'sine', 0.12); setTimeout(() => playTone(660, 0.1, 'sine', 0.1), 80); }
+    function soundPickup() { playTone(440, 0.08, 'triangle', 0.1); }
+    function soundCreate() { playTone(440, 0.1, 'sine', 0.12); setTimeout(() => playTone(554, 0.1, 'sine', 0.12), 100); setTimeout(() => playTone(660, 0.15, 'sine', 0.12), 200); }
+    function soundDone() { playTone(523, 0.12, 'sine', 0.15); setTimeout(() => playTone(659, 0.12, 'sine', 0.15), 120); setTimeout(() => playTone(784, 0.2, 'sine', 0.15), 240); }
+    function soundDelete() { playTone(330, 0.15, 'sawtooth', 0.08); setTimeout(() => playTone(220, 0.2, 'sawtooth', 0.06), 100); }
+    function soundNote() { playTone(880, 0.08, 'sine', 0.08); }
+
+    function toggleAudio() {
+      audioEnabled = !audioEnabled;
+      localStorage.setItem('kanban_audio', audioEnabled ? 'on' : 'off');
+      const btn = document.getElementById('audioToggleBtn');
+      btn.textContent = audioEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+      if (audioEnabled) soundDrop();
+    }
+
+    // Init button state
+    document.addEventListener('DOMContentLoaded', () => {
+      const btn = document.getElementById('audioToggleBtn');
+      btn.textContent = audioEnabled ? '🔊 Sound On' : '🔇 Sound Off';
+    });
+
+    // ============ DATA ============
+    const productColors = { cdl: 'bg-blue-900/50 text-blue-300', cryo: 'bg-purple-900/50 text-purple-300', registry: 'bg-green-900/50 text-green-300', truststay: 'bg-orange-900/50 text-orange-300', internal: 'bg-slate-700 text-slate-300' };
+    const productEmoji = { cdl: '🚛', cryo: '🏥', registry: '🏫', truststay: '🏠', internal: '⚙️' };
+    const avatarClass = { Mark: 'avatar-mark', Akan: 'avatar-akan', Deb: 'avatar-deb', Innocent: 'avatar-innocent', Tunde: 'avatar-tunde', Simi: 'avatar-simi' };
+
+    let tasks = [
+      { id: 1, title: 'Launch B2B email campaign to fleet managers', assignee: 'Deb', product: 'cdl', priority: 'P0', type: 'Growth', status: 'todo', desc: 'All 130 accounts ready, domains verified. Start warmup and initial sends.' },
+      { id: 2, title: 'Find CDL school decision-makers with emails (top 10 states)', assignee: 'Akan', product: 'cdl', priority: 'P1', type: 'Research', status: 'todo', desc: 'Target: Fleet Safety Managers, Training Directors, Compliance Officers' },
+      { id: 3, title: 'Create social media content calendar for CDL', assignee: 'Deb', product: 'cdl', priority: 'P2', type: 'Growth', status: 'progress', desc: 'LinkedIn, X, Facebook posts for CDL audience' },
+      { id: 4, title: 'Deploy email dashboard to production (Vercel)', assignee: 'Innocent', product: 'cdl', priority: 'P1', type: 'Engineering', status: 'todo', desc: 'VPS too slow for Next.js. Need Vercel token for deploy.' },
+      { id: 5, title: 'Course bundle A/B test setup', assignee: 'Deb', product: 'cdl', priority: 'P3', type: 'Growth', status: 'backlog', desc: 'Test different CDL course bundle pricing' },
+      { id: 6, title: 'Launch Google Ads campaign for IVF cryoshipping', assignee: 'Deb', product: 'cryo', priority: 'P1', type: 'Growth', status: 'todo', desc: 'Target fertility clinics, REI doctors' },
+      { id: 7, title: 'Scrape US fertility clinic directory for leads', assignee: 'Akan', product: 'cryo', priority: 'P1', type: 'Research', status: 'todo', desc: 'SART, ASRM member directories' },
+      { id: 8, title: 'Build email nurture sequence for cryo leads', assignee: 'Deb', product: 'cryo', priority: 'P2', type: 'Growth', status: 'backlog', desc: '102 leads delivered, need follow-up sequence' },
+      { id: 9, title: 'SEO optimization for guardiancryo.com', assignee: 'Deb', product: 'cryo', priority: 'P3', type: 'Growth', status: 'backlog', desc: '' },
+      { id: 10, title: 'Generate remaining 28 social media videos', assignee: 'Mark', product: 'registry', priority: 'P1', type: 'Growth', status: 'progress', desc: 'Render service slow. 2/30 complete. Batch overnight.' },
+      { id: 11, title: 'Scrape Nigerian school directories for database', assignee: 'Akan', product: 'registry', priority: 'P2', type: 'Research', status: 'backlog', desc: 'Build school database for schoolregistry.ng' },
+      { id: 12, title: 'Fix Instagram linkage to Facebook Page', assignee: 'Innocent', product: 'registry', priority: 'P2', type: 'Engineering', status: 'backlog', desc: 'FB Page has instagram_content_publish scope but IG not linked' },
+      { id: 13, title: 'Find 500 premium Airbnb/Booking.com hosts in Lagos', assignee: 'Akan', product: 'truststay', priority: 'P0', type: 'Research', status: 'todo', desc: 'Target: Lekki, VI, Ikoyi. 4.5+ stars. Collect host names, social media, contact info.' },
+      { id: 14, title: 'Build host onboarding email campaign', assignee: 'Deb', product: 'truststay', priority: 'P1', type: 'Growth', status: 'backlog', desc: 'Wait for Akan leads first' },
+      { id: 15, title: 'Host dashboard wireframe design', assignee: 'Tunde', product: 'truststay', priority: 'P2', type: 'Product', status: 'backlog', desc: '' },
+      { id: 16, title: 'Global Flight Interception System - Phase 1', assignee: 'Akan', product: 'truststay', priority: 'P3', type: 'Engineering', status: 'backlog', desc: '' },
+      { id: 17, title: 'Clean up stale cron jobs (CDL reminders from Mar 11)', assignee: 'Mark', product: 'internal', priority: 'P2', type: 'Operations', status: 'todo', desc: 'Old CDL lead sourcing reminders still firing every 10 min' },
+      { id: 18, title: 'Set up daily standup automation at 7 AM CST', assignee: 'Mark', product: 'internal', priority: 'P2', type: 'Operations', status: 'progress', desc: 'Cron job for automated standup' },
+      { id: 19, title: 'Configure Google Analytics & Search Console access', assignee: 'Mark', product: 'internal', priority: 'P0', type: 'Operations', status: 'todo', desc: 'Waiting for Gmail account from CEO' },
+      { id: 20, title: 'Build Flourish-style Data Studio templates for SchoolRegistry', assignee: 'Innocent', product: 'registry', priority: 'P0', type: 'Engineering', status: 'progress', desc: 'Interactive bar race, timeline animations. Like FIFA World Ranking style.' },
+      { id: 21, title: 'Compile Nigerian education dataset (WAEC, state metrics, fees)', assignee: 'Mark', product: 'registry', priority: 'P1', type: 'Research', status: 'todo', desc: 'Data for SchoolRegistry video content' },
+      { id: 22, title: 'Generate first batch of SchoolRegistry authority videos', assignee: 'Deb', product: 'registry', priority: 'P1', type: 'Growth', status: 'backlog', desc: 'Waiting for templates from Innocent' },
+    ];
+
+    let nextId = 23;
+
+    // ============ RENDER ============
+    function renderBoard() {
+      const filterProduct = document.getElementById('filterProduct').value;
+      const filterPerson = document.getElementById('filterPerson').value;
+
+      const filtered = tasks.filter(t => {
+        if (filterProduct !== 'all' && t.product !== filterProduct) return false;
+        if (filterPerson !== 'all' && t.assignee !== filterPerson) return false;
+        return true;
+      });
+
+      const cols = { backlog: [], todo: [], progress: [], review: [], done: [] };
+      filtered.forEach(t => { if (cols[t.status]) cols[t.status].push(t); });
+
+      Object.keys(cols).forEach(key => {
+        const el = document.getElementById('col-' + key);
+        el.innerHTML = cols[key].map(t => taskCard(t)).join('');
+      });
+
+      document.getElementById('countBacklog').textContent = cols.backlog.length;
+      document.getElementById('countTodo').textContent = cols.todo.length;
+      document.getElementById('countProgress').textContent = cols.progress.length;
+      document.getElementById('countReview').textContent = cols.review.length;
+      document.getElementById('countDone').textContent = cols.done.length;
+      document.getElementById('kpiTotal').textContent = filtered.length;
+      document.getElementById('kpiBacklog').textContent = cols.backlog.length;
+      document.getElementById('kpiProgress').textContent = cols.progress.length;
+      document.getElementById('kpiReview').textContent = cols.review.length;
+      document.getElementById('kpiDone').textContent = cols.done.length;
+      document.getElementById('kpiBlocked').textContent = filtered.filter(t => t.blocked).length;
+
+      const team = ['Mark', 'Akan', 'Deb', 'Innocent', 'Tunde', 'Simi'];
+      team.forEach(m => {
+        const count = tasks.filter(t => t.assignee === m && t.status !== 'done').length;
+        const el = document.getElementById(m.toLowerCase() + 'Tasks');
+        if (el) el.textContent = count + ' active';
+      });
+    }
+
+    function taskCard(t) {
+      const priClass = 'priority-' + t.priority.toLowerCase();
+      return `
+        <div class="task-card ${priClass}" draggable="true" ondragstart="drag(event)" ondragend="dragEnd(event)" id="task-${t.id}" data-id="${t.id}">
+          <div class="flex items-start justify-between mb-1">
+            <span class="text-xs font-medium text-slate-200 leading-tight">${t.title}</span>
+          </div>
+          <div class="flex items-center justify-between mt-2">
+            <div class="flex items-center gap-1">
+              <span class="badge ${productColors[t.product]}">${productEmoji[t.product]} ${t.product.toUpperCase()}</span>
+              <span class="badge bg-slate-700 text-slate-400">${t.type}</span>
+            </div>
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] text-slate-500">${t.priority}</span>
+              <div class="avatar ${avatarClass[t.assignee]}" title="${t.assignee}">${t.assignee[0]}</div>
+            </div>
+          </div>
+          ${t.blocked ? '<div class="mt-2 text-[10px] text-red-400">⛔ Blocked: ' + (t.blockReason || '') + '</div>' : ''}
+        </div>
+      `;
+    }
+
+    // ============ DRAG & DROP ============
+    let dragSourceStatus = null;
+
+    function drag(e) {
+      const id = parseInt(e.target.dataset.id);
+      const task = tasks.find(t => t.id === id);
+      dragSourceStatus = task ? task.status : null;
+      e.dataTransfer.setData('text/plain', e.target.dataset.id);
+      e.target.classList.add('dragging');
+      soundPickup();
+    }
+    function dragEnd(e) { e.target.classList.remove('dragging'); }
+    function allowDrop(e) { e.preventDefault(); e.currentTarget.classList.add('drag-over'); }
+    function dragLeave(e) { e.currentTarget.classList.remove('drag-over'); }
+    function drop(e) {
+      e.preventDefault();
+      e.currentTarget.classList.remove('drag-over');
+      const id = parseInt(e.dataTransfer.getData('text/plain'));
+      const colId = e.currentTarget.id.replace('col-', '');
+      const statusMap = { backlog: 'backlog', todo: 'todo', progress: 'progress', review: 'review', done: 'done' };
+      const task = tasks.find(t => t.id === id);
+      if (task) {
+        const newStatus = statusMap[colId] || 'backlog';
+        if (task.status !== newStatus) {
+          task.status = newStatus;
+          if (newStatus === 'done') soundDone();
+          else soundDrop();
+        }
+        renderBoard();
+      }
+    }
+
+    // ============ MODAL ============
+    function openNewTask() { document.getElementById('taskModal').classList.add('show'); }
+    function closeModal() { document.getElementById('taskModal').classList.remove('show'); }
+    function createTask() {
+      const title = document.getElementById('taskTitle').value.trim();
+      if (!title) return;
+      tasks.push({
+        id: nextId++,
+        title,
+        assignee: document.getElementById('taskAssignee').value,
+        product: document.getElementById('taskProduct').value,
+        priority: document.getElementById('taskPriority').value,
+        type: document.getElementById('taskType').value,
+        status: 'todo',
+        desc: document.getElementById('taskDesc').value.trim()
+      });
+      document.getElementById('taskTitle').value = '';
+      document.getElementById('taskDesc').value = '';
+      closeModal();
+      renderBoard();
+      soundCreate();
+    }
+
+    // ============ NOTES ============
+    let notes = JSON.parse(localStorage.getItem('kanban_notes') || '[]');
+
+    function renderNotes() {
+      const el = document.getElementById('notesList');
+      if (notes.length === 0) {
+        el.innerHTML = '<p class="text-xs text-slate-500 text-center py-4">No notes yet. Capture your thoughts before they fly away! 🦋</p>';
+        return;
+      }
+      el.innerHTML = notes.map((n, i) => `
+        <div class="bg-slate-800/50 rounded-lg p-3 ${n.voice ? 'border-l-2 border-red-500' : 'border-l-2 border-blue-500'}">
+          <div class="flex items-start justify-between">
+            <div class="flex-1">
+              <p class="text-sm text-slate-200">${n.text}</p>
+              <p class="text-[10px] text-slate-500 mt-1">${n.voice ? '🎤 ' : ''}${n.time} — ${n.date}</p>
+            </div>
+            <div class="flex gap-1 ml-2">
+              <button onclick="promoteNote(${i})" class="text-xs px-2 py-1 bg-slate-700 hover:bg-slate-600 rounded transition" title="Convert to Task">📋</button>
+              <button onclick="deleteNote(${i})" class="text-xs px-2 py-1 bg-slate-700 hover:bg-red-900/50 rounded transition" title="Delete">🗑️</button>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function addNote(text, isVoice = false) {
+      const input = document.getElementById('noteInput');
+      const noteText = text || input.value.trim();
+      if (!noteText) return;
+      const now = new Date();
+      notes.unshift({ text: noteText, voice: isVoice, time: now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}), date: now.toLocaleDateString([], {month: 'short', day: 'numeric'}), ts: now.getTime() });
+      localStorage.setItem('kanban_notes', JSON.stringify(notes));
+      input.value = '';
+      renderNotes();
+      soundNote();
+    }
+
+    function deleteNote(idx) {
+      notes.splice(idx, 1);
+      localStorage.setItem('kanban_notes', JSON.stringify(notes));
+      renderNotes();
+      soundDelete();
+    }
+
+    function promoteNote(idx) {
+      const note = notes[idx];
+      document.getElementById('taskTitle').value = note.text;
+      document.getElementById('taskProduct').value = 'internal';
+      openNewTask();
+      deleteNote(idx);
+    }
+
+    // ============ VOICE INPUT ============
+    let recognition = null;
+    let isListening = false;
+
+    function startVoiceNote() {
+      if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+        alert('Voice input not supported in this browser. Try Chrome or Edge.');
+        return;
+      }
+      if (isListening) { stopVoice(); return; }
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      recognition = new SpeechRecognition();
+      recognition.continuous = false;
+      recognition.interimResults = true;
+      recognition.lang = 'en-US';
+      recognition.onstart = () => { isListening = true; document.getElementById('voiceStatus').classList.remove('hidden'); document.getElementById('voiceBtn').classList.add('animate-pulse'); document.getElementById('voiceLabel').textContent = 'Stop'; };
+      recognition.onresult = (event) => { let t = ''; for (let i = event.resultIndex; i < event.results.length; i++) t += event.results[i][0].transcript; document.getElementById('noteInput').value = t; };
+      recognition.onend = () => { isListening = false; document.getElementById('voiceStatus').classList.add('hidden'); document.getElementById('voiceBtn').classList.remove('animate-pulse'); document.getElementById('voiceLabel').textContent = 'Voice Note'; const text = document.getElementById('noteInput').value.trim(); if (text) addNote(text, true); };
+      recognition.onerror = (event) => { isListening = false; document.getElementById('voiceStatus').classList.add('hidden'); document.getElementById('voiceBtn').classList.remove('animate-pulse'); document.getElementById('voiceLabel').textContent = 'Voice Note'; if (event.error === 'not-allowed') alert('Microphone access denied.'); };
+      recognition.start();
+    }
+
+    function stopVoice() { if (recognition) recognition.stop(); }
+
+    // ============ INIT ============
+    renderBoard();
+    renderNotes();
+  </script>
+</body>
+</html>

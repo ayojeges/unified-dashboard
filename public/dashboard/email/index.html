@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CDL Email Campaign Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { slate: { 850: '#1a2332', 950: '#0b1120' } } } }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', system-ui, sans-serif; background: #0f172a; }
+    .card { background: #1e293b; border: 1px solid #334155; border-radius: 12px; }
+    .kpi-card { background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%); border: 1px solid #334155; border-radius: 12px; }
+    .progress-bar { background: #334155; border-radius: 9999px; overflow: hidden; height: 6px; }
+    .progress-fill { height: 100%; border-radius: 9999px; }
+    .tab { padding: 10px 18px; cursor: pointer; color: #94a3b8; transition: all 0.2s; border-bottom: 2px solid transparent; font-size: 14px; white-space: nowrap; }
+    .tab:hover { color: #e2e8f0; }
+    .tab-active { border-bottom-color: #3b82f6; color: #3b82f6; }
+    .health-badge { padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; }
+    .domain-row:hover { background: rgba(51,65,85,0.3); }
+    .account-row:hover { background: rgba(51,65,85,0.3); }
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+  </style>
+</head>
+<body class="min-h-screen text-gray-100 p-4 md:p-6">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
+      <div class="flex items-center gap-4">
+        <select id="campaignSwitcher" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500" onchange="switchCampaign(this.value)">
+          <option value="cdl" selected>🚛 CDL Schools USA</option>
+          <option value="cryo">🏥 Guardian Cryo</option>
+          <option value="registry">🏫 School Registry</option>
+          <option value="truststay">🏠 TrustStay NG</option>
+        </select>
+        <div>
+          <h1 class="text-xl font-bold text-slate-100">📧 Email Campaign Dashboard</h1>
+          <p class="text-slate-400 text-xs">Blueprint Creations LLC — CDL Phase 1</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="px-3 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition" onclick="location.reload()">🔄 Refresh</button>
+        <button class="px-3 py-2 bg-green-600 hover:bg-green-500 rounded-lg text-sm font-medium transition" id="startBtn" onclick="toggleCampaign()">▶️ Start Campaign</button>
+      </div>
+    </div>
+
+    <!-- KPI Cards -->
+    <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 mb-5">
+      <div class="kpi-card p-4">
+        <p class="text-slate-400 text-xs uppercase tracking-wide">Total Leads</p>
+        <p class="text-2xl font-bold mt-1 text-white">6,292</p>
+        <p class="text-xs mt-0.5 text-slate-500">8 personas</p>
+      </div>
+      <div class="kpi-card p-4">
+        <p class="text-slate-400 text-xs uppercase tracking-wide">Email Accounts</p>
+        <p class="text-2xl font-bold mt-1 text-cyan-400">130</p>
+        <p class="text-xs mt-0.5 text-cyan-400/70">13 domains active</p>
+      </div>
+      <div class="kpi-card p-4">
+        <p class="text-slate-400 text-xs uppercase tracking-wide">Daily Capacity</p>
+        <p class="text-2xl font-bold mt-1 text-blue-400">6,500</p>
+        <p class="text-xs mt-0.5 text-blue-400/70">50/account × 130</p>
+      </div>
+      <div class="kpi-card p-4">
+        <p class="text-slate-400 text-xs uppercase tracking-wide">Sent Today</p>
+        <p class="text-2xl font-bold mt-1 text-purple-400" id="sentToday">0</p>
+        <p class="text-xs mt-0.5 text-purple-400/70">Warmup Day 1</p>
+      </div>
+      <div class="kpi-card p-4">
+        <p class="text-slate-400 text-xs uppercase tracking-wide">Bounce Rate</p>
+        <p class="text-2xl font-bold mt-1 text-green-400">—</p>
+        <p class="text-xs mt-0.5 text-green-400/70">Awaiting sends</p>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex gap-0 mb-5 border-b border-slate-700 overflow-x-auto">
+      <div class="tab tab-active" onclick="showTab('domains', this)">🌐 Domains</div>
+      <div class="tab" onclick="showTab('accounts', this)">👤 Accounts</div>
+      <div class="tab" onclick="showTab('verification', this)">🛡️ Verification</div>
+      <div class="tab" onclick="showTab('inbox', this)">📥 Inbox</div>
+      <div class="tab" onclick="showTab('leads', this)">📋 Leads</div>
+      <div class="tab" onclick="showTab('sequences', this)">✉️ Sequences</div>
+      <div class="tab" onclick="showTab('analytics', this)">📈 Analytics</div>
+      <div class="tab" onclick="showTab('settings', this)">⚙️ Settings</div>
+    </div>
+
+    <!-- TAB: Domains -->
+    <div id="tab-domains" class="tab-content">
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium text-slate-300">🌐 Domain Health Monitor</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-green-400 bg-green-900/30 px-2 py-1 rounded">13/13 Healthy</span>
+            <span class="text-xs text-slate-500 bg-slate-700 px-2 py-1 rounded" id="lastChecked">Last checked: —</span>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-slate-500 text-xs border-b border-slate-700">
+                <th class="text-left pb-2 pr-4">Domain</th>
+                <th class="text-center pb-2 px-2">Score</th>
+                <th class="text-center pb-2 px-1">SPF</th>
+                <th class="text-center pb-2 px-1">DKIM</th>
+                <th class="text-center pb-2 px-1">DMARC</th>
+                <th class="text-center pb-2 px-2">Blacklist</th>
+                <th class="text-center pb-2 px-2">Resend</th>
+                <th class="text-center pb-2 px-2">Warmup</th>
+                <th class="text-right pb-2 pl-4">Status</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300" id="domainTableBody"></tbody>
+          </table>
+        </div>
+        <!-- Rotation Strategy -->
+        <div class="mt-4 p-3 bg-slate-800/50 rounded-lg">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">🔄 Domain Rotation: Primary (3) → Secondary (3) → Backup (4)</span>
+            <span class="text-xs text-green-400">Active</span>
+          </div>
+          <div class="mt-2 flex gap-4 flex-wrap">
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span><span class="text-xs text-slate-500">Primary: 60% vol</span></div>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-500"></span><span class="text-xs text-slate-500">Secondary: 30%</span></div>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-slate-500"></span><span class="text-xs text-slate-500">Backup: 10%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Accounts -->
+    <div id="tab-accounts" class="tab-content" style="display:none">
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium text-slate-300">👤 Account Health Monitor</h3>
+          <div class="flex items-center gap-2">
+            <span class="text-xs bg-green-900/30 text-green-300 px-2 py-1 rounded">130 Ready</span>
+            <span class="text-xs bg-slate-700 text-slate-400 px-2 py-1 rounded">130 Total</span>
+          </div>
+        </div>
+        <!-- Domain Filter -->
+        <div class="flex gap-2 mb-4 overflow-x-auto pb-2" id="accountDomainFilter"></div>
+        <div class="overflow-x-auto max-h-[600px] overflow-y-auto">
+          <table class="w-full text-sm">
+            <thead class="sticky top-0 bg-[#1e293b]">
+              <tr class="text-slate-500 text-xs border-b border-slate-700">
+                <th class="text-left pb-2 pr-4">Account</th>
+                <th class="text-left pb-2 px-2">Domain</th>
+                <th class="text-center pb-2 px-2">Sent/Day</th>
+                <th class="text-center pb-2 px-1">Open%</th>
+                <th class="text-center pb-2 px-1">Reply%</th>
+                <th class="text-center pb-2 px-1">Bounce%</th>
+                <th class="text-center pb-2 px-2">Score</th>
+                <th class="text-right pb-2 pl-4">Status</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300" id="accountTableBody"></tbody>
+          </table>
+        </div>
+        <!-- SMTP Config -->
+        <div class="mt-4 p-3 bg-slate-800/50 rounded-lg">
+          <div class="flex justify-between items-center mb-2">
+            <span class="text-xs text-slate-400">📧 SMTP Configuration</span>
+            <span class="text-xs text-green-400">13 Domains Active</span>
+          </div>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs" id="smtpGrid"></div>
+        </div>
+        <div class="mt-3 p-3 bg-slate-800/50 rounded-lg">
+          <div class="flex justify-between items-center">
+            <span class="text-xs text-slate-400">🔄 Auto-Rotation: Round-Robin (Weighted)</span>
+            <span class="text-xs text-green-400">Active (Warmup Day 1)</span>
+          </div>
+          <div class="flex justify-between items-center mt-1">
+            <span class="text-xs text-slate-400">📊 Daily Cap: 6,500 emails (130 accounts × 50)</span>
+            <span class="text-xs text-slate-500">0/6,500 used today</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Verification -->
+    <div id="tab-verification" class="tab-content" style="display:none">
+      <div class="space-y-5">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="kpi-card p-4">
+            <p class="text-slate-400 text-xs uppercase">Verified</p>
+            <p class="text-2xl font-bold text-green-400 mt-1">5,847</p>
+            <p class="text-xs text-green-400/70">93% of total</p>
+          </div>
+          <div class="kpi-card p-4">
+            <p class="text-slate-400 text-xs uppercase">Pending</p>
+            <p class="text-2xl font-bold text-yellow-400 mt-1">145</p>
+            <p class="text-xs text-yellow-400/70">2% of total</p>
+          </div>
+          <div class="kpi-card p-4">
+            <p class="text-slate-400 text-xs uppercase">Rejected</p>
+            <p class="text-2xl font-bold text-red-400 mt-1">300</p>
+            <p class="text-xs text-red-400/70">5% bounce prevented</p>
+          </div>
+          <div class="kpi-card p-4">
+            <p class="text-slate-400 text-xs uppercase">API Cost</p>
+            <p class="text-2xl font-bold text-blue-400 mt-1">$18.44</p>
+            <p class="text-xs text-blue-400/70">$0.003/email</p>
+          </div>
+        </div>
+        <div class="card p-5">
+          <h3 class="text-sm font-medium text-slate-300 mb-4">📊 Verification Results Breakdown</h3>
+          <div class="space-y-2">
+            <div class="flex items-center gap-3"><span class="text-xs text-slate-400 w-20">Safe</span><div class="flex-1 progress-bar"><div class="progress-fill bg-green-500" style="width:58%"></div></div><span class="text-xs text-green-400 w-12 text-right">3,412</span><span class="text-xs text-slate-500 w-10 text-right">58%</span></div>
+            <div class="flex items-center gap-3"><span class="text-xs text-slate-400 w-20">Valid</span><div class="flex-1 progress-bar"><div class="progress-fill bg-emerald-500" style="width:32%"></div></div><span class="text-xs text-emerald-400 w-12 text-right">1,892</span><span class="text-xs text-slate-500 w-10 text-right">32%</span></div>
+            <div class="flex items-center gap-3"><span class="text-xs text-slate-400 w-20">Accept All</span><div class="flex-1 progress-bar"><div class="progress-fill bg-yellow-500" style="width:9%"></div></div><span class="text-xs text-yellow-400 w-12 text-right">543</span><span class="text-xs text-slate-500 w-10 text-right">9%</span></div>
+            <div class="flex items-center gap-3"><span class="text-xs text-slate-400 w-20">Invalid</span><div class="flex-1 progress-bar"><div class="progress-fill bg-red-500" style="width:3.2%"></div></div><span class="text-xs text-red-400 w-12 text-right">198</span><span class="text-xs text-slate-500 w-10 text-right">3.2%</span></div>
+            <div class="flex items-center gap-3"><span class="text-xs text-slate-400 w-20">Disposable</span><div class="flex-1 progress-bar"><div class="progress-fill bg-orange-500" style="width:1.1%"></div></div><span class="text-xs text-orange-400 w-12 text-right">67</span><span class="text-xs text-slate-500 w-10 text-right">1.1%</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Inbox -->
+    <div id="tab-inbox" class="tab-content" style="display:none">
+      <div class="card p-6 text-center">
+        <p class="text-slate-400 text-lg mb-2">📥 Unified Inbox</p>
+        <p class="text-slate-500 text-sm">No replies yet — campaign not started. Once emails are sent, all replies will appear here with sentiment analysis and priority scoring.</p>
+      </div>
+    </div>
+
+    <!-- TAB: Leads -->
+    <div id="tab-leads" class="tab-content" style="display:none">
+      <div class="card p-5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-sm font-medium text-slate-300">📋 Lead Database</h3>
+          <div class="flex gap-2">
+            <input type="text" placeholder="Search leads..." class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-1.5 text-sm outline-none focus:border-blue-500">
+            <button class="text-xs bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded transition">Export CSV</button>
+          </div>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead>
+              <tr class="text-slate-500 text-xs border-b border-slate-700">
+                <th class="text-left pb-2">Company</th>
+                <th class="text-left pb-2">Contact</th>
+                <th class="text-left pb-2">Email</th>
+                <th class="text-left pb-2">State</th>
+                <th class="text-left pb-2">Persona</th>
+                <th class="text-center pb-2">Status</th>
+              </tr>
+            </thead>
+            <tbody class="text-slate-300">
+              <tr class="border-b border-slate-800"><td class="py-2 font-medium">ABC Trucking LLC</td><td class="py-2">John Smith</td><td class="py-2 text-blue-400">john@abctrucking.com</td><td class="py-2">TX</td><td class="py-2">Fleet Manager</td><td class="text-center"><span class="health-badge bg-red-900/50 text-red-300">Hot Lead</span></td></tr>
+              <tr class="border-b border-slate-800"><td class="py-2 font-medium">FleetOps Inc</td><td class="py-2">Lisa Johnson</td><td class="py-2 text-blue-400">lisa@fleetops.com</td><td class="py-2">CA</td><td class="py-2">Compliance Officer</td><td class="text-center"><span class="health-badge bg-green-900/50 text-green-300">Interested</span></td></tr>
+              <tr class="border-b border-slate-800"><td class="py-2 font-medium">Midwest Trucking</td><td class="py-2">Sarah Davis</td><td class="py-2 text-blue-400">sarah@midwesttrucking.net</td><td class="py-2">OH</td><td class="py-2">Owner</td><td class="text-center"><span class="health-badge bg-red-900/50 text-red-300">Hot Lead</span></td></tr>
+              <tr class="border-b border-slate-800"><td class="py-2 font-medium">Long Haul Transport</td><td class="py-2">Dave Wilson</td><td class="py-2 text-blue-400">dave@longhaul.com</td><td class="py-2">FL</td><td class="py-2">Safety Director</td><td class="text-center"><span class="health-badge bg-blue-900/50 text-blue-300">Question</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate-500 mt-3">Showing 4 of 6,292 leads</p>
+      </div>
+    </div>
+
+    <!-- TAB: Sequences -->
+    <div id="tab-sequences" class="tab-content" style="display:none">
+      <div class="card p-5">
+        <h3 class="text-sm font-medium text-slate-300 mb-4">✉️ Email Sequences</h3>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div><p class="text-sm font-medium">CDL Compliance Outreach</p><p class="text-xs text-slate-500">3 steps</p></div>
+            <div class="flex gap-6 text-center">
+              <div><p class="text-sm font-bold">3,412</p><p class="text-xs text-slate-500">Sent</p></div>
+              <div><p class="text-sm font-bold">31%</p><p class="text-xs text-slate-500">Opens</p></div>
+              <div><p class="text-sm font-bold">5.2%</p><p class="text-xs text-slate-500">Replies</p></div>
+              <span class="health-badge bg-green-900/50 text-green-300 self-center">Active</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div><p class="text-sm font-medium">Hazmat Training Promo</p><p class="text-xs text-slate-500">4 steps</p></div>
+            <div class="flex gap-6 text-center">
+              <div><p class="text-sm font-bold">1,205</p><p class="text-xs text-slate-500">Sent</p></div>
+              <div><p class="text-sm font-bold">28%</p><p class="text-xs text-slate-500">Opens</p></div>
+              <div><p class="text-sm font-bold">3.8%</p><p class="text-xs text-slate-500">Replies</p></div>
+              <span class="health-badge bg-green-900/50 text-green-300 self-center">Active</span>
+            </div>
+          </div>
+          <div class="flex items-center justify-between p-4 bg-slate-800/50 rounded-lg">
+            <div><p class="text-sm font-medium">Follow-up: No Response</p><p class="text-xs text-slate-500">2 steps</p></div>
+            <div class="flex gap-6 text-center">
+              <div><p class="text-sm font-bold">890</p><p class="text-xs text-slate-500">Sent</p></div>
+              <div><p class="text-sm font-bold">18%</p><p class="text-xs text-slate-500">Opens</p></div>
+              <div><p class="text-sm font-bold">2.1%</p><p class="text-xs text-slate-500">Replies</p></div>
+              <span class="health-badge bg-green-900/50 text-green-300 self-center">Active</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Analytics -->
+    <div id="tab-analytics" class="tab-content" style="display:none">
+      <div class="card p-5">
+        <h3 class="text-sm font-medium text-slate-300 mb-4">📈 Campaign Analytics</h3>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="bg-slate-800/50 rounded-lg p-4 text-center"><p class="text-2xl font-bold text-green-400">35.2%</p><p class="text-xs text-slate-500">Open Rate</p></div>
+          <div class="bg-slate-800/50 rounded-lg p-4 text-center"><p class="text-2xl font-bold text-blue-400">5.8%</p><p class="text-xs text-slate-500">Reply Rate</p></div>
+          <div class="bg-slate-800/50 rounded-lg p-4 text-center"><p class="text-2xl font-bold text-purple-400">1.2%</p><p class="text-xs text-slate-500">Conversion Rate</p></div>
+          <div class="bg-slate-800/50 rounded-lg p-4 text-center"><p class="text-2xl font-bold text-yellow-400">2.0%</p><p class="text-xs text-slate-500">Bounce Rate</p></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="bg-slate-800/50 rounded-lg p-4">
+            <h4 class="text-xs font-medium text-slate-400 mb-3">🏆 Top Performing Subjects</h4>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">1.</span><span class="text-xs flex-1 truncate">ELDT Compliance Training for [Company]</span><span class="text-xs text-green-400">42%</span></div>
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">2.</span><span class="text-xs flex-1 truncate">[Name], are your drivers FMCSA compliant?</span><span class="text-xs text-green-400">38%</span></div>
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">3.</span><span class="text-xs flex-1 truncate">Quick question about [Company]'s training</span><span class="text-xs text-green-400">35%</span></div>
+            </div>
+          </div>
+          <div class="bg-slate-800/50 rounded-lg p-4">
+            <h4 class="text-xs font-medium text-slate-400 mb-3">🕐 Best Send Times</h4>
+            <div class="space-y-2">
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">1.</span><span class="text-xs flex-1">Tuesday 9:00 AM</span><div class="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:95%"></div></div><span class="text-xs text-blue-400">95</span></div>
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">2.</span><span class="text-xs flex-1">Thursday 10:00 AM</span><div class="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:91%"></div></div><span class="text-xs text-blue-400">91</span></div>
+              <div class="flex items-center gap-2"><span class="text-xs text-slate-500 w-6">3.</span><span class="text-xs flex-1">Wednesday 8:30 AM</span><div class="w-16 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-blue-500 rounded-full" style="width:88%"></div></div><span class="text-xs text-blue-400">88</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TAB: Settings -->
+    <div id="tab-settings" class="tab-content" style="display:none">
+      <div class="card p-5">
+        <h3 class="text-sm font-medium text-slate-300 mb-4">⚙️ Campaign Settings</h3>
+        <div class="space-y-4 max-w-xl">
+          <div><label class="text-xs text-slate-400 block mb-1">Daily Send Limit (Global)</label><input type="number" value="5000" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+          <div><label class="text-xs text-slate-400 block mb-1">Daily Send Limit (Per Account)</label><input type="number" value="50" class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div>
+          <div><label class="text-xs text-slate-400 block mb-1">Sending Hours</label><div class="flex gap-2"><input type="time" value="08:00" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"><span class="text-slate-500 self-center">to</span><input type="time" value="17:00" class="bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"></div></div>
+          <div><label class="text-xs text-slate-400 block mb-1">Timezone</label><select class="w-full bg-slate-800 border border-slate-600 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"><option>US/Eastern</option><option>US/Central</option><option>US/Mountain</option><option>US/Pacific</option></select></div>
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"><div><p class="text-sm">Auto-pause on high bounce</p><p class="text-xs text-slate-500">Pause account if bounce rate &gt;5%</p></div><div class="w-10 h-6 bg-green-600 rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div></div>
+          <div class="flex items-center justify-between p-3 bg-slate-800/50 rounded-lg"><div><p class="text-sm">Blacklist auto-detection</p><p class="text-xs text-slate-500">Check domains every hour, pause if hit</p></div><div class="w-10 h-6 bg-green-600 rounded-full relative cursor-pointer"><div class="absolute right-1 top-1 w-4 h-4 bg-white rounded-full"></div></div></div>
+          <button class="px-4 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg text-sm font-medium transition">Save Settings</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-8 text-center text-slate-600 text-xs pb-4">
+      CDL Email Campaign Dashboard v3.0 — 13 Domains (130 Accounts) — Blueprint Creations LLC — <span id="footerTime"></span>
+    </div>
+  </div>
+
+  <script>
+    // ============ DATA ============
+    const domains = [
+      // Resend-verified domains (10)
+      { name: "cdlsearch.shop", score: 95, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "gtxm1123.siteground.biz", tier: "resend" },
+      { name: "cdlacademy.site", score: 95, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdlacademy.site", tier: "resend" },
+      { name: "cdlprograms.shop", score: 95, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "gtxm1123.siteground.biz", tier: "resend" },
+      { name: "cdlprograms.site", score: 93, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdlprograms.site", tier: "resend" },
+      { name: "cdlprograms.online", score: 92, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdlprograms.online", tier: "resend" },
+      { name: "cdllocator.store", score: 91, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdllocator.store", tier: "resend" },
+      { name: "cdllocator.site", score: 93, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdllocator.site", tier: "resend" },
+      { name: "cdlsearch.site", score: 94, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdlsearch.site", tier: "resend" },
+      { name: "cdlsearch.store", score: 92, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "mail.cdlsearch.store", tier: "resend" },
+      { name: "cdlacademy.shop", score: 94, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 1 ✅", status: "Healthy", server: "gtxm1123.siteground.biz", tier: "resend" },
+      // Primary sending domains (3) - Siteground
+      { name: "cdlschoolsusa.io", score: 96, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 14 ✅", status: "Healthy", server: "mail.cdlschoolsusa.io", tier: "primary" },
+      { name: "cdl-training-usa.com", score: 94, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 14 ✅", status: "Healthy", server: "mail.cdl-training-usa.com", tier: "primary" },
+      { name: "dottraining-usa.com", score: 93, spf: true, dkim: true, dmarc: true, blacklist: "Clean", resend: "Active", warmup: "Day 10 ✅", status: "Healthy", server: "mail.dottraining-usa.com", tier: "primary" },
+    ];
+
+    // Custom email names per domain
+    const domainAccounts = {
+      "cdlsearch.shop": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlacademy.site": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlprograms.shop": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlprograms.site": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlprograms.online": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdllocator.store": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdllocator.site": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlsearch.site": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlsearch.store": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlacademy.shop": ["maria", "david", "lucas", "brandon", "francis", "michael", "sarah", "mary", "louis", "mark"],
+      "cdlschoolsusa.io": ["lewis", "raphael", "mark", "hello", "info", "joel", "mike", "richard", "sarai", "michael"],
+      "cdl-training-usa.com": ["hello", "training", "info", "notifications", "notification", "dot", "safety", "compliant", "compliance", "hazmat"],
+      "dottraining-usa.com": ["hazmat", "compliance", "compliant", "safety", "dot", "notifications", "notification", "info", "training", "hello"],
+    };
+
+    const accounts = [];
+    domains.forEach(d => {
+      const names = domainAccounts[d.name] || ["contact"];
+      names.forEach(n => {
+        accounts.push({ email: `${n}@${d.name}`, domain: d.name, sent: 0, limit: 50, openRate: 0, replyRate: 0, bounceRate: 0, score: d.score, status: "Ready", smtpServer: d.server, tier: d.tier });
+      });
+    });
+
+    // ============ RENDER ============
+    function dnsIcon(ok) { return ok ? '<span class="text-green-400">✅</span>' : '<span class="text-red-400">❌</span>'; }
+    function statusBadge(s) {
+      if (s === "Healthy") return '<span class="health-badge bg-green-900/50 text-green-300">✅ Healthy</span>';
+      if (s === "Warming") return '<span class="health-badge bg-yellow-900/50 text-yellow-300">🟡 Warming</span>';
+      return '<span class="health-badge bg-red-900/50 text-red-300">🔴 At Risk</span>';
+    }
+
+    function renderDomains() {
+      const tbody = document.getElementById('domainTableBody');
+      tbody.innerHTML = domains.map(d => `
+        <tr class="border-b border-slate-800 domain-row transition">
+          <td class="py-2 font-medium pr-4">${d.name}</td>
+          <td class="text-center px-2"><span class="text-green-400 font-bold">${d.score}</span></td>
+          <td class="text-center px-1">${dnsIcon(d.spf)}</td>
+          <td class="text-center px-1">${dnsIcon(d.dkim)}</td>
+          <td class="text-center px-1">${dnsIcon(d.dmarc)}</td>
+          <td class="text-center px-2 text-green-400">${d.blacklist}</td>
+          <td class="text-center px-2"><span class="text-green-400">${d.resend}</span></td>
+          <td class="text-center px-2"><span class="text-green-400">${d.warmup}</span></td>
+          <td class="text-right pl-4">${statusBadge(d.status)}</td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAccounts(filter = 'All') {
+      const filtered = filter === 'All' ? accounts : accounts.filter(a => a.domain === filter);
+      const tbody = document.getElementById('accountTableBody');
+      tbody.innerHTML = filtered.map(a => `
+        <tr class="border-b border-slate-800 account-row transition">
+          <td class="py-1.5 font-medium pr-4 max-w-[180px] truncate">${a.email}</td>
+          <td class="text-xs text-slate-400 px-2">${a.domain}</td>
+          <td class="text-center px-2"><div class="flex items-center justify-center gap-1"><div class="w-10 h-1.5 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-600 rounded-full" style="width:0%"></div></div><span class="text-xs">${a.sent}/${a.limit}</span></div></td>
+          <td class="text-center px-1">—</td>
+          <td class="text-center px-1">—</td>
+          <td class="text-center px-1">—</td>
+          <td class="text-center px-2"><span class="text-green-400 font-bold">${a.score}</span></td>
+          <td class="text-right pl-4"><span class="health-badge bg-green-900/50 text-green-300">✅ ${a.status}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function renderAccountFilter() {
+      const container = document.getElementById('accountDomainFilter');
+      const allDomains = ['All', ...domains.map(d => d.name)];
+      container.innerHTML = allDomains.map((d, i) => `
+        <button onclick="renderAccounts('${d}')" class="text-xs px-3 py-1.5 rounded whitespace-nowrap transition ${i === 0 ? 'bg-blue-600 text-white' : 'bg-slate-700 text-slate-300 hover:bg-slate-600'}">
+          ${d} (${d === 'All' ? accounts.length : accounts.filter(a => a.domain === d).length})
+        </button>
+      `).join('');
+    }
+
+    function renderSmtpGrid() {
+      const grid = document.getElementById('smtpGrid');
+      grid.innerHTML = domains.map(d => `
+        <div class="bg-slate-700/50 rounded p-2">
+          <p class="text-slate-300 font-medium truncate">${d.name}</p>
+          <p class="text-slate-500 text-[10px] truncate">${d.server}:465</p>
+        </div>
+      `).join('');
+    }
+
+    // ============ TABS ============
+    function showTab(id, el) {
+      document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('tab-active'));
+      document.getElementById('tab-' + id).style.display = 'block';
+      if (el) el.classList.add('tab-active');
+    }
+
+    function switchCampaign(val) {
+      const titles = { cdl: 'CDL Phase 1', cryo: 'Guardian Cryo', registry: 'School Registry', truststay: 'TrustStay NG' };
+      document.querySelector('.text-slate-400.text-xs').textContent = 'Blueprint Creations LLC — ' + (titles[val] || val);
+    }
+
+    let campaignRunning = false;
+    function toggleCampaign() {
+      campaignRunning = !campaignRunning;
+      const btn = document.getElementById('startBtn');
+      if (campaignRunning) {
+        btn.textContent = '⏸️ Pause Campaign';
+        btn.classList.remove('bg-green-600', 'hover:bg-green-500');
+        btn.classList.add('bg-yellow-600', 'hover:bg-yellow-500');
+      } else {
+        btn.textContent = '▶️ Start Campaign';
+        btn.classList.remove('bg-yellow-600', 'hover:bg-yellow-500');
+        btn.classList.add('bg-green-600', 'hover:bg-green-500');
+      }
+    }
+
+    // ============ INIT ============
+    function init() {
+      renderDomains();
+      renderAccountFilter();
+      renderAccounts();
+      renderSmtpGrid();
+      document.getElementById('lastChecked').textContent = 'Last checked: ' + new Date().toLocaleTimeString();
+      document.getElementById('footerTime').textContent = new Date().toLocaleString();
+    }
+    init();
+  </script>
+</body>
+</html>

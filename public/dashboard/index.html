@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Creations | Unified Dashboard</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #0f172a; --sidebar: #1e293b; --card: #1e293b; --border: #334155;
+  --text: #f1f5f9; --muted: #94a3b8; --primary: #3b82f6; --green: #22c55e;
+  --amber: #f59e0b; --cyan: #06b6d4; --purple: #8b5cf6; --red: #ef4444;
+}
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+a { color: var(--primary); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* Sidebar */
+.sidebar { width: 260px; background: var(--sidebar); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; overflow-y: auto; z-index: 100; }
+.sidebar-header { padding: 20px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+.sidebar-header .logo { width: 36px; height: 36px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.sidebar-header h1 { font-size: 15px; font-weight: 700; }
+.sidebar-header p { font-size: 11px; color: var(--muted); }
+.nav-section { padding: 16px 12px 8px; }
+.nav-section h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 8px; padding-left: 8px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 8px; cursor: pointer; transition: all 0.15s; color: var(--muted); font-size: 14px; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text); }
+.nav-item.active { background: rgba(59,130,246,0.15); color: var(--primary); }
+.nav-item .icon { width: 20px; text-align: center; font-size: 16px; }
+.nav-item .badge { margin-left: auto; background: var(--primary); color: white; font-size: 11px; padding: 2px 8px; border-radius: 10px; }
+.sidebar-footer { margin-top: auto; padding: 16px; border-top: 1px solid var(--border); }
+.user-card { display: flex; align-items: center; gap: 10px; }
+.user-avatar { width: 32px; height: 32px; background: linear-gradient(135deg, #3b82f6, #8b5cf6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; }
+.user-info { font-size: 13px; }
+.user-info .name { font-weight: 600; }
+.user-info .role { color: var(--muted); font-size: 11px; }
+
+/* Main */
+.main { margin-left: 260px; flex: 1; padding: 24px; }
+.page { display: none; }
+.page.active { display: block; }
+.page-header { margin-bottom: 24px; }
+.page-header h2 { font-size: 24px; font-weight: 700; }
+.page-header p { color: var(--muted); margin-top: 4px; }
+
+/* Cards */
+.kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px; }
+.kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+.kpi-card .label { font-size: 13px; color: var(--muted); }
+.kpi-card .value { font-size: 28px; font-weight: 700; margin: 4px 0; }
+.kpi-card .change { font-size: 12px; }
+.kpi-card .change.up { color: var(--green); }
+.kpi-card .change.neutral { color: var(--muted); }
+
+/* Project cards */
+.project-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.project-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px; transition: border-color 0.2s; cursor: pointer; }
+.project-card:hover { border-color: var(--primary); }
+.project-card .project-header { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.project-card .project-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; }
+.project-card .project-name { font-weight: 600; font-size: 15px; }
+.project-card .project-status { font-size: 12px; color: var(--muted); }
+.project-card .project-leads { font-size: 24px; font-weight: 700; }
+.project-card .project-leads span { font-size: 12px; font-weight: 400; color: var(--muted); }
+
+/* Quick links */
+.quick-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 12px; }
+.quick-link { display: flex; align-items: center; gap: 14px; padding: 16px; background: var(--card); border: 1px solid var(--border); border-radius: 10px; transition: all 0.15s; cursor: pointer; }
+.quick-link:hover { border-color: var(--primary); background: rgba(59,130,246,0.05); }
+.quick-link .ql-icon { font-size: 20px; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: rgba(59,130,246,0.1); border-radius: 8px; }
+.quick-link .ql-title { font-weight: 600; font-size: 14px; }
+.quick-link .ql-desc { font-size: 12px; color: var(--muted); }
+.quick-link .ql-arrow { margin-left: auto; color: var(--muted); }
+
+/* Domain grid */
+.domain-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; }
+.domain-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; display: flex; align-items: center; gap: 10px; }
+.domain-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.domain-name { font-family: monospace; font-size: 13px; }
+.domain-status { font-size: 11px; color: var(--muted); }
+
+/* Kanban */
+.kanban { display: flex; gap: 16px; overflow-x: auto; padding-bottom: 16px; }
+.kanban-col { min-width: 280px; flex-shrink: 0; }
+.kanban-col-header { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-weight: 600; font-size: 14px; }
+.kanban-dot { width: 10px; height: 10px; border-radius: 50%; }
+.kanban-count { color: var(--muted); font-weight: 400; font-size: 13px; }
+.kanban-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 14px; margin-bottom: 8px; cursor: pointer; transition: border-color 0.15s; }
+.kanban-card:hover { border-color: var(--primary); }
+.kanban-card .kc-title { font-size: 13px; font-weight: 500; margin-bottom: 8px; }
+.kanban-card .kc-meta { display: flex; justify-content: space-between; align-items: center; }
+.kanban-card .kc-tag { font-size: 11px; padding: 2px 8px; border-radius: 4px; }
+.kanban-card .kc-assignee { font-size: 11px; color: var(--muted); }
+
+/* Table */
+.data-table { width: 100%; border-collapse: collapse; }
+.data-table th { text-align: left; padding: 12px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); border-bottom: 1px solid var(--border); }
+.data-table td { padding: 12px; font-size: 13px; border-bottom: 1px solid var(--border); }
+.data-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* Templates */
+.template-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+.template-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px; text-align: center; cursor: pointer; transition: border-color 0.15s; }
+.template-card:hover { border-color: var(--primary); }
+.template-card .tc-preview { height: 60px; background: linear-gradient(135deg, rgba(59,130,246,0.2), rgba(139,92,246,0.2)); border-radius: 6px; margin-bottom: 10px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+.template-card .tc-name { font-size: 13px; font-weight: 500; }
+.template-card .tc-cat { font-size: 11px; color: var(--muted); }
+.template-card .tc-new { font-size: 10px; background: var(--green); color: #000; padding: 1px 6px; border-radius: 4px; margin-left: 4px; }
+
+/* Search */
+.search-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+.search-bar input { flex: 1; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; color: var(--text); font-size: 14px; }
+.search-bar input:focus { outline: none; border-color: var(--primary); }
+.search-bar button { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; color: var(--muted); cursor: pointer; font-size: 14px; }
+.search-bar button:hover { border-color: var(--primary); color: var(--text); }
+
+/* Status indicator */
+.status-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.status-dot.green { background: var(--green); }
+.status-dot.amber { background: var(--amber); }
+.status-dot.red { background: var(--red); }
+
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .main { margin-left: 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-header">
+    <div class="logo">⬡</div>
+    <div>
+      <h1>Unified Dashboard</h1>
+      <p>dash.cdlschoolsusa.io</p>
+    </div>
+  </div>
+  
+  <div class="nav-section">
+    <h3>Navigation</h3>
+    <div class="nav-item active" data-page="dashboard"><span class="icon">🏠</span> Dashboard</div>
+    <div class="nav-item" data-page="email"><span class="icon">📧</span> Email Hub <span class="badge">10</span></div>
+    <div class="nav-item" data-page="kanban"><span class="icon">📋</span> Kanban Board</div>
+    <div class="nav-item" data-page="data-studio"><span class="icon">🎬</span> Data Studio</div>
+    <div class="nav-item" data-page="leads"><span class="icon">👥</span> Leads</div>
+    <div class="nav-item" data-page="analytics"><span class="icon">📊</span> Analytics</div>
+    <div class="nav-item" data-page="docs"><span class="icon">📄</span> Documentation</div>
+  </div>
+  
+  <div class="nav-section">
+    <h3>Projects</h3>
+    <div class="nav-item" data-page="leads"><span class="icon">🚛</span> CDL Schools USA</div>
+    <div class="nav-item" data-page="leads"><span class="icon">❄️</span> Guardian Cryo</div>
+    <div class="nav-item" data-page="leads"><span class="icon">🏠</span> TrustStayNG</div>
+    <div class="nav-item" data-page="leads"><span class="icon">🏫</span> School Registry</div>
+  </div>
+  
+  <div class="sidebar-footer">
+    <div class="user-card">
+      <div class="user-avatar">A</div>
+      <div class="user-info">
+        <div class="name">Ayo Jegede</div>
+        <div class="role">admin@cdlschoolsusa.com</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Blueprint Creations LLC — Command Center</p>
+    </div>
+    
+    <div class="kpi-grid">
+      <div class="kpi-card">
+        <div class="label">Total Leads</div>
+        <div class="value">7,044</div>
+        <div class="change up">+500 today (TrustStayNG)</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Email Accounts</div>
+        <div class="value">100</div>
+        <div class="change neutral">10 domains active</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Active Tasks</div>
+        <div class="value">24</div>
+        <div class="change neutral">3 in progress</div>
+      </div>
+      <div class="kpi-card">
+        <div class="label">Videos Rendered</div>
+        <div class="value">27</div>
+        <div class="change up">25 CDL + 2 SchoolReg</div>
+      </div>
+    </div>
+    
+    <div style="margin-bottom: 24px;">
+      <h3 style="margin-bottom: 12px; font-size: 16px;">Active Projects</h3>
+      <div class="project-grid">
+        <div class="project-card" onclick="showPage('leads')">
+          <div class="project-header">
+            <div class="project-icon" style="background: rgba(16,185,129,0.15); color: #10b981;">🚛</div>
+            <div>
+              <div class="project-name">CDL Schools USA</div>
+              <div class="project-status">Email campaign ready</div>
+            </div>
+          </div>
+          <div class="project-leads">6,292 <span>leads</span></div>
+        </div>
+        <div class="project-card" onclick="showPage('leads')">
+          <div class="project-header">
+            <div class="project-icon" style="background: rgba(6,182,212,0.15); color: #06b6d4;">❄️</div>
+            <div>
+              <div class="project-name">Guardian Cryo</div>
+              <div class="project-status">Google Ads pending</div>
+            </div>
+          </div>
+          <div class="project-leads">102 <span>leads</span></div>
+        </div>
+        <div class="project-card" onclick="showPage('leads')">
+          <div class="project-header">
+            <div class="project-icon" style="background: rgba(245,158,11,0.15); color: #f59e0b;">🏠</div>
+            <div>
+              <div class="project-name">TrustStayNG</div>
+              <div class="project-status">Host acquisition active</div>
+            </div>
+          </div>
+          <div class="project-leads">500+ <span>hosts (expanding to 2K)</span></div>
+        </div>
+        <div class="project-card" onclick="showPage('leads')">
+          <div class="project-header">
+            <div class="project-icon" style="background: rgba(99,102,241,0.15); color: #6366f1;">🏫</div>
+            <div>
+              <div class="project-name">School Registry</div>
+              <div class="project-status">Data Studio building</div>
+            </div>
+          </div>
+          <div class="project-leads">13,300 <span>schools</span></div>
+        </div>
+      </div>
+    </div>
+    
+    <div>
+      <h3 style="margin-bottom: 12px; font-size: 16px;">Quick Access</h3>
+      <div class="quick-grid">
+        <div class="quick-link" onclick="showPage('email')">
+          <div class="ql-icon">📧</div>
+          <div><div class="ql-title">Email Campaigns</div><div class="ql-desc">10 domains · 100 accounts</div></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="quick-link" onclick="showPage('kanban')">
+          <div class="ql-icon">📋</div>
+          <div><div class="ql-title">Kanban Board</div><div class="ql-desc">24 tasks · 4 projects</div></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="quick-link" onclick="showPage('data-studio')">
+          <div class="ql-icon">🎬</div>
+          <div><div class="ql-title">Data Studio</div><div class="ql-desc">40 templates · Render online</div></div>
+          <div class="ql-arrow">→</div>
+        </div>
+        <div class="quick-link" onclick="showPage('analytics')">
+          <div class="ql-icon">📊</div>
+          <div><div class="ql-title">Analytics</div><div class="ql-desc">Cross-project metrics</div></div>
+          <div class="ql-arrow">→</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+
+  <!-- DASHBOARD PAGE -->
+  <div class="page active" id="page-dashboard">
+    <div class="page-header">
+      <h2>Dashboard</h2>
+      <p>Blueprint Creations LLC — Command Center · March 14, 2026 02:02 UTC</p>
+    </div>
+    <!-- Content already in kpi-grid above, this is page-specific -->
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px;">
+      <h3 style="margin-bottom: 12px;">🔥 Today's Priorities</h3>
+      <div style="display: grid; gap: 10px;">
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(245,158,11,0.1); border-radius: 8px;">
+          <span class="status-dot amber"></span>
+          <div><strong>TrustStayNG:</strong> Expand Lagos hosts to 2,000 with phone numbers (WhatsApp campaign prep)</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(59,130,246,0.1); border-radius: 8px;">
+          <span class="status-dot green"></span>
+          <div><strong>CDL Schools:</strong> Source persona-based leads (8 personas, trucking companies 1-50 vehicles)</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(139,92,246,0.1); border-radius: 8px;">
+          <span class="status-dot green"></span>
+          <div><strong>Dashboard:</strong> Build unified dashboard at dash.cdlschoolsusa.io ✅ Live now</div>
+        </div>
+        <div style="display: flex; align-items: center; gap: 12px; padding: 12px; background: rgba(34,197,94,0.1); border-radius: 8px;">
+          <span class="status-dot green"></span>
+          <div><strong>Google Drive:</strong> Token refreshed ✅ TrustStayNG data uploaded to Sheets</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EMAIL PAGE -->
+  <div class="page" id="page-email">
+    <div class="page-header">
+      <h2>📧 Email Hub</h2>
+      <p>10 domains · 100 accounts · 5,000 daily capacity</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Domains</div><div class="value" style="color: var(--green);">10</div><div class="change up">All Healthy</div></div>
+      <div class="kpi-card"><div class="label">Accounts</div><div class="value">100</div><div class="change neutral">10 per domain</div></div>
+      <div class="kpi-card"><div class="label">Leads Verified</div><div class="value">6,292</div><div class="change up">Ready to send</div></div>
+      <div class="kpi-card"><div class="label">Campaigns Sent</div><div class="value">0</div><div class="change neutral">Awaiting domains purchase</div></div>
+    </div>
+    <h3 style="margin-bottom: 12px;">Domain Health</h3>
+    <div class="domain-grid">
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlsearch.shop</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlacademy.site</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlprograms.shop</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlprograms.site</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlprograms.online</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdllocator.store</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdllocator.site</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlsearch.site</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlsearch.store</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+      <div class="domain-card"><div class="domain-dot"></div><div><div class="domain-name">cdlacademy.shop</div><div class="domain-status">SPF ✓ DKIM ✓ DMARC ✓</div></div></div>
+    </div>
+  </div>
+
+  <!-- KANBAN PAGE -->
+  <div class="page" id="page-kanban">
+    <div class="page-header">
+      <h2>📋 Kanban Board</h2>
+      <p>24 tasks · 4 projects · Weekly sprint W11</p>
+    </div>
+    <div class="kanban">
+      <div class="kanban-col">
+        <div class="kanban-col-header"><div class="kanban-dot" style="background: var(--muted);"></div> Backlog <span class="kanban-count">(13)</span></div>
+        <div class="kanban-card"><div class="kc-title">Scrape US fertility clinic directory</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Guardian Cryo</span><span class="kc-assignee">Akan</span></div></div>
+        <div class="kanban-card"><div class="kc-title">Build social media content calendar</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Deb</span></div></div>
+        <div class="kanban-card"><div class="kc-title">Global Flight Interception System Phase 1</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Akan</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><div class="kanban-dot" style="background: var(--primary);"></div> To Do <span class="kanban-count">(8)</span></div>
+        <div class="kanban-card"><div class="kc-title">Launch B2B email campaign to fleet managers</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Deb</span></div></div>
+        <div class="kanban-card"><div class="kc-title">Find CDL decision-makers in top 10 states</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Akan</span></div></div>
+        <div class="kanban-card"><div class="kc-title">Launch Google Ads for IVF cryoshipping</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Guardian Cryo</span><span class="kc-assignee">Deb</span></div></div>
+        <div class="kanban-card"><div class="kc-title">Scrape Nigerian school directories</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(99,102,241,0.15); color: #6366f1;">School Registry</span><span class="kc-assignee">Akan</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><div class="kanban-dot" style="background: var(--amber);"></div> In Progress <span class="kanban-count">(2)</span></div>
+        <div class="kanban-card" style="border-color: var(--amber);"><div class="kc-title">🔥 TrustStayNG Lagos host acquisition (2000)</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(245,158,11,0.15); color: #f59e0b;">TrustStayNG</span><span class="kc-assignee">Scraper</span></div></div>
+        <div class="kanban-card" style="border-color: var(--amber);"><div class="kc-title">🔥 Unified dashboard build</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Internal</span><span class="kc-assignee">Mark</span></div></div>
+        <div class="kanban-card"><div class="kc-title">SchoolRegistry Data Studio templates</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(99,102,241,0.15); color: #6366f1;">School Registry</span><span class="kc-assignee">Innocent</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><div class="kanban-dot" style="background: var(--purple);"></div> Review <span class="kanban-count">(1)</span></div>
+        <div class="kanban-card"><div class="kc-title">Generate 5000 CDL leads with dedup</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Deb</span></div></div>
+      </div>
+      <div class="kanban-col">
+        <div class="kanban-col-header"><div class="kanban-dot" style="background: var(--green);"></div> Done <span class="kanban-count">(4)</span></div>
+        <div class="kanban-card"><div class="kc-title">✅ CDL Schools USA 6,292 leads verified</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(16,185,129,0.15); color: #10b981;">CDL</span><span class="kc-assignee">Deb</span></div></div>
+        <div class="kanban-card"><div class="kc-title">✅ Guardian Cryo 102 leads delivered</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(6,182,212,0.15); color: #06b6d4;">Guardian Cryo</span><span class="kc-assignee">Deb</span></div></div>
+        <div class="kanban-card"><div class="kc-title">✅ TrustStayNG 500 Lagos hosts collected</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(245,158,11,0.15); color: #f59e0b;">TrustStayNG</span><span class="kc-assignee">Akan</span></div></div>
+        <div class="kanban-card"><div class="kc-title">✅ Google Drive tokens refreshed</div><div class="kc-meta"><span class="kc-tag" style="background: rgba(139,92,246,0.15); color: #8b5cf6;">Internal</span><span class="kc-assignee">Mark</span></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DATA STUDIO PAGE -->
+  <div class="page" id="page-data-studio">
+    <div class="page-header">
+      <h2>🎬 Data Studio</h2>
+      <p>40 templates · Render service online · Grammy-style authority videos</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Templates</div><div class="value">40</div><div class="change neutral">4 new SchoolReg</div></div>
+      <div class="kpi-card"><div class="label">Videos Rendered</div><div class="value">27</div><div class="change up">25 CDL + 2 SchoolReg</div></div>
+      <div class="kpi-card"><div class="label">Queue</div><div class="value">0</div><div class="change neutral">Idle</div></div>
+      <div class="kpi-card"><div class="label">Render Service</div><div class="value" style="color: var(--green);">Online</div><div class="change up">Port 4100</div></div>
+    </div>
+    <h3 style="margin-bottom: 12px;">Video Templates</h3>
+    <div class="template-grid">
+      <div class="template-card"><div class="tc-preview">📈</div><div class="tc-name">Line Race</div><div class="tc-cat">Charts</div></div>
+      <div class="template-card"><div class="tc-preview">📊</div><div class="tc-name">Bar Race</div><div class="tc-cat">Charts</div></div>
+      <div class="template-card"><div class="tc-preview">⚖️</div><div class="tc-name">Comparison</div><div class="tc-cat">Charts</div></div>
+      <div class="template-card"><div class="tc-preview">🔢</div><div class="tc-name">Stat Counter</div><div class="tc-cat">Stats</div></div>
+      <div class="template-card"><div class="tc-preview">🏆</div><div class="tc-name">Leaderboard</div><div class="tc-cat">Rankings</div></div>
+      <div class="template-card"><div class="tc-preview">💬</div><div class="tc-name">Quote Card</div><div class="tc-cat">Social</div></div>
+      <div class="template-card"><div class="tc-preview">🗺️</div><div class="tc-name">Heatmap</div><div class="tc-cat">Charts</div></div>
+      <div class="template-card"><div class="tc-preview">⏱️</div><div class="tc-name">Timeline</div><div class="tc-cat">Charts</div></div>
+      <div class="template-card"><div class="tc-preview">🎯</div><div class="tc-name">Annual Rankings<span class="tc-new">NEW</span></div><div class="tc-cat">SchoolReg</div></div>
+      <div class="template-card"><div class="tc-preview">🗺️</div><div class="tc-name">State Scorecard<span class="tc-new">NEW</span></div><div class="tc-cat">SchoolReg</div></div>
+      <div class="template-card"><div class="tc-preview">1️⃣</div><div class="tc-name">One Big Number<span class="tc-new">NEW</span></div><div class="tc-cat">SchoolReg</div></div>
+      <div class="template-card"><div class="tc-preview">💰</div><div class="tc-name">Fees Timeline<span class="tc-new">NEW</span></div><div class="tc-cat">SchoolReg</div></div>
+    </div>
+  </div>
+
+  <!-- LEADS PAGE -->
+  <div class="page" id="page-leads">
+    <div class="page-header">
+      <h2>👥 Lead Database</h2>
+      <p>20,194+ leads across 4 projects</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">CDL Schools USA</div><div class="value">6,292</div><div class="change up">Verified ✓</div></div>
+      <div class="kpi-card"><div class="label">Guardian Cryo</div><div class="value">102</div><div class="change neutral">Delivered</div></div>
+      <div class="kpi-card"><div class="label">TrustStayNG</div><div class="value">500+</div><div class="change up">Expanding to 2K</div></div>
+      <div class="kpi-card"><div class="label">School Registry</div><div class="value">13,300</div><div class="change neutral">Database</div></div>
+    </div>
+    <div class="search-bar">
+      <input type="text" placeholder="Search leads by name, company, email...">
+      <button>🔍 Filter</button>
+      <button>📥 Export</button>
+    </div>
+    <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; overflow: auto;">
+      <table class="data-table">
+        <thead>
+          <tr><th>Company</th><th>Contact</th><th>Title</th><th>Email</th><th>Phone</th><th>Location</th><th>Project</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>ABC Trucking Academy</td><td>John Smith</td><td>Fleet Manager</td><td>john@abctrucking.com</td><td>+1 (555) 123-4567</td><td>TX</td><td><span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 11px;">CDL</span></td></tr>
+          <tr><td>Lone Star CDL School</td><td>Maria Garcia</td><td>Director</td><td>maria@lonestarcdl.com</td><td>+1 (555) 234-5678</td><td>TX</td><td><span style="background: rgba(16,185,129,0.15); color: #10b981; padding: 2px 8px; border-radius: 4px; font-size: 11px;">CDL</span></td></tr>
+          <tr><td>Houston Fertility Institute</td><td>Dr. Chen</td><td>Medical Director</td><td>info@hfi.com</td><td>+1 (555) 345-6789</td><td>TX</td><td><span style="background: rgba(6,182,212,0.15); color: #06b6d4; padding: 2px 8px; border-radius: 4px; font-size: 11px;">Guardian</span></td></tr>
+          <tr><td>Lekki Luxury Apartments</td><td>Chidi Okafor</td><td>Property Manager</td><td>chidi@lekki.luxury</td><td>+234 801 234 5678</td><td>Lagos</td><td><span style="background: rgba(245,158,11,0.15); color: #f59e0b; padding: 2px 8px; border-radius: 4px; font-size: 11px;">TrustStay</span></td></tr>
+          <tr><td>Greenspring Schools</td><td>Mrs. Adeyemi</td><td>Proprietor</td><td>info@greenspring.edu.ng</td><td>+234 802 345 6789</td><td>Lagos</td><td><span style="background: rgba(99,102,241,0.15); color: #6366f1; padding: 2px 8px; border-radius: 4px; font-size: 11px;">SchoolReg</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ANALYTICS PAGE -->
+  <div class="page" id="page-analytics">
+    <div class="page-header">
+      <h2>📊 Analytics</h2>
+      <p>Cross-project metrics and performance</p>
+    </div>
+    <div class="kpi-grid">
+      <div class="kpi-card"><div class="label">Total Revenue</div><div class="value">$0</div><div class="change neutral">Pre-revenue</div></div>
+      <div class="kpi-card"><div class="label">Total Leads</div><div class="value">20,194</div><div class="change up">+500 today</div></div>
+      <div class="kpi-card"><div class="label">Email Sent</div><div class="value">0</div><div class="change neutral">Campaign pending</div></div>
+      <div class="kpi-card"><div class="label">Websites</div><div class="value">4</div><div class="change up">All live</div></div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 40px; margin-bottom: 8px;">📊</div>
+        <p style="color: var(--muted);">Lead Generation by Project</p>
+        <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">Chart data will populate as campaigns run</p>
+      </div>
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; text-align: center; min-height: 200px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+        <div style="font-size: 40px; margin-bottom: 8px;">📧</div>
+        <p style="color: var(--muted);">Email Campaign Performance</p>
+        <p style="font-size: 12px; color: var(--muted); margin-top: 4px;">No campaigns sent yet</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- DOCS PAGE -->
+  <div class="page" id="page-docs">
+    <div class="page-header">
+      <h2>📄 Documentation</h2>
+      <p>SOPs, playbooks, and guides</p>
+    </div>
+    <div class="quick-grid">
+      <div class="quick-link"><div class="ql-icon">🎯</div><div><div class="ql-title">CDL B2B Email Playbook</div><div class="ql-desc">Email campaign strategy, sequences, templates</div></div></div>
+      <div class="quick-link"><div class="ql-icon">🛡️</div><div><div class="ql-title">Guardian Cryo - Lead Qualification</div><div class="ql-desc">How to qualify and score fertility clinic leads</div></div></div>
+      <div class="quick-link"><div class="ql-icon">📱</div><div><div class="ql-title">TrustStayNG - WhatsApp Outreach</div><div class="ql-desc">WhatsApp-first outreach strategy for Lagos hosts</div></div></div>
+      <div class="quick-link"><div class="ql-icon">🎬</div><div><div class="ql-title">Data Studio - Video Templates</div><div class="ql-desc">How to render videos using the 40 templates</div></div></div>
+      <div class="quick-link"><div class="ql-icon">👥</div><div><div class="ql-title">Team Onboarding</div><div class="ql-desc">New agent setup, SOUL.md, memory system</div></div></div>
+      <div class="quick-link"><div class="ql-icon">🔗</div><div><div class="ql-title">API Reference</div><div class="ql-desc">Team API endpoints, task board, delegation</div></div></div>
+    </div>
+  </div>
+
+</main>
+
+<script>
+// Navigation
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const page = item.dataset.page;
+    if (page) showPage(page);
+  });
+});
+
+function showPage(pageId) {
+  // Hide all pages
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  // Show target
+  const target = document.getElementById('page-' + pageId);
+  if (target) target.classList.add('active');
+  // Update nav
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll(`.nav-item[data-page="${pageId}"]`).forEach(n => n.classList.add('active'));
+}
+
+// Auto-refresh timestamp
+setInterval(() => {
+  const now = new Date().toISOString().replace('T', ' ').substring(0, 19) + ' UTC';
+  document.querySelector('.page-header p')?.replaceChildren(document.createTextNode(
+    'Blueprint Creations LLC — Command Center · ' + now
+  ));
+}, 60000);
+</script>
+
+</body>
+</html>
