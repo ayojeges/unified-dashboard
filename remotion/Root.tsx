@@ -16,6 +16,10 @@ import { QuoteCardTemplate } from "../components/data-studio/templates/quote-car
 import { MapVizTemplate } from "../components/data-studio/templates/map-viz";
 import { ScatterRaceTemplate } from "../components/data-studio/templates/scatter-race";
 import { WaterfallTemplate } from "../components/data-studio/templates/waterfall";
+import { AnnualRankingsTemplate } from "../components/data-studio/templates/annual-rankings";
+import { StateScorecardTemplate } from "../components/data-studio/templates/state-scorecard";
+import { OneBigNumberTemplate } from "../components/data-studio/templates/one-big-number";
+import { FeesTimelineTemplate } from "../components/data-studio/templates/fees-timeline";
 
 const FPS = 30;
 const DURATION = FPS * 10;
@@ -39,5 +43,9 @@ export const RemotionRoot: React.FC = () => (
     <Composition id="MapViz" component={MapVizTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ states: [], title: "", brand: "", colors: defaultColors }} />
     <Composition id="ScatterRace" component={ScatterRaceTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ bubbles: [], xLabel: "X", yLabel: "Y", title: "", brand: "", colors: defaultColors }} />
     <Composition id="Waterfall" component={WaterfallTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ items: [], title: "", brand: "", colors: defaultColors }} />
+    <Composition id="AnnualRankings" component={AnnualRankingsTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ schools: [], title: "", year: "", brand: "", colors: defaultColors }} />
+    <Composition id="StateScorecard" component={StateScorecardTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ leftState: "", rightState: "", metrics: [], title: "", brand: "", colors: defaultColors }} />
+    <Composition id="OneBigNumber" component={OneBigNumberTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ value: 0, title: "", brand: "", colors: defaultColors }} />
+    <Composition id="FeesTimeline" component={FeesTimelineTemplate as any} durationInFrames={DURATION} fps={FPS} width={1920} height={1080} defaultProps={{ series: [], title: "", brand: "", colors: defaultColors }} />
   </>
 );
